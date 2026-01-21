@@ -49,9 +49,9 @@ const GalleryViewer = ({ images, title }: { images: string[], title: string }) =
   const prevImage = () => setActiveIdx((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       {/* Main Active Image Stage */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-slate-100 border border-slate-200 shadow-sm group">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl md:rounded-2xl bg-slate-100 border border-slate-200 shadow-sm group">
         <img 
           src={images[activeIdx]} 
           alt={`View ${activeIdx + 1}`} 
@@ -59,30 +59,38 @@ const GalleryViewer = ({ images, title }: { images: string[], title: string }) =
         />
         
         {/* Navigation Overlays */}
-        <div className="absolute inset-0 flex items-center justify-between p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={prevImage} className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm transition-all">
+        <div className="absolute inset-0 flex items-center justify-between p-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <button 
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="p-2 rounded-full bg-black/40 text-white hover:bg-black/70 backdrop-blur-sm transition-all"
+              aria-label="Previous image"
+            >
                 <ChevronLeft className="w-5 h-5" />
             </button>
-            <button onClick={nextImage} className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm transition-all">
+            <button 
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="p-2 rounded-full bg-black/40 text-white hover:bg-black/70 backdrop-blur-sm transition-all"
+              aria-label="Next image"
+            >
                 <ChevronRight className="w-5 h-5" />
             </button>
         </div>
 
         {/* Counter Badge */}
-        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 text-white text-[10px] font-bold rounded-md backdrop-blur-md flex items-center gap-1.5">
+        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 text-white text-[10px] font-bold rounded-md backdrop-blur-md flex items-center gap-1.5 pointer-events-none">
             <ImageIcon className="w-3 h-3" />
             {activeIdx + 1} / {images.length}
         </div>
       </div>
 
       {/* Thumbnail Strip */}
-      <div className="w-full overflow-x-auto pb-2 scrollbar-hide">
+      <div className="w-full overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
         <div className="flex gap-2 min-w-min">
             {images.map((img, idx) => (
                 <button 
                     key={idx}
                     onClick={() => setActiveIdx(idx)}
-                    className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeIdx === idx ? 'border-amber-500 shadow-md scale-105 z-10' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                    className={`relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeIdx === idx ? 'border-amber-500 shadow-md scale-105 z-10' : 'border-transparent opacity-60 hover:opacity-100'}`}
                 >
                     <img src={img} alt="thumb" className="w-full h-full object-cover" />
                 </button>
@@ -102,11 +110,11 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
   const item = UPDATES[0]; // We only have one featured update
 
   return (
-    <section className="py-16 bg-white border-b border-slate-100 relative z-10">
+    <section className="py-12 md:py-16 bg-white border-b border-slate-100 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-10 border-b border-slate-100 pb-6">
+        <div className="flex items-end justify-between mb-8 border-b border-slate-100 pb-4 md:pb-6">
             <div>
                 <h4 className="text-green-700 font-extrabold text-xs uppercase tracking-widest mb-2">
                     Latest Activity
@@ -125,13 +133,22 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
             </div>
         </div>
 
-        {/* Main Content Card - Split Layout */}
-        <div className="bg-slate-50 rounded-3xl p-6 md:p-8 lg:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+        {/* Main Content Card - Mobile First Order */}
+        <div className="bg-slate-50 rounded-2xl md:rounded-3xl p-5 md:p-8 lg:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16">
                 
-                {/* Left Column: Text Content */}
-                <div className="flex flex-col justify-center">
-                    <div className="flex items-center gap-3 mb-6">
+                {/* MOBILE ORDER: 1 (Shown First)
+                   DESKTOP ORDER: 2 (Shown Second/Right)
+                */}
+                <div className="order-1 lg:order-2 relative w-full">
+                    <GalleryViewer images={item.images} title={item.title} />
+                </div>
+
+                {/* MOBILE ORDER: 2 (Shown Second)
+                   DESKTOP ORDER: 1 (Shown First/Left)
+                */}
+                <div className="order-2 lg:order-1 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-4 md:mb-6">
                         <span className="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-extrabold uppercase tracking-wide rounded-full">
                             {item.category}
                         </span>
@@ -141,28 +158,23 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
                         </div>
                     </div>
 
-                    <h3 className="text-2xl md:text-4xl font-bold text-slate-900 leading-tight mb-6">
+                    <h3 className="text-2xl md:text-4xl font-bold text-slate-900 leading-tight mb-4 md:mb-6">
                         {item.title}
                     </h3>
 
-                    <div className="text-slate-600 leading-relaxed text-base md:text-lg mb-8">
+                    <div className="text-slate-600 leading-relaxed text-base md:text-lg mb-6 md:mb-8">
                         {item.content}
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                          <button 
                             onClick={() => onNavigate('read-story', String(item.id))}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-800 hover:bg-green-900 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-green-900/20"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-800 hover:bg-green-900 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-green-900/20 w-full sm:w-auto"
                         >
                             Read Full Report
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
-                </div>
-
-                {/* Right Column: Gallery */}
-                <div className="relative">
-                    <GalleryViewer images={item.images} title={item.title} />
                 </div>
 
             </div>
