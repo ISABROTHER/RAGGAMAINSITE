@@ -50,35 +50,43 @@ const GalleryViewer = ({ images, title }: { images: string[], title: string }) =
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* Main Active Image Stage */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl md:rounded-2xl bg-slate-100 border border-slate-200 shadow-sm group">
+      {/* Main Active Image Stage - PORTRAIT ASPECT RATIO (4:5) */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-slate-900 border border-slate-200 shadow-sm group">
+        
+        {/* 1. Blurred Background Layer (Fills the portrait space) */}
+        <div 
+            className="absolute inset-0 bg-cover bg-center blur-2xl opacity-60 scale-110"
+            style={{ backgroundImage: `url(${images[activeIdx]})` }}
+        />
+
+        {/* 2. Sharp Foreground Image (Full Display - No Cropping) */}
         <img 
           src={images[activeIdx]} 
           alt={`View ${activeIdx + 1}`} 
-          className="w-full h-full object-cover transition-all duration-500"
+          className="relative w-full h-full object-contain z-10 transition-all duration-500"
         />
         
         {/* Navigation Overlays */}
-        <div className="absolute inset-0 flex items-center justify-between p-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 flex items-center justify-between p-2 z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button 
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
-              className="p-2 rounded-full bg-black/40 text-white hover:bg-black/70 backdrop-blur-sm transition-all"
+              className="p-3 rounded-full bg-black/30 text-white hover:bg-black/60 backdrop-blur-md transition-all shadow-lg"
               aria-label="Previous image"
             >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); nextImage(); }}
-              className="p-2 rounded-full bg-black/40 text-white hover:bg-black/70 backdrop-blur-sm transition-all"
+              className="p-3 rounded-full bg-black/30 text-white hover:bg-black/60 backdrop-blur-md transition-all shadow-lg"
               aria-label="Next image"
             >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
             </button>
         </div>
 
         {/* Counter Badge */}
-        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 text-white text-[10px] font-bold rounded-md backdrop-blur-md flex items-center gap-1.5 pointer-events-none">
-            <ImageIcon className="w-3 h-3" />
+        <div className="absolute bottom-4 right-4 px-3 py-1.5 bg-black/60 text-white text-xs font-bold rounded-lg backdrop-blur-md flex items-center gap-2 pointer-events-none z-20">
+            <ImageIcon className="w-4 h-4" />
             {activeIdx + 1} / {images.length}
         </div>
       </div>
@@ -90,7 +98,7 @@ const GalleryViewer = ({ images, title }: { images: string[], title: string }) =
                 <button 
                     key={idx}
                     onClick={() => setActiveIdx(idx)}
-                    className={`relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeIdx === idx ? 'border-amber-500 shadow-md scale-105 z-10' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                    className={`relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeIdx === idx ? 'border-amber-500 shadow-md scale-105 z-10 ring-2 ring-amber-500/50' : 'border-transparent opacity-60 hover:opacity-100'}`}
                 >
                     <img src={img} alt="thumb" className="w-full h-full object-cover" />
                 </button>
@@ -137,16 +145,12 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
         <div className="bg-slate-50 rounded-2xl md:rounded-3xl p-5 md:p-8 lg:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40">
             <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16">
                 
-                {/* MOBILE ORDER: 1 (Shown First)
-                   DESKTOP ORDER: 2 (Shown Second/Right)
-                */}
+                {/* MOBILE ORDER: 1 (Gallery Top) */}
                 <div className="order-1 lg:order-2 relative w-full">
                     <GalleryViewer images={item.images} title={item.title} />
                 </div>
 
-                {/* MOBILE ORDER: 2 (Shown Second)
-                   DESKTOP ORDER: 1 (Shown First/Left)
-                */}
+                {/* MOBILE ORDER: 2 (Text Bottom) */}
                 <div className="order-2 lg:order-1 flex flex-col justify-center">
                     <div className="flex items-center gap-3 mb-4 md:mb-6">
                         <span className="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-extrabold uppercase tracking-wide rounded-full">
