@@ -1,1 +1,6 @@
+# Redirect www.kmnragga.com to kwamenamintanyarku.com
+https://www.kmnragga.com/* https://kwamenamintanyarku.com/:splat 301!
+https://kmnragga.com/* https://kwamenamintanyarku.com/:splat 301!
+
+# SPA fallback
 /* /index.html 200
