@@ -6,7 +6,7 @@ export interface UpdateItem {
   id: number;
   date: string;
   title: string;
-  images: string[]; // Changed to an array of strings
+  images: string[]; 
   category: string;
   content: React.ReactNode;
 }
@@ -17,15 +17,19 @@ export const UPDATES: UpdateItem[] = [
     date: "December 2025",
     title: "Hon. Ragga Accounts to Constituents on Projects and Support in 2025",
     images: [
-      "https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=800", // 1. Students/Scholarship
-      "https://images.pexels.com/photos/301920/pexels-photo-301920.jpeg?auto=compress&cs=tinysrgb&w=800", // 2. Desks
-      "https://images.pexels.com/photos/1036856/pexels-photo-1036856.jpeg?auto=compress&cs=tinysrgb&w=800", // 3. Market Women
-      "https://images.pexels.com/photos/3845653/pexels-photo-3845653.jpeg?auto=compress&cs=tinysrgb&w=800", // 4. Health
-      "https://images.pexels.com/photos/11022645/pexels-photo-11022645.jpeg?auto=compress&cs=tinysrgb&w=800", // 5. Borehole
-      "https://images.pexels.com/photos/5940841/pexels-photo-5940841.jpeg?auto=compress&cs=tinysrgb&w=800", // 6. Community
-      "https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=800", // 7. Infrastructure
-      "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800", // 8. Team
-      "https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=800"  // 9. Success
+      "https://i.imgur.com/XoqlsAC.jpeg",
+      "https://i.imgur.com/OqsIcji.jpeg",
+      "https://i.imgur.com/yZ9V6M2.jpeg",
+      "https://i.imgur.com/L6nJMP5.jpeg",
+      "https://i.imgur.com/veGAIOC.jpeg",
+      "https://i.imgur.com/aFuPALQ.jpeg",
+      "https://i.imgur.com/3HDhGUz.jpeg",
+      "https://i.imgur.com/ZaoXlVe.jpeg",
+      "https://i.imgur.com/d0KGtX4.jpeg",
+      "https://i.imgur.com/bYQKQgG.jpeg",
+      "https://i.imgur.com/yXrt70N.jpeg",
+      "https://i.imgur.com/8j8Gls6.jpeg",
+      "https://i.imgur.com/2PVKXWQ.jpeg"
     ],
     category: "Accountability",
     content: (
@@ -129,18 +133,6 @@ interface LatestUpdatesSectionProps {
 export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { current } = scrollRef;
-      const scrollAmount = 300; 
-      if (direction === 'left') {
-        current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      } else {
-        current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-    }
-  };
-
   return (
     <section className="py-12 md:py-20 bg-[#FFFDF7] border-b border-slate-100 relative z-10">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -169,9 +161,6 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
         </div>
 
         <div className="relative group/carousel flex justify-center md:justify-start">
-          {/* Note: Scroll buttons hidden since we only have 1 card now, 
-              but layout preserved for future additions */}
-          
           <div 
             ref={scrollRef}
             className="flex overflow-x-auto gap-4 md:gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-pl-4"
