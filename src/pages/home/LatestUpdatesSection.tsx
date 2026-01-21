@@ -14,66 +14,14 @@ export interface UpdateItem {
 export const UPDATES: UpdateItem[] = [
   {
     id: 1,
-    date: "15 December 2025",
-    title: "Hon. Ragga Accounts to Constituents: Over 500 Students Benefit from 2025 Scholarship Scheme",
+    date: "December 2025",
+    title: "Hon. Ragga Accounts to Constituents on Projects and Support in 2025",
     image: "https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=800",
-    category: "Education Support",
+    category: "Accountability",
     content: (
       <>
-        <p className="mb-6"><strong>Cape Coast North</strong> – In a major boost to human capital development, Hon. Dr. Kwamena Minta Nyarku has rendered accounts on his educational support initiatives for 2025.</p>
-        <p className="mb-6">Data released shows that over 500 tertiary students received direct financial assistance totaling GH¢ 300,000. "Education is the leveling ground, and no brilliant student in Cape Coast North should drop out due to fees," Hon. Ragga affirmed.</p>
-      </>
-    )
-  },
-  {
-    id: 2,
-    date: "10 December 2025",
-    title: "Operation 1000 Desks: 1st Phase Delivered to Basic Schools",
-    image: "https://images.pexels.com/photos/301920/pexels-photo-301920.jpeg?auto=compress&cs=tinysrgb&w=800",
-    category: "Infrastructure",
-    content: (
-      <>
-        <p className="mb-6"><strong>Cape Coast North</strong> – Fulfilling his promise to improve learning conditions, the MP has successfully delivered the first batch of dual desks to 20 basic schools.</p>
-        <p className="mb-6">"This is just the beginning. We are accounting for every penny entrusted to us by ensuring our children learn in dignity," he stated during the inspection.</p>
-      </>
-    )
-  },
-  {
-    id: 3,
-    date: "02 December 2025",
-    title: "SME Support: 200 Market Women Receive Interest-Free Business Capital",
-    image: "https://images.pexels.com/photos/1036856/pexels-photo-1036856.jpeg?auto=compress&cs=tinysrgb&w=800", 
-    category: "Economic Empowerment",
-    content: (
-      <>
-        <p className="mb-6"><strong>Abura Market</strong> – Hon. Ragga has disbursed interest-free loans and grants to 200 market women to boost their trading capital ahead of the festive season.</p>
-        <p>The initiative aims to support local economies and empower women in the constituency.</p>
-      </>
-    )
-  },
-  {
-    id: 4,
-    date: "20 November 2025",
-    title: "Health First: NHIS Renewals for 1,000 Elderly and Vulnerable Constituents",
-    image: "https://images.pexels.com/photos/3845653/pexels-photo-3845653.jpeg?auto=compress&cs=tinysrgb&w=800",
-    category: "Health",
-    content: (
-      <>
-        <p className="mb-6"><strong>Cape Coast</strong> – To ensure universal health coverage, the MP's office has funded the renewal of National Health Insurance Scheme (NHIS) cards for over 1,000 elderly residents and children.</p>
-        <p>This intervention removes financial barriers to accessing basic healthcare services in the constituency.</p>
-      </>
-    )
-  },
-  {
-    id: 5,
-    date: "10 November 2025",
-    title: "Infrastructure Update: Commissioning of 3 New Mechanized Boreholes",
-    image: "https://images.pexels.com/photos/11022645/pexels-photo-11022645.jpeg?auto=compress&cs=tinysrgb&w=800",
-    category: "Water & Sanitation",
-    content: (
-      <>
-        <p className="mb-6"><strong>Rural Zones</strong> – Addressing water scarcity, Hon. Ragga has commissioned three new mechanized boreholes in communities that previously lacked access to potable water.</p>
-        <p>"Water is life, and providing clean water remains a top priority in our development agenda," the MP remarked.</p>
+        <p className="mb-6"><strong>Cape Coast North</strong> – In a comprehensive address to his constituents, Member of Parliament Hon. Dr. Kwamena Minta Nyarku has rendered an account of his stewardship for the year 2025.</p>
+        <p className="mb-6">The MP highlighted key achievements including the 'Operation 1000 Desks' for basic schools, scholarship packages for over 500 tertiary students, and business support grants for market women. "We are committed to transparent leadership and ensuring that every resource benefits the people of Cape Coast North," Hon. Ragga stated.</p>
       </>
     )
   }
