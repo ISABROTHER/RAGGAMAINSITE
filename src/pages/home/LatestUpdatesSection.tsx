@@ -32,12 +32,7 @@ export const UPDATES: UpdateItem[] = [
       "https://i.imgur.com/2PVKXWQ.jpeg"
     ],
     category: "Accountability",
-    content: (
-      <>
-        <p className="mb-4"><strong>Cape Coast North</strong> – In a comprehensive address to his constituents, Member of Parliament Hon. Dr. Kwamena Minta Nyarku has rendered an account of his stewardship for the year 2025.</p>
-        <p>The MP highlighted key achievements including the 'Operation 1000 Desks' for basic schools, scholarship packages for over 500 tertiary students, and business support grants for market women. "We are committed to transparent leadership and ensuring that every resource benefits the people of Cape Coast North," Hon. Ragga stated.</p>
-      </>
-    )
+    content: null
   }
 ];
 
