@@ -7,7 +7,7 @@ const MOCK_DB = [
   { id: 2, firstName: "Ama", surname: "Osei", year: "1992" },
 ];
 
-export default function ConstituencySearch() {
+export function ConstituencyConnect() {
   const [query, setQuery] = useState("");
   const [searchState, setSearchState] = useState<"idle" | "searching" | "found" | "not_found">("idle");
   const [foundUser, setFoundUser] = useState<{ surname: string; year: string } | null>(null);
