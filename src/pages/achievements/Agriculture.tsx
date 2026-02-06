@@ -1,16 +1,14 @@
-// src/pages/achievements/Agriculture.tsx
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const initiatives = [
-  { year: 2025, title: "1,500 BAGS FERTILIZER DISTRIBUTED TO FARMERS", info: "Massive support for farmers across all farming communities.", image: "https://i.imgur.com/TZ4jIJA.jpeg" }
-];
+import { agricultureInitiatives, achievementYears } from '../../data/achievements';
 
 export function Agriculture() {
   const [activeYear, setActiveYear] = useState<number | 'all'>('all');
-  const years = [2025];
+  const years = achievementYears.agriculture;
 
-  const filteredInitiatives = activeYear === 'all' ? initiatives : initiatives.filter(i => i.year === activeYear);
+  const filteredInitiatives = activeYear === 'all'
+    ? agricultureInitiatives
+    : agricultureInitiatives.filter(i => i.year === activeYear);
 
   return (
     <div className="space-y-8">
