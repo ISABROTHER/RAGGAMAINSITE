@@ -1,6 +1,6 @@
 // src/pages/home/ConstituencyConnect.tsx
 import React, { useState } from "react";
-import { Search, Loader2, X, CheckCircle, User, MapPin, Activity } from "lucide-react";
+import { Search, Loader2, X, CheckCircle, User, MapPin } from "lucide-react";
 
 // Mock Data for Demo
 const DEMO_RESULTS: Record<string, any> = {
@@ -60,7 +60,7 @@ export function ConstituencyConnect() {
                 "My Cherished Constituents,"
               </p>
               <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
-                Effective representation starts with knowing you. I have built this platform to ensure your specific needs are captured in our welfare and development agenda. Verify your details here—let us ensure no one is left behind. Together, we move forward!
+                To serve you better, I must know you. Verify your details here to ensure you are included in our development plans. Together, we move forward!
               </p>
             </div>
           </div>
