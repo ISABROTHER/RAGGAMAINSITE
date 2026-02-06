@@ -56,9 +56,6 @@ export function ConstituencyConnect() {
               Constituency Connect
             </h2>
             <div className="space-y-2">
-              <p className="text-white text-base sm:text-lg font-semibold italic">
-                "My Cherished Constituents,"
-              </p>
               <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
                 To serve you better, I must know you. Verify your details here to ensure you are included in our development plans. Together, we move forward!
               </p>
