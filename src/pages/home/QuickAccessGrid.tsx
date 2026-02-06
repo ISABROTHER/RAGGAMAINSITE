@@ -78,12 +78,11 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
     <section className="relative z-20 -mt-12 md:-mt-20 pt-4 pb-10 md:pb-16 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block: Left Aligned + Clean Text Style (No Pill) */}
+        {/* Header Block: Left Aligned + Clean Text Style (No Pill, No Dot) */}
         <div className="text-left mb-8 md:mb-14">
           
-          {/* Eyebrow: Styled like Latest Updates section (Green, Bold, Uppercase) */}
-          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+          {/* Eyebrow: Styled exactly like Latest Updates section (Green, Bold, Uppercase, No Dot) */}
+          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
             Constituency Services
           </h4>
 
