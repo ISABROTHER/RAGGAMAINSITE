@@ -21,7 +21,8 @@ const quickLinks: QuickLink[] = [
   },
   {
     title: "Report Issue",
-    desc: "Fix potholes & lights",
+    // Updated Description
+    desc: "Report any issue",
     icon: MessageSquareWarning,
     image: "https://i.imgur.com/vt0bGZx.jpeg", 
     route: "issues"
@@ -42,7 +43,8 @@ const quickLinks: QuickLink[] = [
   },
   {
     title: "Support",
-    desc: "Donate to education",
+    // Updated Description (Corrected 'initiates' to 'initiatives')
+    desc: "Contribute to initiatives",
     icon: Heart,
     image: "https://i.imgur.com/eF6PPA9.jpeg", 
     route: "support",
@@ -50,7 +52,8 @@ const quickLinks: QuickLink[] = [
   },
   {
     title: "Appointments",
-    desc: "Book a meeting",
+    // Updated Description
+    desc: "Ready to listen",
     icon: UserCircle,
     image: "https://i.imgur.com/BkoisB5.jpeg", 
     route: "appointments"
