@@ -8,6 +8,7 @@ type QuickLink = {
   icon: React.ElementType;
   image: string;
   route: string;
+  imgPosition?: string; // Added optional property for custom image alignment
 };
 
 const quickLinks: QuickLink[] = [
@@ -43,9 +44,9 @@ const quickLinks: QuickLink[] = [
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    // Fixed: Added 'i.' prefix and '.jpeg' extension for direct image rendering
     image: "https://i.imgur.com/pTQKKjy.jpeg", 
-    route: "support"
+    route: "support",
+    imgPosition: "object-top" // Aligns image to the top to show the action
   },
   {
     title: "Appointments",
@@ -95,7 +96,8 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <img 
                   src={link.image} 
                   alt={link.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  // Apply custom position if exists, otherwise default to object-center
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${link.imgPosition || 'object-center'}`}
                 />
                 {/* Subtle gradient overlay to make image pop */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
