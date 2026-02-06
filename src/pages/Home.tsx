@@ -12,6 +12,11 @@ interface HomeProps {
 export function Home({ onNavigate }: HomeProps) {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
+      {/* Campaign Banner - Only on Home */}
+      <div className="bg-red-700 text-white px-4 py-3 text-center font-bold uppercase tracking-wider text-sm md:text-base">
+        SUPPORT HON. RAGGA’S OPERATION 1000 DESKS FOR STUDENTS 'II' OBIARA K
+      </div>
+
       {/* 1. Hero / Introduction */}
       <HeroSection />
 
