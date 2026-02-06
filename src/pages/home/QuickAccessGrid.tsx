@@ -66,22 +66,26 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
     <section className="relative z-20 -mt-8 md:-mt-16 pt-4 pb-10 md:pb-20 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block */}
-        <div className="text-left mb-8 md:mb-12">
-          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
+        {/* Header Block: Centered & Compact */}
+        <div className="text-center mb-8 md:mb-12">
+          
+          {/* Eyebrow: Centered, No Bottom Margin */}
+          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-0 inline-block">
             Constituency Services
           </h4>
-          <div className="mt-2 flex flex-col items-start justify-start group">
+
+          {/* Main Title: Zero Top Margin, Fluid Font Size to Fit One Line */}
+          <div className="mt-0 flex flex-col items-center justify-center group">
             <h2 className="
-              text-xl sm:text-3xl md:text-5xl 
-              font-extrabold tracking-tight text-left 
+              text-[5.5vw] sm:text-4xl md:text-5xl 
+              font-extrabold tracking-tight 
               bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 
               bg-clip-text text-transparent uppercase
-              whitespace-nowrap
+              whitespace-nowrap leading-tight
             ">
               Information & Support
             </h2>
-            <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
+            <span className="mt-2 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
           </div>
         </div>
 
