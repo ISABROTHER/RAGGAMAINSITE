@@ -30,7 +30,6 @@ const quickLinks: QuickLink[] = [
     title: "Assemblymen",
     desc: "Know your local reps",
     icon: Users,
-    // Updated Image
     image: "https://mrh.gov.gh/wp-content/uploads/2022/10/sino-cape-coast-2.jpg", 
     route: "assemblymen"
   },
@@ -73,7 +72,13 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
             Constituency Services
           </h4>
           <div className="mt-2 flex flex-col items-start justify-start group">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
+            <h2 className="
+              text-xl sm:text-3xl md:text-5xl 
+              font-extrabold tracking-tight text-left 
+              bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 
+              bg-clip-text text-transparent uppercase
+              whitespace-nowrap
+            ">
               Information & Support
             </h2>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
