@@ -20,10 +20,38 @@ export interface ContributionData {
   reference: string;
 }
 
-export const PAY_METHODS: { key: PayMethod; label: string; sublabel: string; color: string; activeClass: string }[] = [
-  { key: 'MOMO', label: 'Mobile Money', sublabel: 'MTN, Vodafone, AirtelTigo', color: 'text-yellow-600', activeClass: 'border-yellow-400 bg-yellow-50 ring-2 ring-yellow-400/20' },
-  { key: 'CARD', label: 'Card', sublabel: 'Visa, Mastercard', color: 'text-blue-600', activeClass: 'border-blue-500 bg-blue-50 ring-2 ring-blue-500/20' },
-  { key: 'BANK', label: 'Bank Transfer', sublabel: 'Direct bank payment', color: 'text-slate-600', activeClass: 'border-slate-400 bg-slate-50 ring-2 ring-slate-400/20' },
+export const PAY_METHODS: {
+  key: PayMethod;
+  label: string;
+  sublabel: string;
+  activeColor: string;
+  activeBg: string;
+  activeRing: string;
+}[] = [
+  {
+    key: 'MOMO',
+    label: 'Mobile Money',
+    sublabel: 'MTN, Vodafone, AirtelTigo',
+    activeColor: 'text-yellow-700',
+    activeBg: 'bg-yellow-50',
+    activeRing: 'ring-yellow-400/30 border-yellow-300',
+  },
+  {
+    key: 'CARD',
+    label: 'Debit / Credit Card',
+    sublabel: 'Visa, Mastercard',
+    activeColor: 'text-blue-700',
+    activeBg: 'bg-blue-50',
+    activeRing: 'ring-blue-400/30 border-blue-300',
+  },
+  {
+    key: 'BANK',
+    label: 'Bank Transfer',
+    sublabel: 'Direct bank payment',
+    activeColor: 'text-slate-700',
+    activeBg: 'bg-slate-50',
+    activeRing: 'ring-slate-400/30 border-slate-300',
+  },
 ];
 
-export const PRESETS = [50, 200, 500, 1000, 5000, 10000];
+export const PRESETS = [10, 50, 100, 200, 500, 1000];

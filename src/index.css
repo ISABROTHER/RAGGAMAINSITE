@@ -5,10 +5,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply antialiased;
+    overscroll-behavior: none;
   }
 }
 
@@ -18,14 +20,8 @@
   }
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .line-clamp-2 {
@@ -40,5 +36,157 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  @keyframes flutter-slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes flutter-fade-backdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes flutter-scale-in {
+    0% { transform: scale(0.85); opacity: 0; }
+    60% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes flutter-check-pop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes flutter-ripple {
+    0% { transform: scale(0); opacity: 0.4; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  @keyframes flutter-pulse-ring {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  @keyframes flutter-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes flutter-dots {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .flutter-sheet {
+    animation: flutter-slide-up 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  .flutter-backdrop {
+    animation: flutter-fade-backdrop 0.3s ease-out forwards;
+  }
+
+  .flutter-scale-in {
+    animation: flutter-scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .flutter-check-pop {
+    animation: flutter-check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .flutter-btn {
+    transition: transform 0.15s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.15s ease, background-color 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  .flutter-btn:active {
+    transform: scale(0.96);
+  }
+
+  .flutter-card {
+    transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .flutter-card:active {
+    transform: scale(0.98);
+  }
+
+  .flutter-input {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .flutter-input:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    background-color: #fff;
+  }
+
+  .flutter-shimmer-bg {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: flutter-shimmer 2s infinite;
+  }
+
+  .flutter-dot-1 { animation: flutter-dots 1.4s infinite ease-in-out; animation-delay: 0s; }
+  .flutter-dot-2 { animation: flutter-dots 1.4s infinite ease-in-out; animation-delay: 0.2s; }
+  .flutter-dot-3 { animation: flutter-dots 1.4s infinite ease-in-out; animation-delay: 0.4s; }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+  }
+
+  input[type="range"].flutter-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 32px;
+    touch-action: manipulation;
+  }
+
+  input[type="range"].flutter-slider::-webkit-slider-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+  }
+
+  input[type="range"].flutter-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #16a34a;
+    margin-top: -11px;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+    transition: transform 0.15s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.15s ease;
+  }
+
+  input[type="range"].flutter-slider:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 2px 12px rgba(22, 163, 74, 0.5);
+  }
+
+  input[type="range"].flutter-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    border: none;
+  }
+
+  input[type="range"].flutter-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #16a34a;
+    border: none;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
   }
 }
