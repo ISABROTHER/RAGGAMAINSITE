@@ -12,7 +12,7 @@ type QuickLink = {
 
 const quickLinks: QuickLink[] = [
   {
-    title: "Ongoing Projects",
+    title: "Projects",
     desc: "Infrastructure progress",
     icon: HardHat,
     image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=600",
@@ -86,7 +86,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
               className={`
                 group relative aspect-[4/5] overflow-hidden rounded-none 
                 transition-all duration-300 active:scale-95 hover:shadow-2xl hover:-translate-y-1
-                w-full text-left bg-slate-100
+                w-full text-left bg-slate-100 shadow-md
               `}
             >
               {/* Top: The Picture */}
@@ -97,20 +97,21 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 {/* Subtle gradient overlay to make image pop */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Bottom: The "Part that contains name" with RED Hue */}
+              {/* Bottom: The "Part that contains name" with RED GRADIENT */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
-                  bg-[#b91c1c]/90 backdrop-blur-md border border-white/10 
+                  bg-gradient-to-br from-[#b91c1c]/95 to-[#7f1d1d]/95
+                  backdrop-blur-md border border-white/10 
                   rounded-none p-4 shadow-lg
-                  transform transition-all duration-300 group-hover:bg-[#b91c1c]
+                  transform transition-all duration-300 group-hover:from-[#c53030] group-hover:to-[#991b1b]
                 ">
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight">
                     {link.title}
                   </h3>
-                  <p className="text-[10px] md:text-sm text-white/80 font-medium mt-1 truncate">
+                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 truncate">
                     {link.desc}
                   </p>
                 </div>
