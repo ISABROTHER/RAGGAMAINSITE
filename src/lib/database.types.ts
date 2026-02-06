@@ -201,6 +201,75 @@ export interface Database {
           created_at?: string
         }
       }
+      issues: {
+        Row: {
+          id: number
+          category: string
+          subcategory: string | null
+          description: string
+          location: string | null
+          priority: string
+          photo_url: string | null
+          name: string | null
+          phone: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: never
+          category: string
+          subcategory?: string | null
+          description: string
+          location?: string | null
+          priority?: string
+          photo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          category?: string
+          subcategory?: string | null
+          description?: string
+          location?: string | null
+          priority?: string
+          photo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          status?: string
+          created_at?: string
+        }
+      }
+      poll_votes: {
+        Row: {
+          id: string
+          session_id: string
+          poll_id: string
+          allocations: Json
+          total_credits_used: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          poll_id?: string
+          allocations: Json
+          total_credits_used?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          poll_id?: string
+          allocations?: Json
+          total_credits_used?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
       contact_messages: {
         Row: {
           id: string

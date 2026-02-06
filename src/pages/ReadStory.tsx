@@ -36,7 +36,7 @@ export function ReadStory({ storyId, onBack }: ReadStoryProps) {
       {/* --- HERO SECTION --- */}
       <div className="relative w-full h-[40vh] md:h-[55vh] overflow-hidden">
         <img 
-          src={story.image} 
+          src={story.images?.[0]}
           alt={story.title} 
           className="w-full h-full object-cover"
         />
@@ -82,8 +82,8 @@ export function ReadStory({ storyId, onBack }: ReadStoryProps) {
             <div className="bg-white rounded-t-3xl p-6 md:p-10 shadow-sm border border-slate-100 min-h-[500px]">
               {/* Author/Meta Line */}
               <div className="flex items-center gap-3 mb-8 border-b border-slate-100 pb-6">
-                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold">
-                  JD
+                <div className="w-10 h-10 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-xs">
+                  MP
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-900">Office of the MP</p>

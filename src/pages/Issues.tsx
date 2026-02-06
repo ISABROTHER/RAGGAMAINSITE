@@ -20,13 +20,10 @@ import {
   Clock,
   Database,
   FileCheck,
-  Sparkles,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOCATIONS } from '../data/locations';
-
-type Priority = 'Normal' | 'Urgent' | 'Life-threatening';
 
 type CategoryKey =
   | 'roads-infrastructure'
@@ -142,12 +139,10 @@ function StepProgressBar({ step1Done, step2Done }: { step1Done: boolean; step2Do
 function SubmissionButton({
   submitting,
   phase,
-  hasPhoto,
   disabled,
 }: {
   submitting: boolean;
   phase: SubmissionPhase;
-  hasPhoto: boolean;
   disabled: boolean;
 }) {
   const phaseMeta = phase ? PHASE_META[phase] : null;
@@ -837,7 +832,6 @@ export function Issues() {
                         <SubmissionButton
                           submitting={submitting}
                           phase={submissionPhase}
-                          hasPhoto={!!photoFile}
                           disabled={false}
                         />
                         <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
