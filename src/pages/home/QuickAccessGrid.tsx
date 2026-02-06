@@ -84,7 +84,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
               key={idx} 
               onClick={() => onNavigate(link.route)} 
               className={`
-                group relative aspect-[4/5] overflow-hidden rounded-[2rem] 
+                group relative aspect-[4/5] overflow-hidden rounded-none 
                 transition-all duration-300 active:scale-95 hover:shadow-2xl hover:-translate-y-1
                 w-full text-left bg-slate-100
               `}
@@ -96,16 +96,16 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   alt={link.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Subtle gradient overlay to make image pop but keep it clean */}
+                {/* Subtle gradient overlay to make image pop */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Bottom: The "Part that contains name" with YOUR GREEN HUE */}
+              {/* Bottom: The "Part that contains name" with RED Hue */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
-                  bg-[#004528]/90 backdrop-blur-md border border-white/10 
-                  rounded-2xl p-4 shadow-lg
-                  transform transition-all duration-300 group-hover:bg-[#004528]
+                  bg-[#b91c1c]/90 backdrop-blur-md border border-white/10 
+                  rounded-none p-4 shadow-lg
+                  transform transition-all duration-300 group-hover:bg-[#b91c1c]
                 ">
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight">
                     {link.title}
