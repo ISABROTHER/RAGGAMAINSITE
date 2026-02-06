@@ -43,7 +43,8 @@ const quickLinks: QuickLink[] = [
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    image: "https://imgur.com/pTQKKjy", 
+    // Fixed: Added 'i.' prefix and '.jpeg' extension for direct image rendering
+    image: "https://i.imgur.com/pTQKKjy.jpeg", 
     route: "support"
   },
   {
