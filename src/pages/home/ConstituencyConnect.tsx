@@ -1,8 +1,8 @@
 // src/components/ConstituencySearch.tsx
 import React, { useState } from "react";
-import { Search, UserCheck, UserPlus, Phone, Calendar, MapPin, Clock, X, ShieldCheck, CreditCard } from "lucide-react";
+import { Search, UserCheck, UserPlus, X, ShieldCheck, CreditCard, MapPin } from "lucide-react";
 
-// Mock Database - Try searching for "Mensah" or "Osei"
+// Mock Database
 const MOCK_DB = [
   { id: "23491005", firstName: "Kwame", surname: "Mensah", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
   { id: "99283741", firstName: "Ama", surname: "Osei", year: "1992", pollingStation: "Methodist JHS B" },
@@ -37,10 +37,8 @@ export default function ConstituencySearch() {
     }, 1200);
   };
 
-  // Handle Login (Simulated)
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful login -> go to Verified view
     setView("verified");
   };
 
@@ -52,7 +50,7 @@ export default function ConstituencySearch() {
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden my-8">
+    <div className="w-full max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
       
       {/* --- 1. SEARCH VIEW --- */}
       {view === "search" && (
@@ -136,7 +134,7 @@ export default function ConstituencySearch() {
       {/* --- 2. LOGIN VIEW --- */}
       {view === "login" && (
         <div className="p-8 md:p-12 bg-white animate-in zoom-in-95 max-w-lg mx-auto">
-          <h3 className="text-2xl font-bold text-center mb-6">Access Details</h3>
+          <h3 className="text-2xl font-bold text-center mb-6 text-slate-900">Access Details</h3>
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="tel" placeholder="Phone Number" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
             <input type="text" placeholder="Year of Birth" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
@@ -155,7 +153,7 @@ export default function ConstituencySearch() {
       {/* --- 3. REGISTER VIEW --- */}
       {view === "register" && (
         <div className="p-6 md:p-10 bg-white animate-in zoom-in-95">
-          <h3 className="text-2xl font-bold text-center mb-2">Join the Network</h3>
+          <h3 className="text-2xl font-bold text-center mb-2 text-slate-900">Join the Network</h3>
           <p className="text-center text-slate-500 mb-6 text-sm">Full details required for verification.</p>
           
           <div className="space-y-3 max-w-lg mx-auto">
@@ -232,4 +230,4 @@ export default function ConstituencySearch() {
       )}
     </div>
   );
-}
+} 
