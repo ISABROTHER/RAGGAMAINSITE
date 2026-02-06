@@ -43,7 +43,7 @@ const quickLinks: QuickLink[] = [
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600",
+    image: "https://imgur.com/pTQKKjy", 
     route: "support"
   },
   {
