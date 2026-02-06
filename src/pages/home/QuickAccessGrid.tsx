@@ -100,12 +100,12 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Bottom: The "Part that contains name" */}
+              {/* Bottom: The "Part that contains name" with YOUR GREEN HUE */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
-                  bg-white/10 backdrop-blur-md border border-white/20 
+                  bg-[#004528]/90 backdrop-blur-md border border-white/10 
                   rounded-2xl p-4 shadow-lg
-                  transform transition-all duration-300 group-hover:bg-white/20
+                  transform transition-all duration-300 group-hover:bg-[#004528]
                 ">
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight">
                     {link.title}
