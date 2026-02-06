@@ -1,6 +1,6 @@
 // src/pages/home/QuickAccessGrid.tsx
 import React from "react";
-import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle, ArrowUpRight } from "lucide-react";
+import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle } from "lucide-react";
 
 type QuickLink = {
   title: string;
@@ -13,7 +13,7 @@ type QuickLink = {
 const quickLinks: QuickLink[] = [
   {
     title: "Ongoing Projects",
-    desc: "Track infrastructure progress",
+    desc: "Infrastructure progress",
     icon: HardHat,
     image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=600",
     route: "ongoing-projects"
@@ -77,48 +77,40 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
           </div>
         </div>
 
-        {/* 2 Columns Mobile (Portrait Cards), 3 Columns Desktop */}
+        {/* Grid: 2 Columns on Mobile, 3 on Desktop */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
           {quickLinks.map((link, idx) => (
             <button 
               key={idx} 
               onClick={() => onNavigate(link.route)} 
               className={`
-                group relative aspect-[4/5] overflow-hidden rounded-3xl 
+                group relative aspect-[4/5] overflow-hidden rounded-[2rem] 
                 transition-all duration-300 active:scale-95 hover:shadow-2xl hover:-translate-y-1
-                w-full text-left
+                w-full text-left bg-slate-100
               `}
             >
-              {/* Background Image */}
-              <div className="absolute inset-0">
+              {/* Top: The Picture */}
+              <div className="absolute inset-0 h-full w-full">
                 <img 
                   src={link.image} 
                   alt={link.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Gradient Overlay for Text Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90" />
+                {/* Subtle gradient overlay to make image pop but keep it clean */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Content Overlay (Flutter/Modern Style) */}
-              <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
-                
-                {/* Top Icon Badge */}
-                <div className="absolute top-4 right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:bg-green-500 group-hover:text-white transition-colors">
-                  <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                </div>
-
-                {/* Main Content */}
-                <div className="transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-600/90 backdrop-blur-sm flex items-center justify-center mb-3 shadow-lg">
-                    <link.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                  </div>
-                  
-                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight mb-1">
+              {/* Bottom: The "Part that contains name" */}
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="
+                  bg-white/10 backdrop-blur-md border border-white/20 
+                  rounded-2xl p-4 shadow-lg
+                  transform transition-all duration-300 group-hover:bg-white/20
+                ">
+                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight">
                     {link.title}
                   </h3>
-                  
-                  <p className="text-[10px] md:text-sm text-slate-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 transform translate-y-2 group-hover:translate-y-0">
+                  <p className="text-[10px] md:text-sm text-white/80 font-medium mt-1 truncate">
                     {link.desc}
                   </p>
                 </div>
