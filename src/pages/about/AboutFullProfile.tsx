@@ -1,8 +1,8 @@
 // src/pages/about/AboutFullProfile.tsx
 import React from 'react';
-import {
-  User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone,
-  CheckSquare, Users, Landmark
+import { 
+  User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
+  CheckSquare, Users, Landmark, Quote 
 } from 'lucide-react';
 import { AnimatedSection } from '../../components/AnimatedSection';
 

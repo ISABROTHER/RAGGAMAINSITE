@@ -4,10 +4,9 @@ import { useEffect, useRef, ReactNode } from 'react';
 interface AnimatedSectionProps {
   children: ReactNode;
   delay?: number;
-  className?: string;
 }
 
-export function AnimatedSection({ children, delay = 0, className = '' }: AnimatedSectionProps) {
+export function AnimatedSection({ children, delay = 0 }: AnimatedSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,9 +35,9 @@ export function AnimatedSection({ children, delay = 0, className = '' }: Animate
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-out ${className}`}
+    <div 
+      ref={ref} 
+      className="transition-all duration-700 ease-out" 
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

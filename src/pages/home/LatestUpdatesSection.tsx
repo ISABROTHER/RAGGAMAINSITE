@@ -32,21 +32,12 @@ export const UPDATES: UpdateItem[] = [
       "https://i.imgur.com/2PVKXWQ.jpeg"
     ],
     category: "Accountability",
-    content: (
-      <>
-        <p>
-          In December 2025, Hon. Dr. Kwamena Minta Nyarku (Ragga), Member of Parliament for Cape Coast North, held a comprehensive accountability session with constituents to report on projects, initiatives, and support provided throughout the year.
-        </p>
-        <p className="mt-3">
-          The session covered major infrastructure developments including the Pedu Park Astro-Turf project, the Abura Health Center expansion, and numerous educational support initiatives across the constituency. Over 180 chopboxes were donated to first-year SHS students, and multiple schools received renovation materials totaling over GH&#8373;50,000.
-        </p>
-      </>
-    )
+    content: null
   }
 ];
 
 // --- Gallery Component ---
-const GalleryViewer = ({ images }: { images: string[], title: string }) => {
+const GalleryViewer = ({ images, title }: { images: string[], title: string }) => {
   const [activeIdx, setActiveIdx] = useState(0);
 
   const nextImage = () => setActiveIdx((prev) => (prev + 1) % images.length);

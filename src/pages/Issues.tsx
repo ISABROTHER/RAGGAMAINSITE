@@ -1,3 +1,4 @@
+// src/pages/Issues.tsx
 import { useState, useEffect, useRef } from 'react';
 import {
   MapPin,
@@ -7,23 +8,22 @@ import {
   AlertCircle,
   LocateFixed,
   Loader2,
+  Image as ImageIcon,
   ArrowRight,
   MessageSquareWarning,
   Search,
   ChevronDown,
   Check,
+  ChevronUp,
   User,
   Phone,
-  Info,
-  Copy,
-  MessageCircle,
-  Clock,
-  Database,
-  FileCheck,
+  Info
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOCATIONS } from '../data/locations';
+
+type Priority = 'Normal' | 'Urgent' | 'Life-threatening';
 
 type CategoryKey =
   | 'roads-infrastructure'
@@ -34,171 +34,97 @@ type CategoryKey =
   | 'community-development'
   | 'governance-feedback';
 
-const CATEGORIES: Record<CategoryKey, { label: string; subs: string[] }> = {
+const CATEGORIES: Record<
+  CategoryKey,
+  { label: string; subs: string[] }
+> = {
   'roads-infrastructure': {
     label: 'Roads & Infrastructure',
-    subs: ['Potholes / Damaged road', 'Streetlight not working', 'Blocked drainage', 'Bridge/Culvert damage', 'Flooding', 'Road markings missing', 'Waste overflow'],
+    subs: [
+      'Potholes / Damaged road',
+      'Streetlight not working',
+      'Blocked drainage',
+      'Bridge/Culvert damage',
+      'Flooding',
+      'Road markings missing',
+      'Waste overflow',
+    ],
   },
   'education-schools': {
     label: 'Education & Schools',
-    subs: ['Broken furniture/roof', 'Shortage of teachers/textbooks', 'Poor sanitation', 'Unsafe structures', 'ICT/Library needs', 'Water access', 'Feeding/bursary delay'],
+    subs: [
+      'Broken furniture/roof',
+      'Shortage of teachers/textbooks',
+      'Poor sanitation',
+      'Unsafe structures',
+      'ICT/Library needs',
+      'Water access',
+      'Feeding/bursary delay',
+    ],
   },
   'health-sanitation': {
     label: 'Health & Sanitation',
-    subs: ['Clinic/CHPS non-functioning', 'Drug/staff shortage', 'Water/sanitation issue', 'Waste dumping/burning', 'Mosquito breeding', 'Maternity/emergency transport'],
+    subs: [
+      'Clinic/CHPS non-functioning',
+      'Drug/staff shortage',
+      'Water/sanitation issue',
+      'Waste dumping/burning',
+      'Mosquito breeding',
+      'Maternity/emergency transport',
+    ],
   },
   'utilities-environment': {
     label: 'Utilities & Environment',
-    subs: ['Power outage/Transformer', 'Water shortage/Burst pipe', 'Refuse landfill overflow', 'Deforestation/sand winning', 'Air/Noise pollution', 'Public toilets inadequate'],
+    subs: [
+      'Power outage/Transformer',
+      'Water shortage/Burst pipe',
+      'Refuse landfill overflow',
+      'Deforestation/sand winning',
+      'Air/Noise pollution',
+      'Public toilets inadequate',
+    ],
   },
   'youth-jobs-welfare': {
     label: 'Youth, Jobs & Welfare',
-    subs: ['Unemployment/Unfair hiring', 'Youth/Women groups support', 'Abandoned livelihood program', 'Grant disbursement delay', 'Need entrepreneurship training', 'Child protection concerns'],
+    subs: [
+      'Unemployment/Unfair hiring',
+      'Youth/Women groups support',
+      'Abandoned livelihood program',
+      'Grant disbursement delay',
+      'Need entrepreneurship training',
+      'Child protection concerns',
+    ],
   },
   'community-development': {
     label: 'Community Development',
-    subs: ['Abandoned community project', 'Market facilities/toilets', 'Parks/Lighting needed', 'Broken boreholes/pumps', 'Unkept cemeteries/grounds', 'Security concerns', 'Mediation support'],
+    subs: [
+      'Abandoned community project',
+      'Market facilities/toilets',
+      'Parks/Lighting needed',
+      'Broken boreholes/pumps',
+      'Unkept cemeteries/grounds',
+      'Security concerns',
+      'Mediation support',
+    ],
   },
   'governance-feedback': {
     label: 'Governance & Public Service',
-    subs: ['Extortion/Absenteeism', 'Permit/forms delay', 'Bribery/Favouritism', 'No response from office', 'Corruption/misuse'],
+    subs: [
+      'Extortion/Absenteeism',
+      'Permit/forms delay',
+      'Bribery/Favouritism',
+      'No response from office',
+      'Corruption/misuse',
+    ],
   },
 };
 
-const RESOLUTION_TIMES: Record<CategoryKey, string> = {
-  'roads-infrastructure': '5-10 business days',
-  'education-schools': '7-14 business days',
-  'health-sanitation': '3-7 business days',
-  'utilities-environment': '2-5 business days',
-  'youth-jobs-welfare': '10-20 business days',
-  'community-development': '7-14 business days',
-  'governance-feedback': '5-10 business days',
-};
-
+// Pre-compute total communities
 const TOTAL_COMMUNITIES = LOCATIONS.reduce((acc, loc) => acc + loc.communities.length, 0);
 
-type SubmissionPhase = null | 'uploading' | 'saving' | 'generating';
-
-const PHASE_META: Record<string, { label: string; icon: typeof Upload; pct: number }> = {
-  uploading: { label: 'Uploading evidence...', icon: Upload, pct: 30 },
-  saving: { label: 'Saving your report...', icon: Database, pct: 65 },
-  generating: { label: 'Generating tracking code...', icon: FileCheck, pct: 95 },
-};
-
-function StepProgressBar({ step1Done, step2Done }: { step1Done: boolean; step2Done: boolean }) {
-  const steps = [
-    { label: 'Location', done: step1Done, active: true },
-    { label: 'Issue', done: step2Done, active: step1Done },
-    { label: 'Submit', done: false, active: step2Done },
-  ];
-
-  return (
-    <div className="sticky top-20 z-30 mb-8">
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-100 shadow-sm px-4 py-3">
-        <div className="flex items-center justify-between max-w-sm mx-auto">
-          {steps.map((s, i) => (
-            <div key={i} className="flex items-center">
-              <div className="flex flex-col items-center gap-1">
-                <motion.div
-                  animate={{
-                    backgroundColor: s.done ? '#22c55e' : s.active ? '#dcfce7' : '#f1f5f9',
-                    borderColor: s.done ? '#22c55e' : s.active ? '#22c55e' : '#e2e8f0',
-                  }}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors"
-                >
-                  {s.done ? (
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300 }}>
-                      <Check className="w-4 h-4 text-white" />
-                    </motion.div>
-                  ) : (
-                    <span className={s.active ? 'text-green-700' : 'text-slate-400'}>{i + 1}</span>
-                  )}
-                </motion.div>
-                <span className={`text-[10px] font-semibold ${s.done ? 'text-green-600' : s.active ? 'text-slate-700' : 'text-slate-400'}`}>
-                  {s.label}
-                </span>
-              </div>
-              {i < 2 && (
-                <div className="w-12 sm:w-20 h-0.5 mx-1.5 mb-4 rounded-full overflow-hidden bg-slate-200">
-                  <motion.div
-                    className="h-full bg-green-500 rounded-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: s.done ? '100%' : '0%' }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SubmissionButton({
-  submitting,
-  phase,
-  disabled,
-}: {
-  submitting: boolean;
-  phase: SubmissionPhase;
-  disabled: boolean;
-}) {
-  const phaseMeta = phase ? PHASE_META[phase] : null;
-  const PhaseIcon = phaseMeta?.icon || Loader2;
-
-  return (
-    <button
-      type="submit"
-      disabled={submitting || disabled}
-      className="
-        relative w-full md:w-auto px-12 py-4 rounded-2xl overflow-hidden
-        bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600
-        text-white font-black text-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5
-        transition-all duration-300
-        disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0
-        flex flex-col items-center justify-center gap-2
-      "
-    >
-      <AnimatePresence mode="wait">
-        {submitting && phaseMeta ? (
-          <motion.div
-            key={phase}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="flex flex-col items-center gap-2.5 w-full"
-          >
-            <div className="flex items-center gap-2.5">
-              <PhaseIcon className="w-5 h-5 animate-pulse" />
-              <span className="text-base font-bold">{phaseMeta.label}</span>
-            </div>
-            <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-white/80 rounded-full"
-                initial={{ width: '0%' }}
-                animate={{ width: `${phaseMeta.pct}%` }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-              />
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="idle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-3"
-          >
-            Submit Report <ArrowRight className="w-6 h-6" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </button>
-  );
-}
-
 export function Issues() {
+  // ---------- STATE ----------
+  // Location
   const [selectedZone, setSelectedZone] = useState<string>('');
   const [selectedCommunity, setSelectedCommunity] = useState<string>('');
   const [locationDetail, setLocationDetail] = useState('');
@@ -206,57 +132,49 @@ export function Issues() {
   const [locGetting, setLocGetting] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
 
+  // Issue
   const [cat, setCat] = useState<CategoryKey>('roads-infrastructure');
   const [subcat, setSubcat] = useState<string>(CATEGORIES['roads-infrastructure'].subs[0]);
   const [manualSubcat, setManualSubcat] = useState('');
   const [description, setDescription] = useState('');
-
+  
+  // Files
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
 
+  // Contact
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
 
+  // Submission
   const [submitting, setSubmitting] = useState(false);
-  const [submissionPhase, setSubmissionPhase] = useState<SubmissionPhase>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [successOpen, setSuccessOpen] = useState(false);
   const [trackingCode, setTrackingCode] = useState<string>('');
-  const [copied, setCopied] = useState(false);
 
+  // Community Search State
   const [communitySearch, setCommunitySearch] = useState('');
   const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] = useState(false);
   const communityDropdownRef = useRef<HTMLDivElement>(null);
 
-  const step2Ref = useRef<HTMLDivElement>(null);
-  const step3Ref = useRef<HTMLDivElement>(null);
-  const prevStep1 = useRef(false);
-  const prevStep2 = useRef(false);
-
+  // Step Progress Logic
   const isStep1Complete = selectedZone !== '' && selectedCommunity !== '';
   const isStep2Complete = description.trim().length > 0;
 
+  // Communities Filter
   const currentZoneData = LOCATIONS.find(l => l.zone === selectedZone);
   const availableCommunities = currentZoneData ? currentZoneData.communities : [];
   const filteredCommunities = availableCommunities.filter((c: string) =>
     c.toLowerCase().includes(communitySearch.toLowerCase())
   );
 
-  const descLength = description.trim().length;
-  const descGuidance = descLength === 0
-    ? { text: 'Describe the issue for faster resolution', color: 'text-slate-400' }
-    : descLength < 20
-    ? { text: 'Add more detail for faster resolution', color: 'text-red-500' }
-    : descLength < 50
-    ? { text: 'Good start -- more context helps', color: 'text-amber-500' }
-    : { text: 'Great description', color: 'text-green-600' };
-
+  // Reset subcat when category changes
   useEffect(() => {
     setSubcat(CATEGORIES[cat].subs[0]);
     setManualSubcat('');
   }, [cat]);
 
+  // Click outside listener for community dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (communityDropdownRef.current && !communityDropdownRef.current.contains(event.target as Node)) {
@@ -266,20 +184,6 @@ export function Issues() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (isStep1Complete && !prevStep1.current) {
-      setTimeout(() => step2Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
-    }
-    prevStep1.current = isStep1Complete;
-  }, [isStep1Complete]);
-
-  useEffect(() => {
-    if (isStep2Complete && !prevStep2.current) {
-      setTimeout(() => step3Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
-    }
-    prevStep2.current = isStep2Complete;
-  }, [isStep2Complete]);
 
   const getGPS = () => {
     setGpsError(null);
@@ -301,20 +205,10 @@ export function Issues() {
     );
   };
 
-  const handleFile = (f: File | null) => {
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
     setPhotoFile(f || null);
     setPhotoPreview(f ? URL.createObjectURL(f) : null);
-  };
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFile(e.target.files?.[0] || null);
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    const f = e.dataTransfer.files?.[0];
-    if (f && f.type.startsWith('image/')) handleFile(f);
   };
 
   const uploadPhoto = async (): Promise<string | null> => {
@@ -351,15 +245,6 @@ export function Issues() {
     setName('');
     setPhone('');
     setGpsError(null);
-    setSubmissionPhase(null);
-  };
-
-  const copyTrackingCode = async () => {
-    try {
-      await navigator.clipboard.writeText(trackingCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch { /* fallback */ }
   };
 
   const onSubmitIssue = async (e: React.FormEvent) => {
@@ -379,37 +264,34 @@ export function Issues() {
     try {
       let photo_url: string | null = null;
       if (photoFile) {
-        setSubmissionPhase('uploading');
         photo_url = await uploadPhoto();
       }
 
-      setSubmissionPhase('saving');
       const finalSubcategory = subcat === '__custom' ? manualSubcat : subcat;
       const fullLocation = `${selectedZone} > ${selectedCommunity}${locationDetail ? ` (${locationDetail})` : ''}`;
       const locCombined = coords.lat && coords.lng
-        ? `${fullLocation} • GPS: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
-        : fullLocation;
+          ? `${fullLocation} • GPS: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
+          : fullLocation;
+
+      const insertPayload = {
+        category: CATEGORIES[cat].label,
+        subcategory: finalSubcategory,
+        description: description.trim(),
+        location: locCombined.trim(),
+        priority: 'Normal', // Hidden priority field
+        photo_url,
+        name: name.trim() || null,
+        phone: phone.trim() || null,
+        status: 'Pending',
+      };
 
       const { data, error } = await supabase
         .from('issues')
-        .insert({
-          category: CATEGORIES[cat].label,
-          subcategory: finalSubcategory,
-          description: description.trim(),
-          location: locCombined.trim(),
-          priority: 'Normal',
-          photo_url,
-          name: name.trim() || null,
-          phone: phone.trim() || null,
-          status: 'Pending',
-        })
+        .insert(insertPayload)
         .select('id')
         .single();
 
       if (error) throw error;
-
-      setSubmissionPhase('generating');
-      await new Promise(r => setTimeout(r, 600));
 
       const code = makeTracking(data?.id ?? null);
       setTrackingCode(code);
@@ -420,7 +302,6 @@ export function Issues() {
       setFormError(err?.message || 'Failed to submit. Please try again.');
     } finally {
       setSubmitting(false);
-      setSubmissionPhase(null);
     }
   };
 
@@ -428,7 +309,8 @@ export function Issues() {
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">
       <section className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-
+          
+          {/* Header */}
           <div className="flex flex-col items-center mb-10 text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 border border-green-100 mb-4">
               <MessageSquareWarning className="w-3.5 h-3.5 text-green-700" />
@@ -437,38 +319,50 @@ export function Issues() {
               </span>
             </div>
             <div className="flex flex-col items-center justify-center group">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-2 bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent">
+              <h2 className="
+                text-3xl sm:text-4xl md:text-5xl 
+                font-extrabold leading-tight tracking-tight mb-2
+                bg-gradient-to-r from-slate-900 via-green-700 to-slate-900
+                bg-clip-text text-transparent
+                motion-safe:transition-transform motion-safe:duration-500
+              ">
                 Report an Issue
               </h2>
-              <span className="mt-4 h-[3px] w-20 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
+              <span className="
+                mt-4 h-[3px] w-20 rounded-full
+                bg-gradient-to-r from-green-500 via-emerald-500 to-green-600
+                motion-safe:transition-all motion-safe:duration-500
+                group-hover:w-32
+              " />
             </div>
             <p className="mt-6 text-slate-600 max-w-2xl mx-auto text-base md:text-lg font-normal leading-relaxed">
-              Help improve the community -- share problems like broken streetlights, potholes, or school issues directly with the MP's office.
+              Help improve the community — share problems like broken streetlights, potholes, or school issues directly with the MP's office.
             </p>
           </div>
 
-          <StepProgressBar step1Done={isStep1Complete} step2Done={isStep2Complete} />
-
           <form onSubmit={onSubmitIssue} className="space-y-6">
-
-            {/* STEP 1: LOCATION */}
+            
+            {/* ------------------------------------------ */}
+            {/* STEP 1: LOCATION DETAILS (BLUE) */}
+            {/* ------------------------------------------ */}
             <div className="rounded-3xl overflow-hidden border border-blue-100 bg-blue-50/60 shadow-sm transition-all">
               <div className="px-6 py-4 border-b border-blue-100/50 flex justify-between items-center bg-blue-50/80">
                 <h3 className="text-lg font-bold text-blue-900 flex items-center gap-2">
                   <MapPin className="w-5 h-5" /> Location Details
                 </h3>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold text-blue-600/70 uppercase tracking-wider hidden sm:inline-block">
-                    Communities in system: {TOTAL_COMMUNITIES}
-                  </span>
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isStep1Complete ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-800'}`}>
-                    Step 1
-                  </span>
+                   <span className="text-[10px] font-bold text-blue-600/70 uppercase tracking-wider hidden sm:inline-block">
+                     Communities in system: {TOTAL_COMMUNITIES}
+                   </span>
+                   <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isStep1Complete ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-800'}`}>
+                     Step 1
+                   </span>
                 </div>
               </div>
 
               <div className="p-6 md:p-8 space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
+                  {/* Area (Zone) */}
                   <div>
                     <label className="block text-sm font-bold text-blue-800 mb-1.5">Area (Zone) *</label>
                     <div className="relative">
@@ -490,9 +384,10 @@ export function Issues() {
                     </div>
                   </div>
 
+                  {/* Community */}
                   <div ref={communityDropdownRef} className="relative">
                     <label className="block text-sm font-bold text-blue-800 mb-1.5">Community *</label>
-                    <div
+                    <div 
                       className={`relative w-full rounded-xl border bg-white text-gray-900 focus-within:ring-2 focus-within:ring-blue-500 shadow-sm ${!selectedZone ? 'bg-gray-50 border-gray-200 cursor-not-allowed' : 'border-blue-200 cursor-text'}`}
                       onClick={() => selectedZone && setIsCommunityDropdownOpen(true)}
                     >
@@ -550,22 +445,26 @@ export function Issues() {
                   </div>
                 </div>
 
+                {/* ASSEMBLYMAN PROFILE CARD (Thick Design - Portrait Image) */}
                 <AnimatePresence>
                   {currentZoneData && (
-                    <motion.div
+                    <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       className="bg-white rounded-2xl border border-blue-200 shadow-md overflow-hidden mt-6"
                     >
                       <div className="flex flex-row">
+                        {/* Image Section - PORTRAIT MODE */}
                         <div className="w-32 sm:w-40 aspect-[3/4] bg-blue-50 flex-shrink-0 relative">
-                          <img
-                            src={currentZoneData.photoUrl}
-                            alt={currentZoneData.assemblyman}
+                          <img 
+                            src={currentZoneData.photoUrl} 
+                            alt={currentZoneData.assemblyman} 
                             className="w-full h-full object-cover"
                           />
                         </div>
+                        
+                        {/* Details Section */}
                         <div className="p-5 flex-1 flex flex-col justify-center">
                           <span className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">
                             Your Assembly Member
@@ -576,6 +475,7 @@ export function Issues() {
                           <p className="text-sm text-slate-500 mb-4 font-medium">
                             {currentZoneData.zone} Electoral Area
                           </p>
+                          
                           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg self-start font-semibold text-sm">
                             <Phone className="w-4 h-4" />
                             {currentZoneData.phone}
@@ -587,258 +487,258 @@ export function Issues() {
                 </AnimatePresence>
 
                 <div className="grid md:grid-cols-2 gap-6 items-end">
-                  <div>
-                    <label className="block text-sm font-bold text-blue-800 mb-1.5">Specific Landmark <span className="font-normal text-blue-600/80">(Optional)</span></label>
-                    <input
-                      value={locationDetail}
-                      onChange={(e) => setLocationDetail(e.target.value)}
-                      placeholder="e.g., Near the Methodist Church"
-                      className="w-full px-4 py-3.5 rounded-xl border border-blue-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                    />
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={getGPS}
-                      className="w-full px-5 py-3.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 text-blue-900 flex items-center justify-center gap-2 transition-colors font-bold shadow-sm"
-                    >
-                      {locGetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
-                      <span>{coords.lat ? "GPS Updated" : "Use Live Location"}</span>
-                    </button>
-                  </div>
+                    {/* Landmark */}
+                    <div>
+                      <label className="block text-sm font-bold text-blue-800 mb-1.5">Specific Landmark <span className="font-normal text-blue-600/80">(Optional)</span></label>
+                      <input
+                        value={locationDetail}
+                        onChange={(e) => setLocationDetail(e.target.value)}
+                        placeholder="e.g., Near the Methodist Church"
+                        className="w-full px-4 py-3.5 rounded-xl border border-blue-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                      />
+                    </div>
+                    
+                    {/* Live Location */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={getGPS}
+                        className="w-full px-5 py-3.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 text-blue-900 flex items-center justify-center gap-2 transition-colors font-bold shadow-sm"
+                        title="Use GPS"
+                      >
+                        {locGetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
+                        <span>{coords.lat ? "GPS Updated" : "Use Live Location"}</span>
+                      </button>
+                    </div>
                 </div>
-
+                
+                {/* GPS Feedback / Error */}
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                  <p className="text-xs text-blue-600/80 leading-relaxed">
-                    Use live location only if you are standing at the exact place where the issue is.
-                  </p>
-                  {coords.lat && coords.lng && (
-                    <div className="text-xs text-green-700 bg-green-100 px-3 py-1.5 rounded-lg font-mono self-start">
-                      GPS Captured: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
-                    </div>
-                  )}
-                  {gpsError && (
-                    <div className="text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-lg font-medium self-start">
-                      {gpsError}
-                    </div>
-                  )}
+                    <p className="text-xs text-blue-600/80 leading-relaxed">
+                       Use live location only if you are standing at the exact place where the issue is.
+                    </p>
+                    
+                    {coords.lat && coords.lng && (
+                        <div className="text-xs text-green-700 bg-green-100 px-3 py-1.5 rounded-lg font-mono self-start">
+                          GPS Captured: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+                        </div>
+                    )}
+                    
+                    {gpsError && (
+                        <div className="text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-lg font-medium self-start">
+                          {gpsError}
+                        </div>
+                    )}
                 </div>
               </div>
             </div>
 
-            {/* STEP 2: ISSUE DETAILS */}
-            <div ref={step2Ref} className={`rounded-3xl overflow-hidden border transition-all duration-500 ${isStep1Complete ? 'border-amber-100 bg-amber-50/60 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
-              <div className="px-6 py-4 border-b border-amber-100/50 flex justify-between items-center bg-amber-50/80">
+            {/* ------------------------------------------ */}
+            {/* STEP 2: ISSUE DETAILS (AMBER) */}
+            {/* ------------------------------------------ */}
+            <div className={`rounded-3xl overflow-hidden border transition-all duration-500 ${isStep1Complete ? 'border-amber-100 bg-amber-50/60 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+               <div className="px-6 py-4 border-b border-amber-100/50 flex justify-between items-center bg-amber-50/80">
                 <h3 className={`text-lg font-bold flex items-center gap-2 ${isStep1Complete ? 'text-amber-900' : 'text-slate-400'}`}>
                   <AlertCircle className="w-5 h-5" /> Issue Details
                 </h3>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isStep2Complete ? 'bg-amber-600 text-white' : isStep1Complete ? 'bg-amber-200 text-amber-900' : 'bg-slate-200 text-slate-500'}`}>
-                  Step 2
+                   Step 2
                 </span>
               </div>
 
               <AnimatePresence>
                 {isStep1Complete && (
-                  <motion.div
+                  <motion.div 
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                   >
                     <div className="p-6 md:p-8 space-y-6">
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-bold text-amber-800 mb-1.5">Category</label>
-                          <div className="relative">
-                            <select
-                              value={cat}
-                              onChange={(e) => setCat(e.target.value as CategoryKey)}
-                              className="w-full appearance-none px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
-                            >
-                              {Object.entries(CATEGORIES).map(([key, val]) => (
-                                <option key={key} value={key}>{val.label}</option>
-                              ))}
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                       <div className="grid md:grid-cols-2 gap-6">
+                          {/* Category */}
+                          <div>
+                            <label className="block text-sm font-bold text-amber-800 mb-1.5">Category</label>
+                            <div className="relative">
+                              <select
+                                value={cat}
+                                onChange={(e) => setCat(e.target.value as CategoryKey)}
+                                className="w-full appearance-none px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
+                              >
+                                {Object.entries(CATEGORIES).map(([key, val]) => (
+                                  <option key={key} value={key}>{val.label}</option>
+                                ))}
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
                           </div>
-                        </div>
 
-                        <div>
-                          <label className="block text-sm font-bold text-amber-800 mb-1.5">Sub-category</label>
-                          <div className="relative">
-                            <select
-                              value={manualSubcat !== '' || subcat === '__custom' ? '__custom' : subcat}
-                              onChange={(e) => {
-                                if (e.target.value === '__custom') {
-                                  setSubcat('__custom');
-                                } else {
-                                  setSubcat(e.target.value);
-                                  setManualSubcat('');
-                                }
-                              }}
-                              className="w-full appearance-none px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
-                            >
-                              {CATEGORIES[cat].subs.map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
-                              <option value="__custom">Issue not listed -- type manually</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                          {/* Sub-category */}
+                          <div>
+                            <label className="block text-sm font-bold text-amber-800 mb-1.5">Sub-category</label>
+                            <div className="relative">
+                              <select
+                                value={manualSubcat !== '' || subcat === '__custom' ? '__custom' : subcat}
+                                onChange={(e) => {
+                                  if (e.target.value === '__custom') {
+                                    setSubcat('__custom'); // Use a flag value or handle logic
+                                  } else {
+                                    setSubcat(e.target.value);
+                                    setManualSubcat('');
+                                  }
+                                }}
+                                className="w-full appearance-none px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
+                              >
+                                {CATEGORIES[cat].subs.map((s) => (
+                                  <option key={s} value={s}>{s}</option>
+                                ))}
+                                <option value="__custom">Issue not listed – type manually</option>
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
+                            
+                            {/* Custom Input */}
+                            {subcat === '__custom' && (
+                              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-3">
+                                <input
+                                  type="text"
+                                  value={manualSubcat}
+                                  onChange={(e) => setManualSubcat(e.target.value)}
+                                  placeholder="Type the issue in your own words"
+                                  className="w-full px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
+                                />
+                              </motion.div>
+                            )}
                           </div>
-                          {subcat === '__custom' && (
-                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-3">
-                              <input
-                                type="text"
-                                value={manualSubcat}
-                                onChange={(e) => setManualSubcat(e.target.value)}
-                                placeholder="Type the issue in your own words"
-                                className="w-full px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
-                              />
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
+                       </div>
 
-                      <div>
-                        <label className="block text-sm font-bold text-amber-800 mb-1.5">Description *</label>
-                        <textarea
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          rows={4}
-                          maxLength={500}
-                          placeholder="Describe the issue in detail..."
-                          className="w-full px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
-                        />
-                        <div className="flex justify-between items-center mt-1.5">
-                          <span className={`text-xs font-medium ${descGuidance.color}`}>
-                            {descGuidance.text}
-                          </span>
-                          <span className={`text-xs tabular-nums ${descLength > 450 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
-                            {descLength}/500
-                          </span>
-                        </div>
-                      </div>
+                       {/* Description */}
+                       <div>
+                          <label className="block text-sm font-bold text-amber-800 mb-1.5">Description *</label>
+                          <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            rows={4}
+                            placeholder="Describe the issue in detail..."
+                            className="w-full px-4 py-3.5 rounded-xl border border-amber-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
+                          />
+                       </div>
 
-                      <div>
-                        <label className="block text-sm font-bold text-amber-800 mb-1.5">Photo Evidence</label>
-                        {!photoPreview ? (
-                          <div
-                            onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-                            onDragLeave={() => setDragActive(false)}
-                            onDrop={onDrop}
-                            className={`
-                              relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 cursor-pointer
-                              ${dragActive
-                                ? 'border-amber-400 bg-amber-50 scale-[1.01]'
-                                : 'border-amber-200 bg-white hover:border-amber-300 hover:bg-amber-50/50'
-                              }
-                            `}
-                          >
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              onChange={onFileChange}
-                            />
-                            <div className="flex flex-col items-center gap-2">
-                              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${dragActive ? 'bg-amber-200' : 'bg-amber-100'}`}>
-                                <Upload className={`w-5 h-5 transition-colors ${dragActive ? 'text-amber-700' : 'text-amber-500'}`} />
+                       {/* Photo Evidence */}
+                       <div>
+                          <label className="block text-sm font-bold text-amber-800 mb-1.5">Photo Evidence</label>
+                          <div className="flex items-center gap-4">
+                            {!photoPreview ? (
+                              <label className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-amber-200 bg-white hover:bg-amber-50 cursor-pointer transition-colors text-sm font-bold text-amber-900 shadow-sm">
+                                <Upload className="w-4 h-4" />
+                                <span>Upload Photo</span>
+                                <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
+                              </label>
+                            ) : (
+                              <div className="relative flex items-center gap-3 p-2 border border-amber-200 rounded-xl bg-white shadow-sm pr-4">
+                                  <img src={photoPreview} alt="Preview" className="h-12 w-12 object-cover rounded-lg" />
+                                  <span className="text-sm text-gray-600 truncate max-w-[150px]">{photoFile?.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => { setPhotoFile(null); setPhotoPreview(null); }}
+                                    className="p-1.5 hover:bg-red-50 rounded-full text-red-500 transition-colors"
+                                    title="Remove photo"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
                               </div>
-                              <p className="text-sm font-semibold text-slate-700">
-                                {dragActive ? 'Drop your photo here' : 'Drag & drop a photo or click to browse'}
-                              </p>
-                              <p className="text-xs text-slate-400">JPG, PNG up to 10MB</p>
-                            </div>
+                            )}
                           </div>
-                        ) : (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="relative flex items-center gap-4 p-3 border border-amber-200 rounded-xl bg-white shadow-sm"
-                          >
-                            <img src={photoPreview} alt="Preview" className="h-16 w-16 object-cover rounded-lg" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-700 truncate">{photoFile?.name}</p>
-                              <p className="text-xs text-slate-400">{photoFile ? (photoFile.size / 1024).toFixed(0) + ' KB' : ''}</p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => { setPhotoFile(null); setPhotoPreview(null); }}
-                              className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
+                       </div>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* STEP 3: YOUR DETAILS */}
-            <div ref={step3Ref} className={`rounded-3xl overflow-hidden border transition-all duration-500 ${isStep2Complete ? 'border-green-100 bg-green-50/60 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
-              <div className="px-6 py-4 border-b border-green-100/50 flex justify-between items-center bg-green-50/80">
+            {/* ------------------------------------------ */}
+            {/* STEP 3: YOUR DETAILS (GREEN) */}
+            {/* ------------------------------------------ */}
+             <div className={`rounded-3xl overflow-hidden border transition-all duration-500 ${isStep2Complete ? 'border-green-100 bg-green-50/60 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+               <div className="px-6 py-4 border-b border-green-100/50 flex justify-between items-center bg-green-50/80">
                 <h3 className={`text-lg font-bold flex items-center gap-2 ${isStep2Complete ? 'text-green-900' : 'text-slate-400'}`}>
                   <User className="w-5 h-5" /> Your Details (Optional)
                 </h3>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isStep2Complete ? 'bg-green-200 text-green-800' : 'bg-slate-200 text-slate-500'}`}>
-                  Step 3
+                   Step 3
                 </span>
               </div>
 
               <AnimatePresence>
                 {isStep2Complete && (
-                  <motion.div
+                  <motion.div 
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                   >
-                    <div className="p-6 md:p-8">
-                      <div className="grid md:grid-cols-2 gap-6 mb-8">
-                        <div>
-                          <label className="block text-sm font-bold text-green-800 mb-1.5">Name <span className="font-normal text-green-600/80">(Optional)</span></label>
-                          <input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Your name"
-                            className="w-full px-4 py-3.5 rounded-xl border border-green-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-bold text-green-800 mb-1.5">Phone <span className="font-normal text-green-600/80">(Optional)</span></label>
-                          <input
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="e.g., 024XXXXXXX"
-                            className="w-full px-4 py-3.5 rounded-xl border border-green-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
-                          />
-                        </div>
-                      </div>
-
-                      {formError && (
-                        <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 text-red-800 border border-red-100 mb-6">
-                          <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                     <div className="p-6 md:p-8">
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
                           <div>
-                            <p className="font-bold text-sm">Submission Failed</p>
-                            <p className="text-sm">{formError}</p>
+                            <label className="block text-sm font-bold text-green-800 mb-1.5">Name <span className="font-normal text-green-600/80">(Optional)</span></label>
+                            <input
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder="Your name"
+                              className="w-full px-4 py-3.5 rounded-xl border border-green-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-bold text-green-800 mb-1.5">Phone <span className="font-normal text-green-600/80">(Optional)</span></label>
+                            <input
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              placeholder="e.g., 024XXXXXXX"
+                              className="w-full px-4 py-3.5 rounded-xl border border-green-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
+                            />
                           </div>
                         </div>
-                      )}
 
-                      <div className="flex flex-col items-center gap-4 pt-2">
-                        <SubmissionButton
-                          submitting={submitting}
-                          phase={submissionPhase}
-                          disabled={false}
-                        />
-                        <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-                          <Info className="w-3.5 h-3.5" /> Your details remain private. You'll receive a tracking code upon submission.
-                        </p>
-                      </div>
-                    </div>
+                        {formError && (
+                          <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 text-red-800 border border-red-100 mb-6">
+                            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-bold text-sm">Submission Failed</p>
+                              <p className="text-sm">{formError}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex flex-col items-center gap-4 pt-2">
+                          <button
+                            type="submit"
+                            disabled={submitting}
+                            className="
+                              relative w-full md:w-auto px-12 py-4 rounded-2xl 
+                              bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600
+                              text-white font-black text-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 
+                              transition-all duration-300 
+                              disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0
+                              flex items-center justify-center gap-3
+                            "
+                          >
+                            {submitting ? (
+                              <>
+                                <Loader2 className="w-6 h-6 animate-spin" />
+                                Submitting...
+                              </>
+                            ) : (
+                              <>
+                                Submit Report <ArrowRight className="w-6 h-6" />
+                              </>
+                            )}
+                          </button>
+                          <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                            <Info className="w-3.5 h-3.5" /> Your details remain private. You'll receive a tracking code upon submission.
+                          </p>
+                        </div>
+                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -849,92 +749,49 @@ export function Issues() {
       </section>
 
       {/* SUCCESS MODAL */}
-      <AnimatePresence>
-        {successOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={() => setSuccessOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="relative max-w-md w-full rounded-[2rem] border border-white/20 bg-[#002B5B] shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden z-10"
-            >
-              <div className="h-2 bg-gradient-to-r from-[#FF6B00] via-amber-300 to-[#FF6B00]" />
-              <div className="p-10 text-white text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 12, delay: 0.15 }}
-                  className="mx-auto w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6 shadow-inner"
-                >
+      {successOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSuccessOpen(false)} />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="relative max-w-md w-full rounded-[2rem] border border-white/20 bg-[#002B5B] shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden z-10"
+          >
+            <div className="h-2 bg-gradient-to-r from-[#FF6B00] via-amber-300 to-[#FF6B00]" />
+            <div className="p-10 text-white text-center">
+              <div className="mx-auto w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6 shadow-inner">
                   <CheckCircle className="w-10 h-10 text-green-400" />
-                </motion.div>
-                <h3 className="text-3xl font-extrabold mb-3 tracking-tight">Issue Submitted!</h3>
-                <p className="text-blue-100 text-base mb-6">
-                  Thank you for reporting. Your tracking code is:
-                </p>
-
-                <div className="bg-white/10 rounded-2xl p-5 mb-4 border border-white/10 backdrop-blur-md">
+              </div>
+              <h3 className="text-3xl font-extrabold mb-3 tracking-tight">Issue Submitted!</h3>
+              <p className="text-blue-100 text-base mb-8">
+                Thank you for reporting. Your tracking code is:
+              </p>
+              
+              <div className="bg-white/10 rounded-2xl p-5 mb-8 border border-white/10 backdrop-blur-md">
                   <div className="text-4xl font-black tracking-widest text-[#FF6B00] font-mono">{trackingCode}</div>
                   <p className="text-xs text-blue-200 mt-3 font-medium uppercase tracking-wide">
-                    Save this code
+                  Save this code
                   </p>
-                </div>
-
-                <div className="flex items-center justify-center gap-2 mb-6 text-blue-200 text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>Estimated response: {RESOLUTION_TIMES[cat]}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <button
-                    type="button"
-                    onClick={copyTrackingCode}
-                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
-                      copied
-                        ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                        : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
-                    }`}
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copied ? 'Copied!' : 'Copy Code'}
-                  </button>
-                  <a
-                    href={`https://wa.me/?text=${encodeURIComponent(`My issue tracking code: ${trackingCode}. Submitted via Citizen Reporting.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600/20 text-green-300 hover:bg-green-600/30 border border-green-500/30 font-bold text-sm transition-all"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    WhatsApp
-                  </a>
-                </div>
-
-                <button
-                  onClick={() => setSuccessOpen(false)}
-                  className="w-full px-6 py-4 rounded-xl bg-white text-[#002B5B] font-bold hover:bg-gray-50 transition shadow-lg text-lg"
-                >
-                  Done
-                </button>
               </div>
+
               <button
                 onClick={() => setSuccessOpen(false)}
-                className="absolute top-5 right-5 text-blue-300 hover:text-white p-2 transition-colors"
-                aria-label="Close"
+                className="w-full px-6 py-4 rounded-xl bg-white text-[#002B5B] font-bold hover:bg-gray-50 transition shadow-lg text-lg"
               >
-                <X className="w-6 h-6" />
+                Done
               </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            </div>
+            <button
+              onClick={() =>  setSuccessOpen(false)}
+              className="absolute top-5 right-5 text-blue-300 hover:text-white p-2 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
