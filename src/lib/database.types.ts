@@ -299,6 +299,94 @@ export interface Database {
           created_at?: string
         }
       }
+      projects: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          description: string
+          category: string
+          image_url: string | null
+          target_units: number
+          unit_label: string
+          unit_price_ghs: number
+          is_active: boolean
+          is_featured: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          description?: string
+          category?: string
+          image_url?: string | null
+          target_units?: number
+          unit_label?: string
+          unit_price_ghs?: number
+          is_active?: boolean
+          is_featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          description?: string
+          category?: string
+          image_url?: string | null
+          target_units?: number
+          unit_label?: string
+          unit_price_ghs?: number
+          is_active?: boolean
+          is_featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      contributions: {
+        Row: {
+          id: string
+          project_id: string
+          donor_first_name: string
+          donor_last_name: string
+          donor_contact: string
+          amount_ghs: number
+          units_contributed: number
+          payment_reference: string
+          payment_method: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          donor_first_name: string
+          donor_last_name: string
+          donor_contact: string
+          amount_ghs?: number
+          units_contributed?: number
+          payment_reference: string
+          payment_method?: string
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          donor_first_name?: string
+          donor_last_name?: string
+          donor_contact?: string
+          amount_ghs?: number
+          units_contributed?: number
+          payment_reference?: string
+          payment_method?: string
+          status?: string
+          created_at?: string
+        }
+      }
     }
   }
 }
