@@ -48,7 +48,7 @@ export function ConstituencyConnect() {
     >
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
         
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
           
           {/* Left Side: MP's Message */}
           <div className="text-center md:text-left flex-1 space-y-2">
@@ -62,35 +62,44 @@ export function ConstituencyConnect() {
             </div>
           </div>
 
-          {/* Right Side: Search Interface */}
+          {/* Right Side: Search Interface (Flutter Style) */}
           <div className="w-full md:w-auto flex-1 max-w-lg relative">
-            <form onSubmit={handleSearch} className="relative group z-20">
-              <input
-                type="tel"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                disabled={isLoading || result}
-                placeholder="Enter Telephone Number"
-                className="w-full h-12 pl-5 pr-32 rounded-lg border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-amber-400 focus:bg-white/20 transition-all font-medium disabled:opacity-50"
-              />
-              
-              <button
-                type="submit"
-                disabled={isLoading || !!result}
-                className="absolute right-1.5 top-1.5 bottom-1.5 px-5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-500/50 text-white font-bold rounded-md transition-all shadow-lg flex items-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-sm">Checking...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-4 h-4" />
-                    <span className="uppercase tracking-wider text-xs sm:text-sm">Check</span>
-                  </>
-                )}
-              </button>
+            <form onSubmit={handleSearch} className="relative z-20 bg-white/5 p-4 rounded-xl border border-white/10 shadow-lg backdrop-blur-sm">
+              <div className="relative flex items-center">
+                
+                {/* Flutter-style Floating Label Input */}
+                <div className="relative w-full">
+                  <input
+                    type="tel"
+                    id="phone_input"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    disabled={isLoading || result}
+                    className="peer block w-full px-0 py-2.5 text-base text-white bg-transparent border-0 border-b-2 border-white/40 appearance-none focus:outline-none focus:ring-0 focus:border-amber-400 transition-colors"
+                    placeholder=" "
+                  />
+                  <label
+                    htmlFor="phone_input"
+                    className="absolute text-sm text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-400 peer-focus:scale-75 peer-focus:-translate-y-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-white/60"
+                  >
+                    Enter Telephone Number
+                  </label>
+                </div>
+
+                {/* Search Button */}
+                <button
+                  type="submit"
+                  disabled={isLoading || !!result}
+                  className="ml-4 p-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-500/50 text-white rounded-full shadow-md transition-all hover:shadow-lg active:scale-95 flex-shrink-0"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Search className="w-5 h-5" />
+                  )}
+                </button>
+
+              </div>
             </form>
 
             {/* Result Card */}
