@@ -44,9 +44,11 @@ const quickLinks: QuickLink[] = [
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    image: "https://i.imgur.com/pTQKKjy.jpeg", 
+    image: "https://i.imgur.com/pTQKKjy.jpeg",
     route: "support",
-    imgPosition: "object-top" // Aligns image to the top to show the action
+    // Updated position: horizontally centered, vertically at 40% from the top.
+    // This "pulls the picture up" by showing more of the mid-section.
+    imgPosition: "object-[center_40%]"
   },
   {
     title: "Appointments",
