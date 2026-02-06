@@ -78,13 +78,17 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
     <section className="relative z-20 -mt-12 md:-mt-20 pt-4 pb-10 md:pb-16 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header: Original Gradient & Animation, but Left Aligned */}
+        {/* Header Block: Left Aligned + Clean Text Style (No Pill) */}
         <div className="text-left mb-8 md:mb-14">
-          <p className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 border border-green-100">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-green-700">Constituency Services</span>
-          </p>
-          <div className="mt-4 flex flex-col items-start justify-start group">
+          
+          {/* Eyebrow: Styled like Latest Updates section (Green, Bold, Uppercase) */}
+          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+            Constituency Services
+          </h4>
+
+          {/* Main Title: Original Gradient & Animation */}
+          <div className="mt-2 flex flex-col items-start justify-start group">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
               Information & Support
             </h2>
