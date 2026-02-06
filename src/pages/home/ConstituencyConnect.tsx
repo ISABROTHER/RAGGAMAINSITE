@@ -1,9 +1,8 @@
-// src/pages/home/StatsStrip.tsx
+// src/pages/home/ConstituencyConnect.tsx
 import React, { useState } from "react";
 import { Search, Loader2, X, CheckCircle, User, MapPin, Activity } from "lucide-react";
 
-// This is "Mock Data" to simulate how the system works for the demo.
-// In the future, this would be replaced by a real Supabase database query.
+// Mock Data for Demo
 const DEMO_RESULTS: Record<string, any> = {
   "default": {
     name: "Kwame Mensah",
@@ -15,7 +14,7 @@ const DEMO_RESULTS: Record<string, any> = {
   }
 };
 
-export function StatsStrip() {
+export function ConstituencyConnect() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -24,15 +23,12 @@ export function StatsStrip() {
     e.preventDefault();
     if (!query.trim()) return;
 
-    // 1. Start Loading
     setIsLoading(true);
     setResult(null);
 
-    // 2. Simulate a network request delay (1.5 seconds)
+    // Simulate network delay
     setTimeout(() => {
       setIsLoading(false);
-      // For demo purposes, we always return the default mock user
-      // No matter what they type.
       setResult(DEMO_RESULTS["default"]);
     }, 1500);
   };
@@ -52,17 +48,21 @@ export function StatsStrip() {
     >
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Main Content Area */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
           
-          {/* Left Side: Text Info */}
-          <div className="text-center md:text-left flex-1 space-y-3">
+          {/* Left Side: MP's Message */}
+          <div className="text-center md:text-left flex-1 space-y-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-amber-400 uppercase tracking-tight">
               Constituency Connect
             </h2>
-            <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
-              Direct access to support and development. We prioritize your specific needs through open, two-way communication beyond just elections.
-            </p>
+            <div className="space-y-2">
+              <p className="text-white text-base sm:text-lg font-semibold italic">
+                "My Cherished Constituents,"
+              </p>
+              <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
+                Effective representation starts with knowing you. I have built this platform to ensure your specific needs are captured in our welfare and development agenda. Verify your details here—let us ensure no one is left behind. Together, we move forward!
+              </p>
+            </div>
           </div>
 
           {/* Right Side: Search Interface */}
@@ -96,21 +96,19 @@ export function StatsStrip() {
               </button>
             </form>
 
-            {/* Simulated Search Result Card (Pop-up) */}
+            {/* Result Card */}
             {result && (
               <div className="absolute top-full mt-4 left-0 right-0 bg-white rounded-xl shadow-2xl overflow-hidden z-30 animate-in fade-in slide-in-from-top-2">
-                {/* Header */}
                 <div className="bg-emerald-800 text-white p-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-emerald-400" />
-                    <span className="font-bold uppercase tracking-wide text-sm">Record Found</span>
+                    <span className="font-bold uppercase tracking-wide text-sm">Details Verified</span>
                   </div>
                   <button onClick={closeResult} className="hover:bg-white/10 p-1 rounded-full transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                {/* Body */}
                 <div className="p-5 text-slate-800 space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-slate-200">
@@ -131,13 +129,6 @@ export function StatsStrip() {
                       <div>
                         <p className="text-xs text-slate-400 uppercase font-bold">Polling Station</p>
                         <p className="text-sm font-semibold text-slate-700">{result.station}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Activity className="w-4 h-4 text-amber-500 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase font-bold">Last Activity</p>
-                        <p className="text-sm font-semibold text-slate-700">{result.lastVoted}</p>
                       </div>
                     </div>
                   </div>
