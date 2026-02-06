@@ -46,7 +46,7 @@ export const UPDATES: UpdateItem[] = [
 ];
 
 // --- Gallery Component ---
-const GalleryViewer = ({ images, title }: { images: string[], title: string }) => {
+const GalleryViewer = ({ images }: { images: string[], title: string }) => {
   const [activeIdx, setActiveIdx] = useState(0);
 
   const nextImage = () => setActiveIdx((prev) => (prev + 1) % images.length);

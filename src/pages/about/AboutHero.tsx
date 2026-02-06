@@ -1,5 +1,4 @@
 // src/pages/about/AboutHero.tsx
-import React from 'react';
 
 export function AboutHero() {
   const heroDesktopUrl = "https://i.imgur.com/6rWU7qN.png";

@@ -33,7 +33,7 @@ export function Assemblymen() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      () => {
         setTimeout(() => {
           setIsLocating(false);
           // Simulation of zone detection logic

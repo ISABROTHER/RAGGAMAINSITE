@@ -40,6 +40,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       events: {
         Row: {
@@ -78,6 +79,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       blog_posts: {
         Row: {
@@ -119,6 +121,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       event_rsvps: {
         Row: {
@@ -148,6 +151,14 @@ export interface Database {
           guests?: number
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'event_rsvps_event_id_fkey'
+            columns: ['event_id']
+            referencedRelation: 'events'
+            referencedColumns: ['id']
+          }
+        ]
       }
       newsletter_signups: {
         Row: {
@@ -171,6 +182,7 @@ export interface Database {
           subscribed?: boolean
           created_at?: string
         }
+        Relationships: []
       }
       volunteer_signups: {
         Row: {
@@ -200,6 +212,7 @@ export interface Database {
           availability?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       issues: {
         Row: {
@@ -240,6 +253,7 @@ export interface Database {
           status?: string
           created_at?: string
         }
+        Relationships: []
       }
       poll_votes: {
         Row: {
@@ -269,6 +283,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       contact_messages: {
         Row: {
@@ -298,6 +313,7 @@ export interface Database {
           read?: boolean
           created_at?: string
         }
+        Relationships: []
       }
       projects: {
         Row: {
@@ -345,6 +361,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       contributions: {
         Row: {
@@ -386,7 +403,27 @@ export interface Database {
           status?: string
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'contributions_project_id_fkey'
+            columns: ['project_id']
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
+        ]
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

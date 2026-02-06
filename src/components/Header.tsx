@@ -1,10 +1,10 @@
 // src/components/Header.tsx
 import { useState } from 'react';
-import { 
-  Menu, X, Home, User, Users, HardHat, Award, 
-  Calendar, MessageSquareWarning, HandHeart, 
-  LayoutDashboard, LogIn, ChevronRight, Vote, 
-  UserCircle, Heart 
+import {
+  Menu, X, Home, User, Users, HardHat, Award,
+  Calendar, MessageSquareWarning,
+  LayoutDashboard, LogIn, ChevronRight, Vote,
+  UserCircle, Heart
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -62,8 +62,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   };
 
   const menuVariants = {
-    closed: { scale: 0.9, opacity: 0, transition: { type: "spring", stiffness: 300, damping: 35 } },
-    open: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 25 } }
+    closed: { scale: 0.9, opacity: 0, transition: { type: "spring" as const, stiffness: 300, damping: 35 } },
+    open: { scale: 1, opacity: 1, transition: { type: "spring" as const, stiffness: 200, damping: 25 } }
   };
 
   const itemVariants = {
@@ -131,7 +131,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       </header>
       <div className="bg-red-600 h-5 overflow-hidden relative flex items-center" style={{ marginTop: `${headerHeight}px` }}>
         <div className="marquee-track absolute top-0 left-0 h-full flex items-center whitespace-nowrap font-bold text-white text-[0.65rem] tracking-widest uppercase">
-          <span>SUPPORT HON. RAGGA’S OPERATION 1000 DESKS FOR STUDENTS 'II' OBIARA KA HO 'II'</span>
+          <span>SUPPORT HON. RAGGA'S OPERATION 1000 DESKS FOR STUDENTS 'II' OBIARA KA HO 'II'</span>
+          <span>SUPPORT HON. RAGGA'S OPERATION 1000 DESKS FOR STUDENTS 'II' OBIARA KA HO 'II'</span>
         </div>
       </div>
     </div>

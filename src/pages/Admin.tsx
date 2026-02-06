@@ -1,9 +1,9 @@
 // src/pages/Admin.tsx
 import { useState, useEffect } from 'react';
-import { 
-  Plus, Edit, Trash2, Eye, EyeOff, LayoutDashboard, 
-  Calendar, FileText, Settings, TrendingUp, Users, 
-  DollarSign, Bell, ChevronRight, LogOut, Menu as MenuIcon
+import {
+  Plus, Edit, Trash2, Eye, EyeOff, LayoutDashboard,
+  Calendar, FileText, Settings, TrendingUp, Users,
+  DollarSign, Bell, ChevronRight, LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/Button';
@@ -17,7 +17,7 @@ export function Admin() {
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'posts' | 'settings'>('overview');
   const [events, setEvents] = useState<Event[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   // Mock Stats
   const stats = [

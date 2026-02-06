@@ -1,7 +1,7 @@
 // src/pages/ReadStory.tsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { ArrowLeft, Calendar, Share2, Clock, Tag, Facebook, Twitter, Link as LinkIcon } from 'lucide-react';
-import { UPDATES, UpdateItem } from './home/LatestUpdatesSection';
+import { UPDATES } from './home/LatestUpdatesSection';
 
 interface ReadStoryProps {
   storyId: string | null;
