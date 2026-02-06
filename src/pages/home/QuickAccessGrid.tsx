@@ -44,15 +44,17 @@ const quickLinks: QuickLink[] = [
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    image: "https://i.imgur.com/pTQKKjy.jpeg",
+    // Updated Image
+    image: "https://i.imgur.com/eF6PPA9.jpeg", 
     route: "support",
-    imgPosition: "object-[center_40%]"
+    imgPosition: "object-top" // Aligns to top to ensure faces/heads aren't cut off
   },
   {
     title: "Appointments",
     desc: "Book a meeting",
     icon: UserCircle,
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+    // Updated Image
+    image: "https://i.imgur.com/BkoisB5.jpeg", 
     route: "appointments"
   }
 ];
@@ -109,7 +111,6 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   rounded-none px-4 py-2.5 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
                 ">
-                  {/* Text Content - Reduced vertical padding (py-2.5) */}
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
                     {link.title}
                   </h3>
