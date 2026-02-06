@@ -1,7 +1,7 @@
 // src/pages/Home.tsx
 import { HeroSection } from "./home/HeroSection";
 import { QuickAccessGrid } from "./home/QuickAccessGrid";
-import { StatsStrip } from "./home/StatsStrip";
+import { ConstituencyConnect } from "./home/ConstituencyConnect";
 import { LatestUpdatesSection } from "./home/LatestUpdatesSection";
 import { PrioritiesSection } from "./home/PrioritiesSection";
 
@@ -18,8 +18,8 @@ export function Home({ onNavigate }: HomeProps) {
       {/* 2. Quick Links to Services */}
       <QuickAccessGrid onNavigate={onNavigate} />
       
-      {/* 3. Campaign Statistics Counter */}
-      <StatsStrip />
+      {/* 3. Constituency Connect (Data Portal) */}
+      <ConstituencyConnect />
       
       {/* 4. Latest News & Stories */}
       <LatestUpdatesSection onNavigate={onNavigate} />
