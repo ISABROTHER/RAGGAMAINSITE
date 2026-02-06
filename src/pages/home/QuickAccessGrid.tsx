@@ -16,7 +16,6 @@ const quickLinks: QuickLink[] = [
     title: "Projects",
     desc: "Ongoing projects",
     icon: HardHat,
-    // Updated Image
     image: "https://i.imgur.com/jdIxXwk.jpeg", 
     route: "ongoing-projects"
   },
@@ -24,7 +23,6 @@ const quickLinks: QuickLink[] = [
     title: "Report Issue",
     desc: "Fix potholes & lights",
     icon: MessageSquareWarning,
-    // Updated Image
     image: "https://i.imgur.com/vt0bGZx.jpeg", 
     route: "issues"
   },
@@ -32,14 +30,14 @@ const quickLinks: QuickLink[] = [
     title: "Assemblymen",
     desc: "Know your local reps",
     icon: Users,
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=600",
+    // Updated Image
+    image: "https://mrh.gov.gh/wp-content/uploads/2022/10/sino-cape-coast-2.jpg", 
     route: "assemblymen"
   },
   {
     title: "Achievements",
     desc: "Our track record",
     icon: Award,
-    // Updated Image
     image: "https://i.imgur.com/RRiZZkS.jpeg", 
     route: "achievements"
   },
