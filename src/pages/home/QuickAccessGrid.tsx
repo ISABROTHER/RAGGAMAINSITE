@@ -8,7 +8,7 @@ type QuickLink = {
   icon: React.ElementType;
   image: string;
   route: string;
-  imgPosition?: string; // Added optional property for custom image alignment
+  imgPosition?: string;
 };
 
 const quickLinks: QuickLink[] = [
@@ -46,8 +46,6 @@ const quickLinks: QuickLink[] = [
     icon: Heart,
     image: "https://i.imgur.com/pTQKKjy.jpeg",
     route: "support",
-    // Updated position: horizontally centered, vertically at 40% from the top.
-    // This "pulls the picture up" by showing more of the mid-section.
     imgPosition: "object-[center_40%]"
   },
   {
@@ -98,10 +96,8 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <img 
                   src={link.image} 
                   alt={link.title}
-                  // Apply custom position if exists, otherwise default to object-center
                   className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${link.imgPosition || 'object-center'}`}
                 />
-                {/* Subtle gradient overlay to make image pop */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
 
@@ -110,14 +106,14 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <div className="
                   bg-gradient-to-r from-red-600/95 to-red-700/95
                   backdrop-blur-md border border-white/10 
-                  rounded-none p-4 shadow-lg
+                  rounded-none px-4 py-2.5 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
                 ">
-                  {/* Text Content - Full Width */}
+                  {/* Text Content - Reduced vertical padding (py-2.5) */}
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
                     {link.title}
                   </h3>
-                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 break-words leading-snug">
+                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-0.5 break-words leading-snug">
                     {link.desc}
                   </p>
                 </div>
