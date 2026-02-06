@@ -1,6 +1,6 @@
 // src/pages/home/QuickAccessGrid.tsx
 import React from "react";
-import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle } from "lucide-react";
+import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle, ArrowRight } from "lucide-react";
 
 type QuickLink = {
   title: string;
@@ -100,20 +100,29 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Bottom: The "Part that contains name" with RED GRADIENT */}
+              {/* Bottom: The "Part that contains name" with PROPER RED */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
-                  bg-gradient-to-br from-[#b91c1c]/95 to-[#7f1d1d]/95
+                  bg-gradient-to-r from-red-600/95 to-red-700/95
                   backdrop-blur-md border border-white/10 
                   rounded-none p-4 shadow-lg
-                  transform transition-all duration-300 group-hover:from-[#c53030] group-hover:to-[#991b1b]
+                  transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
+                  flex items-center justify-between gap-2
                 ">
-                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight">
-                    {link.title}
-                  </h3>
-                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 truncate">
-                    {link.desc}
-                  </p>
+                  {/* Text Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base md:text-2xl font-bold text-white leading-tight truncate">
+                      {link.title}
+                    </h3>
+                    <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 truncate">
+                      {link.desc}
+                    </p>
+                  </div>
+
+                  {/* Arrow Icon ("Something to make go see") */}
+                  <div className="flex-shrink-0 bg-white/20 p-1.5 rounded-full group-hover:bg-white text-white group-hover:text-red-600 transition-colors">
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
                 </div>
               </div>
             </button>
