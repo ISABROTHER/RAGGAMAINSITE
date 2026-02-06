@@ -1,70 +1,56 @@
 // src/pages/home/QuickAccessGrid.tsx
 import React from "react";
-import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle } from "lucide-react";
+import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle, ArrowUpRight } from "lucide-react";
 
 type QuickLink = {
   title: string;
-  mobileDesc: string;
   desc: string;
   icon: React.ElementType;
-  bgClass: string;
-  iconColor: string;
+  image: string;
   route: string;
 };
 
 const quickLinks: QuickLink[] = [
   {
     title: "Ongoing Projects",
-    mobileDesc: "Infrastructure",
-    desc: "Track ongoing infrastructure developments and renovations.",
+    desc: "Track infrastructure progress",
     icon: HardHat,
-    bgClass: "from-amber-50 to-orange-50/50 border-orange-100",
-    iconColor: "text-amber-600",
+    image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=600",
     route: "ongoing-projects"
   },
   {
     title: "Report Issue",
-    mobileDesc: "Fix problems",
-    desc: "Spot a problem? Report potholes or streetlights directly.",
+    desc: "Fix potholes & lights",
     icon: MessageSquareWarning,
-    bgClass: "from-emerald-50 to-teal-50/50 border-emerald-100",
-    iconColor: "text-emerald-600",
+    image: "https://images.unsplash.com/photo-1516733968668-dbdce39c4651?auto=format&fit=crop&q=80&w=600",
     route: "issues"
   },
   {
     title: "Assemblymen",
-    mobileDesc: "Local Reps",
-    desc: "Meet the local representatives working with Hon. Ragga.",
+    desc: "Know your local reps",
     icon: Users,
-    bgClass: "from-blue-50 to-indigo-50/50 border-blue-100",
-    iconColor: "text-blue-600",
+    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=600",
     route: "assemblymen"
   },
   {
     title: "Achievements",
-    mobileDesc: "Track record",
-    desc: "A record of promises kept: infrastructure, desks, and more.",
+    desc: "Our track record",
     icon: Award,
-    bgClass: "from-purple-50 to-fuchsia-50/50 border-purple-100",
-    iconColor: "text-purple-600",
+    image: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&q=80&w=600",
     route: "achievements"
   },
   {
     title: "Support",
-    mobileDesc: "Donate Books",
-    desc: "Help us raise 200,000 exercise books for our students.",
+    desc: "Donate to education",
     icon: Heart,
-    bgClass: "from-rose-50 to-pink-50/50 border-rose-100",
-    iconColor: "text-rose-600",
+    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600",
     route: "support"
   },
   {
     title: "Appointments",
-    mobileDesc: "Book/Apply",
-    desc: "Schedule meetings or submit job and grant applications.",
+    desc: "Book a meeting",
     icon: UserCircle,
-    bgClass: "from-slate-50 to-gray-50/50 border-slate-200",
-    iconColor: "text-slate-600",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
     route: "appointments"
   }
 ];
@@ -75,11 +61,11 @@ interface QuickAccessGridProps {
 
 export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
   return (
-    <section className="relative z-20 -mt-12 md:-mt-20 pt-4 pb-10 md:pb-16 bg-white">
+    <section className="relative z-20 -mt-8 md:-mt-16 pt-4 pb-10 md:pb-20 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block: Left Aligned + Clean Text Style */}
-        <div className="text-left mb-8 md:mb-14">
+        {/* Header Block */}
+        <div className="text-left mb-8 md:mb-12">
           <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
             Constituency Services
           </h4>
@@ -91,38 +77,52 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
           </div>
         </div>
 
-        {/* 2 Columns on Mobile, 3 on Desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 lg:gap-10">
+        {/* 2 Columns Mobile (Portrait Cards), 3 Columns Desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
           {quickLinks.map((link, idx) => (
             <button 
               key={idx} 
               onClick={() => onNavigate(link.route)} 
               className={`
-                group relative rounded-2xl bg-white border border-slate-100 
-                shadow-[0_2px_10px_rgba(0,0,0,0.06)] hover:shadow-xl
-                p-4 md:p-8 flex flex-col items-center text-center 
-                transition-all duration-200 active:scale-95
+                group relative aspect-[4/5] overflow-hidden rounded-3xl 
+                transition-all duration-300 active:scale-95 hover:shadow-2xl hover:-translate-y-1
+                w-full text-left
               `}
             >
-              {/* Icon Container: Colored "App Icon" Style */}
-              <div className={`
-                w-14 h-14 md:w-20 md:h-20 rounded-2xl mb-3 md:mb-6 
-                flex items-center justify-center shadow-inner
-                bg-gradient-to-br ${link.bgClass}
-                group-hover:scale-110 transition-transform duration-300
-              `}>
-                <link.icon className={`w-7 h-7 md:w-10 md:h-10 ${link.iconColor}`} />
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img 
+                  src={link.image} 
+                  alt={link.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90" />
               </div>
 
-              {/* Title */}
-              <h3 className="text-sm md:text-2xl font-bold text-slate-800 leading-tight">
-                {link.title}
-              </h3>
-              
-              {/* Description: Hidden on Mobile for cleaner "App" look */}
-              <p className="hidden md:block text-slate-500 text-base leading-relaxed mt-3 max-w-xs">
-                {link.desc}
-              </p>
+              {/* Content Overlay (Flutter/Modern Style) */}
+              <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
+                
+                {/* Top Icon Badge */}
+                <div className="absolute top-4 right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                  <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                </div>
+
+                {/* Main Content */}
+                <div className="transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-600/90 backdrop-blur-sm flex items-center justify-center mb-3 shadow-lg">
+                    <link.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  </div>
+                  
+                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight mb-1">
+                    {link.title}
+                  </h3>
+                  
+                  <p className="text-[10px] md:text-sm text-slate-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 transform translate-y-2 group-hover:translate-y-0">
+                    {link.desc}
+                  </p>
+                </div>
+              </div>
             </button>
           ))}
         </div>
