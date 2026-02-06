@@ -78,15 +78,11 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
     <section className="relative z-20 -mt-12 md:-mt-20 pt-4 pb-10 md:pb-16 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block: Left Aligned + Clean Text Style (No Pill, No Dot) */}
+        {/* Header Block: Left Aligned + Clean Text Style */}
         <div className="text-left mb-8 md:mb-14">
-          
-          {/* Eyebrow: Styled exactly like Latest Updates section (Green, Bold, Uppercase, No Dot) */}
           <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
             Constituency Services
           </h4>
-
-          {/* Main Title: Original Gradient & Animation */}
           <div className="mt-2 flex flex-col items-start justify-start group">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
               Information & Support
@@ -95,13 +91,38 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 lg:gap-10">
+        {/* 2 Columns on Mobile, 3 on Desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 lg:gap-10">
           {quickLinks.map((link, idx) => (
-            <button key={idx} onClick={() => onNavigate(link.route)} className={`group relative overflow-hidden rounded-xl md:rounded-3xl border ${link.bgClass} bg-gradient-to-br p-3 md:p-10 flex flex-col items-center text-center hover:shadow-xl hover:-translate-y-2 transition-all`}>
-              <div className="w-12 h-12 md:w-20 md:h-20 bg-white rounded-xl md:rounded-3xl flex items-center justify-center shadow-sm mb-2 md:mb-6 group-hover:scale-110"><link.icon className={`w-6 h-6 md:w-10 md:h-10 ${link.iconColor}`} /></div>
-              <h3 className="text-xs sm:text-sm md:text-2xl font-bold text-slate-900 mb-1 md:mb-3 truncate w-full tracking-tight">{link.title}</h3>
-              <p className="block md:hidden text-slate-500 text-[10px] leading-none font-medium">{link.mobileDesc}</p>
-              <p className="hidden md:block text-slate-600 text-base leading-relaxed max-w-sm mx-auto">{link.desc}</p>
+            <button 
+              key={idx} 
+              onClick={() => onNavigate(link.route)} 
+              className={`
+                group relative rounded-2xl bg-white border border-slate-100 
+                shadow-[0_2px_10px_rgba(0,0,0,0.06)] hover:shadow-xl
+                p-4 md:p-8 flex flex-col items-center text-center 
+                transition-all duration-200 active:scale-95
+              `}
+            >
+              {/* Icon Container: Colored "App Icon" Style */}
+              <div className={`
+                w-14 h-14 md:w-20 md:h-20 rounded-2xl mb-3 md:mb-6 
+                flex items-center justify-center shadow-inner
+                bg-gradient-to-br ${link.bgClass}
+                group-hover:scale-110 transition-transform duration-300
+              `}>
+                <link.icon className={`w-7 h-7 md:w-10 md:h-10 ${link.iconColor}`} />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-sm md:text-2xl font-bold text-slate-800 leading-tight">
+                {link.title}
+              </h3>
+              
+              {/* Description: Hidden on Mobile for cleaner "App" look */}
+              <p className="hidden md:block text-slate-500 text-base leading-relaxed mt-3 max-w-xs">
+                {link.desc}
+              </p>
             </button>
           ))}
         </div>
