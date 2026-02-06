@@ -1,153 +1,235 @@
-// src/pages/home/StatsStrip.tsx
+// src/components/ConstituencySearch.tsx
 import React, { useState } from "react";
-import { Search, Loader2, X, CheckCircle, User, MapPin, Activity } from "lucide-react";
+import { Search, UserCheck, UserPlus, Phone, Calendar, MapPin, Clock, X, ShieldCheck, CreditCard } from "lucide-react";
 
-// This is "Mock Data" to simulate how the system works for the demo.
-// In the future, this would be replaced by a real Supabase database query.
-const DEMO_RESULTS: Record<string, any> = {
-  "default": {
-    name: "Kwame Mensah",
-    id: "23491005",
-    station: "Roman Catholic Prim. Sch. A",
-    status: "Verified Member",
-    lastVoted: "2020 General Election",
-    contributions: "Standard Tier"
-  } 
-};
+// Mock Database - Try searching for "Mensah" or "Osei"
+const MOCK_DB = [
+  { id: "23491005", firstName: "Kwame", surname: "Mensah", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
+  { id: "99283741", firstName: "Ama", surname: "Osei", year: "1992", pollingStation: "Methodist JHS B" },
+];
 
-export function StatsStrip() {
+export default function ConstituencySearch() {
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [searchState, setSearchState] = useState<"idle" | "searching" | "found" | "not_found">("idle");
+  const [foundUser, setFoundUser] = useState<typeof MOCK_DB[0] | null>(null);
+  const [view, setView] = useState<"search" | "login" | "register" | "verified">("search");
 
+  // Handle Search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
-    // 1. Start Loading
-    setIsLoading(true);
-    setResult(null);
-
-    // 2. Simulate a network request delay (1.5 seconds)
+    setSearchState("searching");
+    
+    // Simulate API delay
     setTimeout(() => {
-      setIsLoading(false);
-      // For demo purposes, we always return the default mock user
-      // No matter what they type.
-      setResult(DEMO_RESULTS["default"]);
-    }, 1500);
+      const result = MOCK_DB.find((u) => 
+        u.surname.toLowerCase().includes(query.toLowerCase()) || 
+        u.firstName.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (result) {
+        setFoundUser(result);
+        setSearchState("found");
+      } else {
+        setSearchState("not_found");
+      }
+    }, 1200);
   };
 
-  const closeResult = () => {
-    setResult(null);
+  // Handle Login (Simulated)
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate successful login -> go to Verified view
+    setView("verified");
+  };
+
+  const handleReset = () => {
     setQuery("");
+    setSearchState("idle");
+    setView("search");
+    setFoundUser(null);
   };
 
   return (
-    <section
-      className="text-white py-8 md:py-12 relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(90deg, #004528, #006B3F, #004528)" // NDC green hue band
-      }}
-    >
-      <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Main Content Area */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-          
-          {/* Left Side: Text Info */}
-          <div className="text-center md:text-left flex-1 space-y-3">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-amber-400 uppercase tracking-tight">
+    <div className="w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden my-8">
+      
+      {/* --- 1. SEARCH VIEW --- */}
+      {view === "search" && (
+        <div className="p-6 md:p-10">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-green-800 uppercase tracking-wide mb-2">
               Constituency Connect
             </h2>
-            <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
-              Direct access to support and development. We prioritize your specific needs through open, two-way communication beyond just elections.
-            </p>
+            <p className="text-slate-500">Search to verify your membership status.</p>
           </div>
 
-          {/* Right Side: Search Interface */}
-          <div className="w-full md:w-auto flex-1 max-w-lg relative">
-            <form onSubmit={handleSearch} className="relative group z-20">
+          <form onSubmit={handleSearch} className="relative max-w-lg mx-auto">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-green-600 transition-colors" />
               <input
-                type="tel"
+                type="text"
+                placeholder="Enter Surname (Try 'Mensah')..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                disabled={isLoading || result}
-                placeholder="Enter Telephone Number"
-                className="w-full h-14 pl-6 pr-36 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-amber-400 focus:bg-white/20 transition-all font-medium disabled:opacity-50"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-lg"
               />
-              
-              <button
-                type="submit"
-                disabled={isLoading || !!result}
-                className="absolute right-2 top-2 bottom-2 px-6 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-500/50 text-white font-bold rounded-lg transition-all shadow-lg flex items-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Checking...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-5 h-5" />
-                    <span className="uppercase tracking-wider text-sm">Check</span>
-                  </>
-                )}
-              </button>
-            </form>
+            </div>
+            <button 
+              type="submit"
+              disabled={searchState === "searching"}
+              className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-green-700/20 disabled:opacity-70"
+            >
+              {searchState === "searching" ? "Searching Database..." : "Check Status"}
+            </button>
+          </form>
 
-            {/* Simulated Search Result Card (Pop-up) */}
-            {result && (
-              <div className="absolute top-full mt-4 left-0 right-0 bg-white rounded-xl shadow-2xl overflow-hidden z-30 animate-in fade-in slide-in-from-top-2">
-                {/* Header */}
-                <div className="bg-emerald-800 text-white p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
-                    <span className="font-bold uppercase tracking-wide text-sm">Record Found</span>
+          {/* Search Results Area */}
+          <div className="mt-8 min-h-[100px] flex items-center justify-center">
+            
+            {/* FOUND STATE */}
+            {searchState === "found" && foundUser && (
+              <div className="w-full max-w-lg bg-green-50 border border-green-100 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center text-green-800">
+                    <UserCheck size={24} />
                   </div>
-                  <button onClick={closeResult} className="hover:bg-white/10 p-1 rounded-full transition-colors">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Body */}
-                <div className="p-5 text-slate-800 space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-slate-200">
-                      <User className="w-8 h-8 text-slate-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg text-slate-900">{result.name}</h3>
-                      <p className="text-sm text-slate-500 font-medium">ID: {result.id}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase">
-                        {result.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3 pt-2 border-t border-slate-100">
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-4 h-4 text-amber-500 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase font-bold">Polling Station</p>
-                        <p className="text-sm font-semibold text-slate-700">{result.station}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Activity className="w-4 h-4 text-amber-500 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase font-bold">Last Activity</p>
-                        <p className="text-sm font-semibold text-slate-700">{result.lastVoted}</p>
-                      </div>
-                    </div>
+                  <div>
+                    <h3 className="font-extrabold text-lg text-green-900">HON. RAGGA KNOWS YOU</h3>
+                    <p className="text-green-800">Match: <strong>{foundUser.surname}</strong> (Born {foundUser.year})</p>
                   </div>
                 </div>
+                <button 
+                  onClick={() => setView("login")}
+                  className="w-full bg-green-800 text-white font-bold py-3 rounded-xl hover:bg-green-900 transition-colors"
+                >
+                  Login to Access Full Details
+                </button>
+              </div>
+            )}
+
+            {/* NOT FOUND STATE */}
+            {searchState === "not_found" && (
+              <div className="w-full max-w-lg bg-red-50 border border-red-100 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4">
+                 <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-red-200 rounded-full flex items-center justify-center text-red-800">
+                    <UserPlus size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-lg text-red-900">Not in System</h3>
+                    <p className="text-red-800 text-sm">We couldn't find a record for "{query}".</p>
+                  </div>
+                </div>
+                <p className="text-sm text-red-700/80 mb-3 text-center">Let us communicate with you.</p>
+                <button 
+                  onClick={() => setView("register")}
+                  className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  Send Request to Join
+                </button>
               </div>
             )}
           </div>
-
         </div>
-      </div>
-    </section>
+      )}
+
+      {/* --- 2. LOGIN VIEW --- */}
+      {view === "login" && (
+        <div className="p-8 md:p-12 bg-white animate-in zoom-in-95 max-w-lg mx-auto">
+          <h3 className="text-2xl font-bold text-center mb-6">Access Details</h3>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input type="tel" placeholder="Phone Number" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
+            <input type="text" placeholder="Year of Birth" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
+            <input type="password" placeholder="Password" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
+            
+            <button type="submit" className="w-full bg-green-700 text-white font-bold py-4 rounded-xl hover:bg-green-800">
+              Login
+            </button>
+            <button onClick={handleReset} type="button" className="w-full text-slate-400 py-2 hover:text-slate-600">
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* --- 3. REGISTER VIEW --- */}
+      {view === "register" && (
+        <div className="p-6 md:p-10 bg-white animate-in zoom-in-95">
+          <h3 className="text-2xl font-bold text-center mb-2">Join the Network</h3>
+          <p className="text-center text-slate-500 mb-6 text-sm">Full details required for verification.</p>
+          
+          <div className="space-y-3 max-w-lg mx-auto">
+            <div className="grid grid-cols-2 gap-3">
+              <input type="text" placeholder="First Name" className="p-3 bg-slate-50 border rounded-xl w-full" />
+              <input type="text" placeholder="Surname" className="p-3 bg-slate-50 border rounded-xl w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input type="text" placeholder="Year of Birth" className="p-3 bg-slate-50 border rounded-xl w-full" />
+              <input type="tel" placeholder="Phone Number" className="p-3 bg-slate-50 border rounded-xl w-full" />
+            </div>
+            <input type="password" placeholder="Create Password" className="w-full p-3 bg-slate-50 border rounded-xl" />
+            
+            <div className="pt-2 border-t mt-2">
+              <p className="text-xs font-bold text-green-700 mb-2 uppercase">Residence Info</p>
+              <input type="text" placeholder="Where do you stay?" className="w-full p-3 bg-slate-50 border rounded-xl mb-3" />
+              <input type="text" placeholder="How long have you lived there?" className="w-full p-3 bg-slate-50 border rounded-xl" />
+            </div>
+
+            <button className="w-full bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-600/20 mt-4">Submit Request</button>
+            <button onClick={handleReset} className="w-full text-slate-400 py-2">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* --- 4. DETAILS VERIFIED VIEW --- */}
+      {view === "verified" && foundUser && (
+        <div className="p-8 md:p-12 bg-white animate-in zoom-in-95 flex flex-col items-center text-center max-w-md mx-auto">
+          
+          {/* Green Check Icon */}
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50">
+            <ShieldCheck className="w-10 h-10 text-green-600" />
+          </div>
+
+          <h2 className="text-2xl font-extrabold text-green-900 mb-1">Details Verified</h2>
+          <p className="text-slate-400 text-sm mb-8">Access granted</p>
+
+          {/* User Card */}
+          <div className="w-full bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden mb-8">
+            <div className="p-6 border-b border-slate-100">
+              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
+                {foundUser.firstName} {foundUser.surname}
+              </h3>
+              
+              <div className="flex items-center justify-center gap-2 mt-2 text-slate-500 font-medium">
+                <CreditCard className="w-4 h-4" />
+                <span>ID: <span className="text-slate-900 font-bold tracking-widest">{foundUser.id}</span></span>
+              </div>
+              
+              <div className="mt-4 inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Verified Member
+              </div>
+            </div>
+
+            <div className="p-4 bg-white">
+              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Polling Station</p>
+              <div className="flex items-center justify-center gap-2 text-slate-800 font-semibold">
+                <MapPin className="w-4 h-4 text-green-600" />
+                {foundUser.pollingStation}
+              </div>
+            </div>
+          </div>
+
+          {/* Close Button */}
+          <button 
+            onClick={handleReset}
+            className="group flex items-center gap-2 text-slate-400 hover:text-slate-700 transition-colors font-medium px-6 py-3 rounded-full hover:bg-slate-100"
+          >
+            <X className="w-5 h-5" />
+            <span>Close</span>
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
