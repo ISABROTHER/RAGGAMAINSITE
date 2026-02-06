@@ -81,6 +81,9 @@ export function ConstituencyConnect() {
               Connect
             </span>
           </h2>
+          <p className="mt-2 text-slate-400 text-sm max-w-xs mx-auto leading-relaxed">
+            Verify your membership, find your polling station, and access constituency records instantly.
+          </p>
         </div>
 
         <div className="bg-white rounded-xl shadow-xl shadow-black/15 overflow-hidden">
