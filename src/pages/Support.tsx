@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, BookOpen, Target, Users, ArrowRight, Loader2 } from 'lucide-react';
+import { Heart, BookOpen, Target, Users, ArrowRight, Loader2, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
 import { supabase } from '../lib/supabase';
@@ -175,20 +175,100 @@ function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress;
 
           <div className="flex flex-wrap items-center gap-6 mb-10">
             <Stat icon={Users} label="Contributors" value={project.donor_count.toLocaleString()} />
-            <Stat icon={Target} label="Target" value={`${(project.target_units).toLocaleString()} ${project.unit_label}`} />
+            <Stat icon={Target} label="Target" value={`${project.target_units.toLocaleString()} ${project.unit_label}`} />
             <Stat icon={BookOpen} label="Per Unit" value={`GH\u20B5${project.unit_price_ghs.toFixed(2)}`} />
           </div>
 
-          <button
-            onClick={onContribute}
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-bold text-sm uppercase tracking-wider transition-all duration-300 active:scale-[0.97]"
-          >
-            <Heart className="w-4 h-4" />
-            Contribute Now
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={onContribute}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-bold text-sm uppercase tracking-wider transition-all duration-300 active:scale-[0.97]"
+            >
+              <Heart className="w-4 h-4" />
+              Contribute Now
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <ShareButtons slug={project.slug} title={project.title} variant="dark" />
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ShareButtons({ slug, title, variant }: { slug: string; title: string; variant: 'dark' | 'light' }) {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = `${window.location.origin}/support?project=${slug}`;
+  const shareText = `Support "${title}" - Help provide exercise books for students in Cape Coast North!`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch { /* ignore */ }
+  };
+
+  const shareNative = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text: shareText, url: shareUrl });
+      } catch { /* user cancelled */ }
+    } else {
+      copyLink();
+    }
+  };
+
+  const shareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+  };
+
+  const shareX = () => {
+    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const isDark = variant === 'dark';
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        onClick={shareNative}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+          isDark ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+        }`}
+        title="Share"
+      >
+        <Share2 className="w-4 h-4" />
+      </button>
+      <button
+        onClick={shareWhatsApp}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+          isDark ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+        }`}
+        title="WhatsApp"
+      >
+        <MessageCircle className="w-4 h-4" />
+      </button>
+      <button
+        onClick={shareX}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+          isDark ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+        }`}
+        title="Post on X"
+      >
+        <Twitter className="w-4 h-4" />
+      </button>
+      <button
+        onClick={copyLink}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+          copied
+            ? 'bg-green-500/20 text-green-400'
+            : isDark ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+        }`}
+        title="Copy link"
+      >
+        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+      </button>
     </div>
   );
 }
@@ -242,13 +322,16 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           </p>
         </div>
 
-        <button
-          onClick={onContribute}
-          className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
-        >
-          <Heart className="w-3.5 h-3.5" />
-          Contribute
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onContribute}
+            className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+          >
+            <Heart className="w-3.5 h-3.5" />
+            Contribute
+          </button>
+          <ShareButtons slug={project.slug} title={project.title} variant="light" />
+        </div>
       </div>
     </div>
   );
