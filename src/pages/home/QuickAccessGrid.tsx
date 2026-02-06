@@ -16,14 +16,16 @@ const quickLinks: QuickLink[] = [
     title: "Projects",
     desc: "Ongoing projects",
     icon: HardHat,
-    image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=600",
+    // Updated Image
+    image: "https://i.imgur.com/jdIxXwk.jpeg", 
     route: "ongoing-projects"
   },
   {
     title: "Report Issue",
     desc: "Fix potholes & lights",
     icon: MessageSquareWarning,
-    image: "https://images.unsplash.com/photo-1516733968668-dbdce39c4651?auto=format&fit=crop&q=80&w=600",
+    // Updated Image
+    image: "https://i.imgur.com/vt0bGZx.jpeg", 
     route: "issues"
   },
   {
@@ -37,23 +39,22 @@ const quickLinks: QuickLink[] = [
     title: "Achievements",
     desc: "Our track record",
     icon: Award,
-    image: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&q=80&w=600",
+    // Updated Image
+    image: "https://i.imgur.com/RRiZZkS.jpeg", 
     route: "achievements"
   },
   {
     title: "Support",
     desc: "Donate to education",
     icon: Heart,
-    // Updated Image
     image: "https://i.imgur.com/eF6PPA9.jpeg", 
     route: "support",
-    imgPosition: "object-top" // Aligns to top to ensure faces/heads aren't cut off
+    imgPosition: "object-top" 
   },
   {
     title: "Appointments",
     desc: "Book a meeting",
     icon: UserCircle,
-    // Updated Image
     image: "https://i.imgur.com/BkoisB5.jpeg", 
     route: "appointments"
   }
@@ -111,6 +112,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   rounded-none px-4 py-2.5 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
                 ">
+                  {/* Text Content */}
                   <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
                     {link.title}
                   </h3>
