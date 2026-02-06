@@ -61,7 +61,7 @@ export function StatsStrip() {
               Constituency Data Portal
             </h2>
             <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
-              Verify your membership status, check your polling station details, and access your constituency records securely.
+              Ensure the MP has clear data on your specific needs to facilitate effective support. This portal enables direct, two-way communication—focusing on development and welfare, not just voting.
             </p>
           </div>
 
