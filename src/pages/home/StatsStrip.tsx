@@ -58,10 +58,10 @@ export function StatsStrip() {
           {/* Left Side: Text Info */}
           <div className="text-center md:text-left flex-1 space-y-3">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-amber-400 uppercase tracking-tight">
-              Constituency Data Portal
+              Constituency Connect
             </h2>
             <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
-              Ensure the MP has clear data on your specific needs to facilitate effective support. This portal enables direct, two-way communication—focusing on development and welfare, not just voting.
+              Direct access to support and development. We prioritize your specific needs through open, two-way communication beyond just elections.
             </p>
           </div>
 
