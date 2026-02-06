@@ -134,18 +134,18 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             My Vision
           </h4>
 
-          {/* Main Heading: Original Gradient & Animation */}
+          {/* Main Heading: "My Priorities" with Larger Font */}
           <div className="mt-4 flex flex-col items-start justify-start group">
             <h3
               className="
-                text-xl sm:text-2xl md:text-5xl 
+                text-3xl sm:text-4xl md:text-5xl 
                 font-extrabold tracking-tight text-left
                 bg-gradient-to-r from-slate-900 via-green-700 to-slate-900
                 bg-clip-text text-transparent
                 motion-safe:transition-transform motion-safe:duration-500
               "
             >
-              Priorities for Cape Coast North
+              My Priorities
             </h3>
             <span
               className="
