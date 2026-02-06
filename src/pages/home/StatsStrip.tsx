@@ -69,11 +69,11 @@ export function StatsStrip() {
           <div className="w-full md:w-auto flex-1 max-w-lg relative">
             <form onSubmit={handleSearch} className="relative group z-20">
               <input
-                type="text"
+                type="tel"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 disabled={isLoading || result}
-                placeholder="Enter Voter ID or Name..."
+                placeholder="Enter Telephone Number"
                 className="w-full h-14 pl-6 pr-36 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-amber-400 focus:bg-white/20 transition-all font-medium disabled:opacity-50"
               />
               
