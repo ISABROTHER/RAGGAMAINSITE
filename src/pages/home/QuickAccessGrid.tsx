@@ -41,9 +41,9 @@ const quickLinks: QuickLink[] = [
     route: "achievements"
   },
   {
-    // Updated Title and Description
     title: "Donation",
-    desc: "Make a difference",
+    // Updated Description
+    desc: "Be part of a change",
     icon: Heart,
     image: "https://i.imgur.com/eF6PPA9.jpeg", 
     route: "support",
