@@ -33,9 +33,9 @@ export function DetailsStep({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-4 space-y-6">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4 space-y-6">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300 mb-3 px-0.5">Your Details</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 px-0.5">Your Details</p>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <FloatingInput
@@ -75,43 +75,43 @@ export function DetailsStep({
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300 mb-3 px-0.5">Payment Method</p>
-          <div className="space-y-2.5">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 px-0.5">Payment Method</p>
+          <div className="space-y-3">
             {PAY_METHODS.map((m, i) => {
               const Icon = PAY_ICONS[m.key];
               const active = payMethod === m.key;
               return (
                 <motion.button
                   key={m.key}
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.98 }}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06, duration: 0.3 }}
                   onClick={() => setPayMethod(m.key)}
-                  className={`flutter-card w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left ${
+                  className={`flutter-card w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-left min-h-[72px] ${
                     active
                       ? `${m.activeBg} ${m.activeRing} ring-2`
-                      : 'border-slate-100 bg-white hover:border-slate-200'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
-                    active ? 'bg-white shadow-sm' : 'bg-slate-50'
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                    active ? 'bg-white shadow-md' : 'bg-slate-50'
                   }`}>
                     <Icon className={`w-5 h-5 transition-colors ${active ? m.activeColor : 'text-slate-400'}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-bold transition-colors ${active ? 'text-slate-900' : 'text-slate-600'}`}>{m.label}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">{m.sublabel}</p>
+                    <p className={`text-[15px] font-bold transition-colors leading-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{m.label}</p>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{m.sublabel}</p>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    active ? 'border-green-600 bg-green-600' : 'border-slate-200'
+                  <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+                    active ? 'border-green-600 bg-green-600' : 'border-slate-300'
                   }`}>
                     {active && (
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                        className="w-2.5 h-2.5 bg-white rounded-full"
+                        className="w-3 h-3 bg-white rounded-full"
                       />
                     )}
                   </div>
@@ -132,30 +132,30 @@ export function DetailsStep({
           </motion.div>
         )}
 
-        <div className="flex items-center gap-2.5 px-1">
+        <div className="flex items-center gap-3 px-1">
           <ShieldCheck className="w-4 h-4 text-green-600 shrink-0" />
-          <span className="text-[10px] text-slate-400 font-medium leading-snug">
+          <span className="text-[10px] text-slate-500 font-medium leading-relaxed">
             256-bit encrypted. Your data is secured by Paystack.
           </span>
         </div>
       </div>
 
-      <div className="shrink-0 px-5 pb-5 pt-2 safe-bottom flex gap-3">
+      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom flex gap-3">
         <motion.button
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.92 }}
           onClick={onBack}
-          className="flutter-btn w-14 h-14 shrink-0 border-2 border-slate-100 rounded-2xl flex items-center justify-center text-slate-400"
+          className="flutter-btn w-16 h-16 shrink-0 border-2 border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:border-slate-300 hover:bg-slate-50"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6" />
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
           disabled={!canProceed}
-          className="flutter-btn flex-1 py-[18px] bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-[15px] tracking-wide shadow-lg shadow-green-600/20 disabled:shadow-none flex items-center justify-center gap-2.5"
+          className="flutter-btn flex-1 py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
         >
           Review Order
-          <ArrowRight className="w-[18px] h-[18px]" />
+          <ArrowRight className="w-5 h-5" />
         </motion.button>
       </div>
     </div>
@@ -180,8 +180,8 @@ function FloatingInput({
   const hasValue = value.length > 0;
   return (
     <div className="relative">
-      <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
-        focused ? 'text-green-600' : 'text-slate-300'
+      <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
+        focused ? 'text-green-600' : 'text-slate-400'
       }`}>
         <Icon className="w-4 h-4" />
       </div>
@@ -193,18 +193,18 @@ function FloatingInput({
         onFocus={onFocus}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={`flutter-input w-full pl-11 pr-4 py-4 bg-slate-50 border-2 rounded-2xl font-medium text-sm text-slate-900 outline-none placeholder:text-slate-300 ${
-          focused ? 'border-green-500 bg-white' : hasValue ? 'border-slate-200 bg-white' : 'border-slate-100'
+        className={`flutter-input w-full pl-12 pr-4 py-5 bg-slate-50 border-2 rounded-2xl font-medium text-[15px] text-slate-900 outline-none placeholder:text-slate-400 min-h-[60px] ${
+          focused ? 'border-green-500 bg-white shadow-sm' : hasValue ? 'border-slate-200 bg-white' : 'border-slate-200'
         }`}
       />
       <motion.label
         initial={false}
         animate={{
-          y: focused || hasValue ? -28 : 0,
+          y: focused || hasValue ? -30 : 0,
           scale: focused || hasValue ? 0.75 : 1,
           opacity: focused || hasValue ? 1 : 0,
         }}
-        className="absolute left-11 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-green-600 origin-left pointer-events-none bg-white px-1"
+        className="absolute left-12 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-green-600 origin-left pointer-events-none bg-white px-1"
       >
         {label}
       </motion.label>

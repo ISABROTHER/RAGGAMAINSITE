@@ -144,42 +144,51 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={modalState === 'form' ? onClose : undefined}
       />
 
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-        className="relative bg-white w-full max-w-md rounded-t-[28px] sm:rounded-[28px] shadow-2xl flex flex-col overflow-hidden"
-        style={{ maxHeight: 'min(94vh, 780px)' }}
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        drag={modalState === 'form' ? 'y' : false}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0, bottom: 0.5 }}
+        onDragEnd={(e, { offset, velocity }) => {
+          if (offset.y > 100 || velocity.y > 300) {
+            onClose();
+          }
+        }}
+        className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
+        style={{ maxHeight: 'min(92vh, 800px)', touchAction: 'none' }}
       >
-        <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mt-2.5 mb-1 sm:hidden" />
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-1.5 sm:hidden cursor-grab active:cursor-grabbing" />
 
-        <div className="flex items-center justify-between px-5 pt-3 pb-2 shrink-0">
+        <div className="flex items-center justify-between px-5 sm:px-6 pt-3 pb-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-green-50 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center shadow-sm">
               <BookOpen className="w-5 h-5 text-green-700" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Contribute</h2>
-              <p className="text-[11px] text-slate-400 font-medium leading-tight truncate max-w-[200px]">{project.title}</p>
+              <p className="text-[11px] text-slate-500 font-medium leading-tight truncate max-w-[180px]">{project.title}</p>
             </div>
           </div>
           {modalState === 'form' && (
             <motion.button
-              whileTap={{ scale: 0.85 }}
+              whileTap={{ scale: 0.88 }}
               onClick={onClose}
-              className="flutter-btn w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50"
+              className="flutter-btn w-11 h-11 rounded-2xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-colors"
             >
-              <X className="w-5 h-5 text-slate-400" />
+              <X className="w-5 h-5 text-slate-500" />
             </motion.button>
           )}
         </div>
 
         {modalState !== 'failed' && (
-          <div className="px-5 pb-3 pt-1 shrink-0">
+          <div className="px-5 sm:px-6 pb-4 pt-1 shrink-0">
             <StepIndicator current={step} total={4} labels={STEP_LABELS} />
           </div>
         )}
