@@ -1,6 +1,6 @@
 // src/pages/home/QuickAccessGrid.tsx
 import React from "react";
-import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle, ArrowRight } from "lucide-react";
+import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle } from "lucide-react";
 
 type QuickLink = {
   title: string;
@@ -107,22 +107,14 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   backdrop-blur-md border border-white/10 
                   rounded-none p-4 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
-                  flex items-center justify-between gap-3
                 ">
-                  {/* Text Content - Removed truncate so text wraps */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
-                      {link.title}
-                    </h3>
-                    <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 break-words leading-snug">
-                      {link.desc}
-                    </p>
-                  </div>
-
-                  {/* Arrow Icon */}
-                  <div className="flex-shrink-0 bg-white/20 p-1.5 rounded-full group-hover:bg-white text-white group-hover:text-red-600 transition-colors">
-                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                  </div>
+                  {/* Text Content - Full Width */}
+                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
+                    {link.title}
+                  </h3>
+                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-1 break-words leading-snug">
+                    {link.desc}
+                  </p>
                 </div>
               </div>
             </button>
