@@ -10,17 +10,17 @@ import {
   ChevronLeft,
   ArrowRight
 } from "lucide-react";
+import { achievementCounts } from "../../data/achievements";
 
 interface PrioritiesSectionProps {
   onNavigate: (page: string) => void;
 }
 
 type Priority = {
-  id: string;
+  id: keyof typeof achievementCounts;
   title: string;
   subtitle: string;
   desc: string;
-  initiativesCount: string;
   icon: React.ElementType;
   accentBg: string;
   accentText: string;
@@ -34,7 +34,6 @@ const priorities: Priority[] = [
     title: "Educational Support",
     subtitle: "Educational Support",
     desc: "Supporting quality education, digital literacy, and youth skills training.",
-    initiativesCount: "4 initiatives listed",
     icon: BookOpen,
     accentBg: "bg-blue-100",
     accentText: "text-blue-700",
@@ -46,7 +45,6 @@ const priorities: Priority[] = [
     title: "Health & Sanitation",
     subtitle: "Health & Sanitation",
     desc: "Expanding access to healthcare and clean water for all.",
-    initiativesCount: "2 initiatives listed",
     icon: HeartPulse,
     accentBg: "bg-green-100",
     accentText: "text-green-700",
@@ -58,7 +56,6 @@ const priorities: Priority[] = [
     title: "Job Creation",
     subtitle: "Job Creation",
     desc: "Creating jobs and empowering local businesses.",
-    initiativesCount: "3 initiatives listed",
     icon: Briefcase,
     accentBg: "bg-amber-100",
     accentText: "text-amber-700",
@@ -70,7 +67,6 @@ const priorities: Priority[] = [
     title: "Infrastructure",
     subtitle: "Infrastructure",
     desc: "Improving roads, electrification, and connectivity.",
-    initiativesCount: "4 initiatives listed",
     icon: Construction,
     accentBg: "bg-slate-100",
     accentText: "text-slate-800",
@@ -82,7 +78,6 @@ const priorities: Priority[] = [
     title: "Agri-Development",
     subtitle: "Agri-Development",
     desc: "Supporting farmers with tools, training, and market access.",
-    initiativesCount: "4 initiatives listed",
     icon: Sprout,
     accentBg: "bg-emerald-100",
     accentText: "text-emerald-700",
@@ -201,7 +196,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                       {priority.title}
                     </h4>
                     <p className="text-xs font-semibold text-emerald-700 mb-1">
-                      {priority.initiativesCount}
+                      {achievementCounts[priority.id]} initiatives delivered
                     </p>
                     <p className="text-sm text-slate-700 leading-relaxed mb-4">
                       {priority.desc}
@@ -243,7 +238,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                     {priority.title}
                   </h4>
                   <p className="text-[10px] font-semibold text-emerald-700 mt-1">
-                    {priority.initiativesCount}
+                    {achievementCounts[priority.id]} initiatives delivered
                   </p>
                   <p className="text-xs text-slate-600 leading-snug mt-1 line-clamp-2">
                     {priority.desc}
@@ -342,7 +337,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                     {priority.title}
                   </h4>
                   <p className="text-sm font-bold text-emerald-700 mb-3 uppercase tracking-wide">
-                    {priority.initiativesCount}
+                    {achievementCounts[priority.id]} initiatives delivered
                   </p>
                   <p className="text-slate-600 mb-6 leading-relaxed text-base flex-1">
                     {priority.desc}
