@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -7,11 +7,13 @@ import {
   X,
   ShieldCheck,
   MapPin,
-  Loader2,
   ArrowLeft,
   Fingerprint,
   CheckCircle2,
   CreditCard,
+  Database,
+  ScanSearch,
+  ShieldAlert,
 } from "lucide-react";
 
 const MOCK_DB = [
@@ -20,7 +22,7 @@ const MOCK_DB = [
   { id: "30587612", firstName: "Kofi", surname: "Adjei", phone: "0576040260", year: "1990", pollingStation: "D/A Primary Sch. C" },
 ];
 
-type ViewState = "search" | "login" | "register" | "verified";
+type ViewState = "search" | "searching" | "login" | "register" | "verified";
 
 const anim = {
   initial: { opacity: 0, y: 12 },
@@ -32,46 +34,159 @@ const anim = {
 const inputCls =
   "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
 
+const SEARCH_STEPS = [
+  { label: "Connecting to database", icon: Database, duration: 600 },
+  { label: "Scanning records", icon: ScanSearch, duration: 500 },
+  { label: "Verifying match", icon: ShieldAlert, duration: 400 },
+];
+
+function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
+  const [step, setStep] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let totalElapsed = 0;
+    const totalDuration = SEARCH_STEPS.reduce((s, st) => s + st.duration, 0);
+    const interval = setInterval(() => {
+      totalElapsed += 30;
+      const pct = Math.min((totalElapsed / totalDuration) * 100, 100);
+      setProgress(pct);
+
+      let accumulated = 0;
+      for (let i = 0; i < SEARCH_STEPS.length; i++) {
+        accumulated += SEARCH_STEPS[i].duration;
+        if (totalElapsed < accumulated) {
+          setStep(i);
+          break;
+        }
+      }
+
+      if (totalElapsed >= totalDuration) {
+        clearInterval(interval);
+        setTimeout(onComplete, 200);
+      }
+    }, 30);
+    return () => clearInterval(interval);
+  }, [onComplete]);
+
+  const Icon = SEARCH_STEPS[step].icon;
+
+  return (
+    <motion.div {...anim} className="py-6 px-5">
+      <div className="flex items-center gap-3 mb-5">
+        <motion.div
+          key={step}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20"
+        >
+          <Icon className="w-4 h-4 text-white" />
+        </motion.div>
+        <div className="flex-1">
+          <motion.p
+            key={step}
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-sm font-semibold text-slate-800"
+          >
+            {SEARCH_STEPS[step].label}
+          </motion.p>
+          <p className="text-[11px] text-slate-400 font-mono">
+            Step {step + 1} of {SEARCH_STEPS.length}
+          </p>
+        </div>
+        <span className="text-xs font-bold text-green-600 tabular-nums">
+          {Math.round(progress)}%
+        </span>
+      </div>
+
+      <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+        <motion.div
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"
+          style={{ width: `${progress}%` }}
+          transition={{ duration: 0.05 }}
+        />
+        <motion.div
+          className="absolute inset-y-0 left-0 rounded-full bg-white/30"
+          style={{ width: `${progress}%` }}
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ repeat: Infinity, duration: 1 }}
+        />
+      </div>
+
+      <div className="flex justify-between mt-3">
+        {SEARCH_STEPS.map((s, i) => (
+          <div key={i} className="flex items-center gap-1">
+            <div
+              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
+                i <= step ? "bg-green-500" : "bg-slate-200"
+              }`}
+            />
+            <span
+              className={`text-[10px] transition-colors duration-300 ${
+                i <= step ? "text-green-600 font-semibold" : "text-slate-300"
+              }`}
+            >
+              {s.label.split(" ").slice(-1)[0]}
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 export function ConstituencyConnect() {
   const [query, setQuery] = useState("");
-  const [searching, setSearching] = useState(false);
   const [found, setFound] = useState<typeof MOCK_DB[0] | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [view, setView] = useState<ViewState>("search");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const reset = () => {
     setQuery("");
-    setSearching(false);
     setFound(null);
     setNotFound(false);
     setView("search");
+    setSearchQuery("");
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    setSearching(true);
+    setSearchQuery(query.trim());
     setFound(null);
     setNotFound(false);
-    setTimeout(() => {
-      const q = query.trim().toLowerCase();
-      const r = MOCK_DB.find(
-        (u) =>
-          u.surname.toLowerCase().includes(q) ||
-          u.firstName.toLowerCase().includes(q) ||
-          u.phone.includes(q)
-      );
-      setSearching(false);
-      if (r) setFound(r);
-      else setNotFound(true);
-    }, 900);
+    setView("searching");
+  };
+
+  const handleSearchComplete = () => {
+    const q = searchQuery.toLowerCase();
+    const r = MOCK_DB.find(
+      (u) =>
+        u.surname.toLowerCase().includes(q) ||
+        u.firstName.toLowerCase().includes(q) ||
+        u.phone.includes(q)
+    );
+    if (r) {
+      setFound(r);
+    } else {
+      setNotFound(true);
+    }
+    setView("search");
   };
 
   return (
     <section className="relative py-10 md:py-16 bg-slate-900 overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-      <div className="absolute top-0 right-0 w-72 h-72 bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-56 h-56 bg-emerald-500/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+      <div className="absolute inset-0">
+        <img
+          src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/60" />
+      </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12">
@@ -109,12 +224,18 @@ export function ConstituencyConnect() {
           <div className="lg:w-[400px] flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 overflow-hidden ring-1 ring-white/10">
               <AnimatePresence mode="wait">
+                {view === "searching" && (
+                  <motion.div key="searching" {...anim}>
+                    <SearchLoadingBar onComplete={handleSearchComplete} />
+                  </motion.div>
+                )}
+
                 {view === "search" && (
                   <motion.div key="search" {...anim} className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20">
-                          <Fingerprint className="w-4.5 h-4.5 text-white" />
+                          <Fingerprint className="w-4 h-4 text-white" />
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 leading-tight">Search Records</p>
@@ -143,11 +264,11 @@ export function ConstituencyConnect() {
                       </div>
                       <button
                         type="submit"
-                        disabled={searching || !query.trim()}
+                        disabled={!query.trim()}
                         className="mt-3 w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-semibold py-2.5 rounded-lg transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
                       >
-                        {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-                        {searching ? "Searching..." : "Check Status"}
+                        <Search className="w-3.5 h-3.5" />
+                        Check Status
                       </button>
                     </form>
 
@@ -162,7 +283,7 @@ export function ConstituencyConnect() {
                               <p className="font-bold text-green-900 text-sm">{found.firstName} {found.surname}</p>
                               <p className="text-green-700 text-xs">Born {found.year}</p>
                             </div>
-                            <CheckCircle2 className="w-4.5 h-4.5 text-green-500 flex-shrink-0" />
+                            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                           </div>
                           <button onClick={() => setView("login")} className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 rounded-lg transition-all text-sm">
                             Login to View Details
@@ -175,7 +296,7 @@ export function ConstituencyConnect() {
                             <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
                               <UserPlus className="w-4 h-4 text-white" />
                             </div>
-                            <p className="font-bold text-amber-900 text-sm">No record for "{query}"</p>
+                            <p className="font-bold text-amber-900 text-sm">No record for "{searchQuery}"</p>
                           </div>
                           <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm">
                             Request to Join
