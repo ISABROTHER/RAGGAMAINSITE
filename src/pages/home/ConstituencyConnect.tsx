@@ -1,18 +1,17 @@
-// src/components/ConstituencySearch.tsx
 import React, { useState } from "react";
-import { Search, UserCheck, UserPlus, X, ShieldCheck, CreditCard, MapPin } from "lucide-react";
+import { Search, UserCheck, UserPlus, Lock, Phone, Calendar, MapPin, Clock } from "lucide-react";
 
-// Mock Database
+// Mock Database - Try searching for "Mensah" or "Osei"
 const MOCK_DB = [
-  { id: "23491005", firstName: "Kwame", surname: "Mensah", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
-  { id: "99283741", firstName: "Ama", surname: "Osei", year: "1992", pollingStation: "Methodist JHS B" },
+  { id: 1, firstName: "Kwame", surname: "Mensah", year: "1985" },
+  { id: 2, firstName: "Ama", surname: "Osei", year: "1992" },
 ];
 
-export default function ConstituencySearch() {
+export function ConstituencyConnect() {
   const [query, setQuery] = useState("");
   const [searchState, setSearchState] = useState<"idle" | "searching" | "found" | "not_found">("idle");
-  const [foundUser, setFoundUser] = useState<typeof MOCK_DB[0] | null>(null);
-  const [view, setView] = useState<"search" | "login" | "register" | "verified">("search");
+  const [foundUser, setFoundUser] = useState<{ surname: string; year: string } | null>(null);
+  const [view, setView] = useState<"search" | "login" | "register">("search");
 
   // Handle Search
   const handleSearch = (e: React.FormEvent) => {
@@ -21,7 +20,7 @@ export default function ConstituencySearch() {
 
     setSearchState("searching");
     
-    // Simulate API delay
+    // Simulate finding a user after 1.5 seconds
     setTimeout(() => {
       const result = MOCK_DB.find((u) => 
         u.surname.toLowerCase().includes(query.toLowerCase()) || 
@@ -29,17 +28,12 @@ export default function ConstituencySearch() {
       );
 
       if (result) {
-        setFoundUser(result);
+        setFoundUser({ surname: result.surname, year: result.year });
         setSearchState("found");
       } else {
         setSearchState("not_found");
       }
-    }, 1200);
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setView("verified");
+    }, 1500);
   };
 
   const handleReset = () => {
@@ -50,7 +44,7 @@ export default function ConstituencySearch() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+    <div className="w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden my-8">
       
       {/* --- 1. SEARCH VIEW --- */}
       {view === "search" && (
@@ -133,27 +127,22 @@ export default function ConstituencySearch() {
 
       {/* --- 2. LOGIN VIEW --- */}
       {view === "login" && (
-        <div className="p-8 md:p-12 bg-white animate-in zoom-in-95 max-w-lg mx-auto">
-          <h3 className="text-2xl font-bold text-center mb-6 text-slate-900">Access Details</h3>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input type="tel" placeholder="Phone Number" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
-            <input type="text" placeholder="Year of Birth" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
-            <input type="password" placeholder="Password" className="w-full p-3 bg-slate-50 border rounded-xl focus:border-green-500 outline-none" required />
-            
-            <button type="submit" className="w-full bg-green-700 text-white font-bold py-4 rounded-xl hover:bg-green-800">
-              Login
-            </button>
-            <button onClick={handleReset} type="button" className="w-full text-slate-400 py-2 hover:text-slate-600">
-              Cancel
-            </button>
-          </form>
+        <div className="p-8 md:p-12 bg-white animate-in zoom-in-95">
+          <h3 className="text-2xl font-bold text-center mb-6">Access Details</h3>
+          <div className="space-y-4 max-w-md mx-auto">
+            <input type="tel" placeholder="Phone Number" className="w-full p-3 bg-slate-50 border rounded-xl" />
+            <input type="text" placeholder="Year of Birth" className="w-full p-3 bg-slate-50 border rounded-xl" />
+            <input type="password" placeholder="Password" className="w-full p-3 bg-slate-50 border rounded-xl" />
+            <button className="w-full bg-green-700 text-white font-bold py-4 rounded-xl">Login</button>
+            <button onClick={handleReset} className="w-full text-slate-400 py-2">Cancel</button>
+          </div>
         </div>
       )}
 
       {/* --- 3. REGISTER VIEW --- */}
       {view === "register" && (
         <div className="p-6 md:p-10 bg-white animate-in zoom-in-95">
-          <h3 className="text-2xl font-bold text-center mb-2 text-slate-900">Join the Network</h3>
+          <h3 className="text-2xl font-bold text-center mb-2">Join the Network</h3>
           <p className="text-center text-slate-500 mb-6 text-sm">Full details required for verification.</p>
           
           <div className="space-y-3 max-w-lg mx-auto">
@@ -178,56 +167,6 @@ export default function ConstituencySearch() {
           </div>
         </div>
       )}
-
-      {/* --- 4. DETAILS VERIFIED VIEW --- */}
-      {view === "verified" && foundUser && (
-        <div className="p-8 md:p-12 bg-white animate-in zoom-in-95 flex flex-col items-center text-center max-w-md mx-auto">
-          
-          {/* Green Check Icon */}
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50">
-            <ShieldCheck className="w-10 h-10 text-green-600" />
-          </div>
-
-          <h2 className="text-2xl font-extrabold text-green-900 mb-1">Details Verified</h2>
-          <p className="text-slate-400 text-sm mb-8">Access granted</p>
-
-          {/* User Card */}
-          <div className="w-full bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden mb-8">
-            <div className="p-6 border-b border-slate-100">
-              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
-                {foundUser.firstName} {foundUser.surname}
-              </h3>
-              
-              <div className="flex items-center justify-center gap-2 mt-2 text-slate-500 font-medium">
-                <CreditCard className="w-4 h-4" />
-                <span>ID: <span className="text-slate-900 font-bold tracking-widest">{foundUser.id}</span></span>
-              </div>
-              
-              <div className="mt-4 inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Verified Member
-              </div>
-            </div>
-
-            <div className="p-4 bg-white">
-              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Polling Station</p>
-              <div className="flex items-center justify-center gap-2 text-slate-800 font-semibold">
-                <MapPin className="w-4 h-4 text-green-600" />
-                {foundUser.pollingStation}
-              </div>
-            </div>
-          </div>
-
-          {/* Close Button */}
-          <button 
-            onClick={handleReset}
-            className="group flex items-center gap-2 text-slate-400 hover:text-slate-700 transition-colors font-medium px-6 py-3 rounded-full hover:bg-slate-100"
-          >
-            <X className="w-5 h-5" />
-            <span>Close</span>
-          </button>
-        </div>
-      )}
     </div>
   );
-}
+}  
