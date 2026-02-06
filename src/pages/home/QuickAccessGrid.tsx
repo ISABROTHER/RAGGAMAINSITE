@@ -77,16 +77,21 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
   return (
     <section className="relative z-20 -mt-12 md:-mt-20 pt-4 pb-10 md:pb-16 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 md:mb-14">
+        
+        {/* Header: Original Gradient & Animation, but Left Aligned */}
+        <div className="text-left mb-8 md:mb-14">
           <p className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 border border-green-100">
             <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
             <span className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-green-700">Constituency Services</span>
           </p>
-          <div className="mt-4 flex flex-col items-center justify-center group">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-center bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">Information & Support</h2>
+          <div className="mt-4 flex flex-col items-start justify-start group">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
+              Information & Support
+            </h2>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
           </div>
         </div>
+
         <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 lg:gap-10">
           {quickLinks.map((link, idx) => (
             <button key={idx} onClick={() => onNavigate(link.route)} className={`group relative overflow-hidden rounded-xl md:rounded-3xl border ${link.bgClass} bg-gradient-to-br p-3 md:p-10 flex flex-col items-center text-center hover:shadow-xl hover:-translate-y-2 transition-all`}>
@@ -100,4 +105,4 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
       </div>
     </section>
   );
-} 
+}
