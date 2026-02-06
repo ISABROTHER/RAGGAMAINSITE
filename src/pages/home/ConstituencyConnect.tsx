@@ -101,50 +101,63 @@ export function ConstituencyConnect() {
 
               </div>
             </form>
+          </div>
+        </div>
+      </div>
 
-            {/* Result Card */}
-            {result && (
-              <div className="absolute top-full mt-3 left-0 right-0 bg-white rounded-lg shadow-2xl overflow-hidden z-30 animate-in fade-in slide-in-from-top-2">
-                <div className="bg-emerald-800 text-white p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-400" />
-                    <span className="font-bold uppercase tracking-wide text-xs">Details Verified</span>
-                  </div>
-                  <button onClick={closeResult} className="hover:bg-white/10 p-1 rounded-full transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
+      {/* Result Modal - Displays Centered on Screen (No longer beneath the input) */}
+      {result && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-emerald-800 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-emerald-400" />
+                <span className="font-bold uppercase tracking-wide text-sm">Details Verified</span>
+              </div>
+              <button 
+                onClick={closeResult} 
+                className="hover:bg-white/10 p-2 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 text-slate-800 space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-slate-200">
+                  <User className="w-8 h-8 text-slate-400" />
                 </div>
+                <div>
+                  <h3 className="font-bold text-xl text-slate-900">{result.name}</h3>
+                  <p className="text-sm text-slate-500 font-medium">ID: {result.id}</p>
+                  <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase">
+                    {result.status}
+                  </span>
+                </div>
+              </div>
 
-                <div className="p-4 text-slate-800 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-slate-200">
-                      <User className="w-6 h-6 text-slate-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-base text-slate-900">{result.name}</h3>
-                      <p className="text-xs text-slate-500 font-medium">ID: {result.id}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">
-                        {result.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-2 pt-2 border-t border-slate-100">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-amber-500 mt-0.5" />
-                      <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold">Polling Station</p>
-                        <p className="text-sm font-semibold text-slate-700">{result.station}</p>
-                      </div>
-                    </div>
+              <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-100">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-amber-500 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Polling Station</p>
+                    <p className="text-base font-semibold text-slate-700 leading-tight">{result.station}</p>
                   </div>
                 </div>
               </div>
-            )}
+              
+              <button 
+                onClick={closeResult}
+                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
-
         </div>
-      </div>
+      )}
     </section>
   );
 }
