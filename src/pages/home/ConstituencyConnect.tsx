@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 
 const MOCK_DB = [
-  { id: "23491005", firstName: "Kwame", surname: "Mensah", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
-  { id: "99283741", firstName: "Ama", surname: "Osei", year: "1992", pollingStation: "Methodist JHS B" },
+  { id: "23491005", firstName: "Kwame", surname: "Mensah", phone: "0241234567", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
+  { id: "99283741", firstName: "Ama", surname: "Osei", phone: "0209876543", year: "1992", pollingStation: "Methodist JHS B" },
+  { id: "30587612", firstName: "Kofi", surname: "Adjei", phone: "0576040260", year: "1990", pollingStation: "D/A Primary Sch. C" },
 ];
 
 type ViewState = "search" | "login" | "register" | "verified";
@@ -53,10 +54,12 @@ export function ConstituencyConnect() {
     setFound(null);
     setNotFound(false);
     setTimeout(() => {
+      const q = query.trim().toLowerCase();
       const r = MOCK_DB.find(
         (u) =>
-          u.surname.toLowerCase().includes(query.toLowerCase()) ||
-          u.firstName.toLowerCase().includes(query.toLowerCase())
+          u.surname.toLowerCase().includes(q) ||
+          u.firstName.toLowerCase().includes(q) ||
+          u.phone.includes(q)
       );
       setSearching(false);
       if (r) setFound(r);
@@ -102,7 +105,7 @@ export function ConstituencyConnect() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                     <input
                       type="text"
-                      placeholder="Enter surname..."
+                      placeholder="Enter name or phone number..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       className={`${inputCls} !pl-9`}
@@ -151,7 +154,7 @@ export function ConstituencyConnect() {
                   )}
                   {!found && !notFound && !searching && (
                     <motion.p key="hint" {...anim} className="mt-4 text-center text-xs text-slate-400 py-3">
-                      Try <span className="font-semibold text-slate-500">"Mensah"</span> or <span className="font-semibold text-slate-500">"Osei"</span>
+                      Try <span className="font-semibold text-slate-500">"Mensah"</span>, <span className="font-semibold text-slate-500">"Osei"</span> or <span className="font-semibold text-slate-500">"0576040260"</span>
                     </motion.p>
                   )}
                 </AnimatePresence>
