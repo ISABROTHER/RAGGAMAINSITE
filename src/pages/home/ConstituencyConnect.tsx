@@ -8,7 +8,7 @@ const MOCK_DB = [
   { id: "99283741", firstName: "Ama", surname: "Osei", year: "1992", pollingStation: "Methodist JHS B" },
 ];
 
-export default function ConstituencySearch() {
+export function ConstituencyConnect() {
   const [query, setQuery] = useState("");
   const [searchState, setSearchState] = useState<"idle" | "searching" | "found" | "not_found">("idle");
   const [foundUser, setFoundUser] = useState<typeof MOCK_DB[0] | null>(null);
