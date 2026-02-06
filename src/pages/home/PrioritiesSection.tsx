@@ -126,23 +126,20 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
     <section className="py-12 md:py-24 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Heading block */}
-        <div className="text-center mb-10 md:mb-16">
+        {/* Header: Clean Style (No Pill, No Dot) */}
+        <div className="text-left mb-10 md:mb-16">
           
-          {/* Eyebrow Pill */}
-          <p className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 border border-green-100">
-            <span className="h-2 w-2 rounded-full bg-green-500 motion-safe:animate-pulse" />
-            <span className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-green-700">
-              My Vision
-            </span>
-          </p>
+          {/* Eyebrow: Styled like Latest Updates section (Green, Bold, Uppercase, No Dot) */}
+          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
+            My Vision
+          </h4>
 
-          {/* Main Heading */}
-          <div className="mt-4 flex flex-col items-center justify-center group">
+          {/* Main Heading: Original Gradient & Animation */}
+          <div className="mt-4 flex flex-col items-start justify-start group">
             <h3
               className="
                 text-xl sm:text-2xl md:text-5xl 
-                font-extrabold tracking-tight text-center
+                font-extrabold tracking-tight text-left
                 bg-gradient-to-r from-slate-900 via-green-700 to-slate-900
                 bg-clip-text text-transparent
                 motion-safe:transition-transform motion-safe:duration-500
@@ -160,7 +157,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             />
           </div>
 
-          <p className="mt-6 text-base md:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="mt-6 text-base md:text-lg text-slate-600 max-w-3xl mr-auto leading-relaxed">
             We are building a community where opportunity is shared, education is
             accessible, and healthcare is a right, not a privilege.
           </p>
