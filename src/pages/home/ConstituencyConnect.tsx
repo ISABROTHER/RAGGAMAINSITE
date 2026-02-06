@@ -1,259 +1,153 @@
-// src/components/ConstituencySearch.tsx
+// src/pages/home/StatsStrip.tsx
 import React, { useState } from "react";
-import { Search, UserCheck, UserPlus, Lock, Phone, Calendar, MapPin, Clock, User } from "lucide-react";
+import { Search, Loader2, X, CheckCircle, User, MapPin, Activity } from "lucide-react";
 
-// Mock Data for demonstration
-const MOCK_DB = [
-  { id: 1, firstName: "Kwame", surname: "Mensah", year: "1985" },
-  { id: 2, firstName: "Ama", surname: "Osei", year: "1992" },
-];
+// This is "Mock Data" to simulate how the system works for the demo.
+// In the future, this would be replaced by a real Supabase database query.
+const DEMO_RESULTS: Record<string, any> = {
+  "default": {
+    name: "Kwame Mensah",
+    id: "23491005",
+    station: "Roman Catholic Prim. Sch. A",
+    status: "Verified Member",
+    lastVoted: "2020 General Election",
+    contributions: "Standard Tier"
+  } 
+};
 
-export function ConstituencySearch() {
+export function StatsStrip() {
   const [query, setQuery] = useState("");
-  const [searchState, setSearchState] = useState<"idle" | "searching" | "found" | "not_found">("idle");
-  const [foundUser, setFoundUser] = useState<{ surname: string; year: string } | null>(null);
-  const [view, setView] = useState<"search" | "login" | "register">("search");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
 
-  // Handle Search Logic
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
-    setSearchState("searching");
-    
-    // Simulate API delay
-    setTimeout(() => {
-      const result = MOCK_DB.find((u) => 
-        u.surname.toLowerCase().includes(query.toLowerCase()) || 
-        u.firstName.toLowerCase().includes(query.toLowerCase())
-      );
+    // 1. Start Loading
+    setIsLoading(true);
+    setResult(null);
 
-      if (result) {
-        setFoundUser({ surname: result.surname, year: result.year });
-        setSearchState("found");
-      } else {
-        setSearchState("not_found");
-      }
-    }, 800);
+    // 2. Simulate a network request delay (1.5 seconds)
+    setTimeout(() => {
+      setIsLoading(false);
+      // For demo purposes, we always return the default mock user
+      // No matter what they type.
+      setResult(DEMO_RESULTS["default"]);
+    }, 1500);
   };
 
-  // Reset to start
-  const handleReset = () => {
+  const closeResult = () => {
+    setResult(null);
     setQuery("");
-    setSearchState("idle");
-    setView("search");
-    setFoundUser(null);
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
-      
-      {/* --- INITIAL SEARCH VIEW --- */}
-      {view === "search" && (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-          <div className="p-8 text-center">
-            <h2 className="text-3xl font-extrabold text-green-800 mb-2">Constituency Connect</h2>
-            <p className="text-slate-500 mb-8">Search to see if you are in the registry.</p>
+    <section
+      className="text-white py-8 md:py-12 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(90deg, #004528, #006B3F, #004528)" // NDC green hue band
+      }}
+    >
+      <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Main Content Area */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+          
+          {/* Left Side: Text Info */}
+          <div className="text-center md:text-left flex-1 space-y-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-amber-400 uppercase tracking-tight">
+              Constituency Connect
+            </h2>
+            <p className="text-amber-50 text-sm sm:text-base max-w-xl mx-auto md:mx-0 font-medium leading-relaxed opacity-90">
+              Direct access to support and development. We prioritize your specific needs through open, two-way communication beyond just elections.
+            </p>
+          </div>
 
-            <form onSubmit={handleSearch} className="relative max-w-md mx-auto">
+          {/* Right Side: Search Interface */}
+          <div className="w-full md:w-auto flex-1 max-w-lg relative">
+            <form onSubmit={handleSearch} className="relative group z-20">
               <input
-                type="text"
-                placeholder="Enter your name..."
+                type="tel"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-lg"
+                disabled={isLoading || result}
+                placeholder="Enter Telephone Number"
+                className="w-full h-14 pl-6 pr-36 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-amber-400 focus:bg-white/20 transition-all font-medium disabled:opacity-50"
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6" />
-              <button 
+              
+              <button
                 type="submit"
-                className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-green-700/20"
+                disabled={isLoading || !!result}
+                className="absolute right-2 top-2 bottom-2 px-6 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-500/50 text-white font-bold rounded-lg transition-all shadow-lg flex items-center gap-2"
               >
-                {searchState === "searching" ? "Searching..." : "Check Status"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5" />
+                    <span className="uppercase tracking-wider text-sm">Check</span>
+                  </>
+                )}
               </button>
             </form>
-          </div>
 
-          {/* --- RESULTS SECTION --- */}
-          <div className="bg-slate-50 p-6 border-t border-slate-100 min-h-[200px] flex items-center justify-center">
-            
-            {searchState === "idle" && (
-              <div className="text-slate-400 text-sm">Results will appear here</div>
-            )}
-
-            {/* OPTION 1: USER FOUND */}
-            {searchState === "found" && foundUser && (
-              <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-white p-6 rounded-2xl border-l-4 border-green-500 shadow-sm flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-                    <UserCheck className="w-6 h-6 text-green-700" />
+            {/* Simulated Search Result Card (Pop-up) */}
+            {result && (
+              <div className="absolute top-full mt-4 left-0 right-0 bg-white rounded-xl shadow-2xl overflow-hidden z-30 animate-in fade-in slide-in-from-top-2">
+                {/* Header */}
+                <div className="bg-emerald-800 text-white p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <span className="font-bold uppercase tracking-wide text-sm">Record Found</span>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-slate-800">HON. RAGGA KNOWS YOU</h3>
-                    <p className="text-slate-600">
-                      Match found: <span className="font-semibold text-green-700">{foundUser.surname}</span> (Born {foundUser.year})
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <p className="text-sm text-slate-500 mb-4">Want to see your full details?</p>
-                  <button 
-                    onClick={() => setView("login")}
-                    className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors"
-                  >
-                    Login to Access Full Details
+                  <button onClick={closeResult} className="hover:bg-white/10 p-1 rounded-full transition-colors">
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
+
+                {/* Body */}
+                <div className="p-5 text-slate-800 space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-slate-200">
+                      <User className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-slate-900">{result.name}</h3>
+                      <p className="text-sm text-slate-500 font-medium">ID: {result.id}</p>
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase">
+                        {result.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 pt-2 border-t border-slate-100">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-4 h-4 text-amber-500 mt-1" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase font-bold">Polling Station</p>
+                        <p className="text-sm font-semibold text-slate-700">{result.station}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Activity className="w-4 h-4 text-amber-500 mt-1" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase font-bold">Last Activity</p>
+                        <p className="text-sm font-semibold text-slate-700">{result.lastVoted}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
-
-            {/* OPTION 2: USER NOT FOUND */}
-            {searchState === "not_found" && (
-              <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-white p-6 rounded-2xl border-l-4 border-red-500 shadow-sm flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-                    <UserPlus className="w-6 h-6 text-red-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-slate-800">Not in the System</h3>
-                    <p className="text-slate-600 text-sm">
-                      We couldn't find a record for "{query}".
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <p className="text-sm text-slate-500 mb-4">Let us communicate with you.</p>
-                  <button 
-                    onClick={() => setView("register")}
-                    className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
-                  >
-                    Send Request to Join
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* --- LOGIN VIEW (If Found) --- */}
-      {view === "login" && (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 animate-in zoom-in-95 duration-300">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-slate-900">Access Full Details</h3>
-            <p className="text-slate-500 text-sm mt-1">Verify your identity to proceed</p>
           </div>
 
-          <form className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Phone Number</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input type="tel" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="024 XXX XXXX" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Year of Birth</label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input type="number" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="YYYY" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input type="password" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="••••••" />
-              </div>
-            </div>
-
-            <button className="w-full bg-green-700 text-white font-bold py-4 rounded-xl mt-4 hover:bg-green-800 transition-colors">
-              Login
-            </button>
-            <button onClick={handleReset} type="button" className="w-full text-slate-400 text-sm font-medium py-2 hover:text-slate-600">
-              Cancel
-            </button>
-          </form>
         </div>
-      )}
-
-      {/* --- REGISTER VIEW (If Not Found) --- */}
-      {view === "register" && (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 animate-in zoom-in-95 duration-300">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-slate-900">Let's Connect</h3>
-            <p className="text-slate-500 text-sm mt-1">Please provide your details to join the network.</p>
-          </div>
-
-          <form className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">First Name</label>
-                <input type="text" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="Kwame" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Surname</label>
-                <input type="text" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="Mensah" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Year of Birth</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="number" className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="1990" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Phone</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="tel" className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="024..." />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input type="password" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="Create a password" />
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 mt-2">
-               <p className="text-xs text-green-700 font-bold uppercase mb-3">Residence Details</p>
-               <div className="space-y-4">
-                 <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Where do you stay?</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input type="text" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="e.g. Adisadel Village, House No. 12" />
-                    </div>
-                 </div>
-                 <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">How long have you lived there?</label>
-                    <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input type="text" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-green-500 focus:outline-none" placeholder="e.g. 10 years" />
-                    </div>
-                 </div>
-               </div>
-            </div>
-
-            <button className="w-full bg-red-600 text-white font-bold py-4 rounded-xl mt-4 hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20">
-              Submit Request
-            </button>
-            <button onClick={handleReset} type="button" className="w-full text-slate-400 text-sm font-medium py-2 hover:text-slate-600">
-              Cancel
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
-} 
+}
