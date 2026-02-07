@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard, FolderOpen, DollarSign, Users,
   FileText, MessageSquare, Megaphone, AlertTriangle,
-  Shield, Settings, MapPin, Clock, Bell
+  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -16,16 +16,22 @@ import { AdminUsers } from './admin/AdminUsers';
 import { AdminContent } from './admin/AdminContent';
 import { AdminSecurity } from './admin/AdminSecurity';
 import { AdminSettings } from './admin/AdminSettings';
+import { AdminAssemblymen } from './admin/AdminAssemblymen';
+import { AdminAchievements } from './admin/AdminAchievements';
+import { AdminAppointments } from './admin/AdminAppointments';
 
 const NAV = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: FolderOpen },
-  { id: 'financials', label: 'Finances', icon: DollarSign },
+  { id: 'donations', label: 'Donations', icon: DollarSign },
+  { id: 'assemblymen', label: 'Assemblymen', icon: UserCheck },
+  { id: 'achievements', label: 'Achievements', icon: Award },
+  { id: 'appointments', label: 'Appointments', icon: Calendar },
+  { id: 'issues', label: 'Issues', icon: AlertTriangle },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'content', label: 'Content', icon: FileText },
   { id: 'messages', label: 'Messages', icon: MessageSquare },
   { id: 'announcements', label: 'Announce', icon: Megaphone },
-  { id: 'issues', label: 'Issues', icon: AlertTriangle },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -102,12 +108,18 @@ export function Admin() {
         />
       )}
 
-      {activeTab === 'financials' && (
+      {activeTab === 'donations' && (
         <AdminFinancials
           contributions={contributions}
           projects={projects}
         />
       )}
+
+      {activeTab === 'assemblymen' && <AdminAssemblymen />}
+
+      {activeTab === 'achievements' && <AdminAchievements />}
+
+      {activeTab === 'appointments' && <AdminAppointments />}
 
       {activeTab === 'users' && (
         <AdminUsers
