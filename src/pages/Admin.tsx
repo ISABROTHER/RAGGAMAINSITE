@@ -1,19 +1,22 @@
-// src/pages/Admin.tsx
 import { useState, useEffect } from 'react';
-import { 
-  Plus, Edit, Trash2, Eye, EyeOff, LayoutDashboard, 
-  Calendar, FileText, Settings, TrendingUp, Users, 
-  DollarSign, Bell, ChevronRight, LogOut, Menu as MenuIcon
+import {
+  Plus, Edit, Trash2, Eye, EyeOff, LayoutDashboard,
+  Calendar, FileText, Settings, TrendingUp, Users,
+  DollarSign, Bell, ChevronRight, LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/Button';
 import type { Database } from '../lib/database.types';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
 type Event = Database['public']['Tables']['events']['Row'];
 
 export function Admin() {
+  const { profile, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'posts' | 'settings'>('overview');
   const [events, setEvents] = useState<Event[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -112,11 +115,11 @@ export function Admin() {
         <div className="p-8 pb-4">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 rounded-full bg-[#CE1126] flex items-center justify-center text-white font-black text-lg shadow-md">
-              JD
+              {(profile?.full_name || 'U').charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="font-bold text-slate-900 leading-tight text-lg">Hon. Ragga</h1>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">My Page</p>
+              <h1 className="font-bold text-slate-900 leading-tight text-lg">{profile?.full_name || 'User'}</h1>
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{profile?.role || 'Member'}</p>
             </div>
           </div>
           <div className="h-px w-full bg-slate-100" />
@@ -130,7 +133,10 @@ export function Admin() {
         </nav>
 
         <div className="p-6 border-t border-slate-100">
-          <button className="flex items-center space-x-3 px-4 py-3 w-full text-slate-500 hover:text-red-600 transition-colors rounded-xl hover:bg-red-50 font-medium">
+          <button
+            onClick={async () => { await signOut(); navigate('/'); }}
+            className="flex items-center space-x-3 px-4 py-3 w-full text-slate-500 hover:text-red-600 transition-colors rounded-xl hover:bg-red-50 font-medium"
+          >
             <LogOut className="w-5 h-5" />
             <span>Log Out</span>
           </button>

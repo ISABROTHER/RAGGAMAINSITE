@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
@@ -14,8 +13,11 @@ import { Polls } from './pages/Polls';
 import { Admin } from './pages/Admin';
 import { Volunteer } from './pages/Volunteer';
 import { ReadStory } from './pages/ReadStory';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function ReadStoryPage() {
   const { id } = useParams();
@@ -27,7 +29,6 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // RESET SCROLL TO TOP ON EVERY NAVIGATION
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -49,9 +50,11 @@ function App() {
     }
   };
 
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header currentPage={getCurrentPage()} onNavigate={handleNavigate} />
+      {!isAuthPage && <Header currentPage={getCurrentPage()} onNavigate={handleNavigate} />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home onNavigate={handleNavigate} />} />
@@ -62,14 +65,23 @@ function App() {
           <Route path="/ongoing-projects" element={<OngoingProjects />} />
           <Route path="/events" element={<Events />} />
           <Route path="/polls" element={<Polls />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute onNavigate={handleNavigate}>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/issues" element={<Issues />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/read-story/:id" element={<ReadStoryPage />} />
+          <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
+          <Route path="/register" element={<Register onNavigate={handleNavigate} />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAuthPage && <Footer />}
     </div>
   );
 }

@@ -1,12 +1,12 @@
-// src/components/Header.tsx
 import { useState } from 'react';
-import { 
-  Menu, X, Home, User, Users, HardHat, Award, 
-  Calendar, MessageSquareWarning, HandHeart, 
-  LayoutDashboard, LogIn, ChevronRight, Vote, 
-  UserCircle, Heart 
+import {
+  Menu, X, Home, User, Users, HardHat, Award,
+  Calendar, MessageSquareWarning,
+  LayoutDashboard, LogIn, ChevronRight, Vote,
+  UserCircle, Heart, LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   currentPage: string;
@@ -15,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
 
   const headerHeightBase = 90; 
   const headerScale = 1.1; 
@@ -34,13 +35,16 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'About' },
-    { id: 'achievements', label: 'Impact' }, 
-    { id: 'support', label: 'Support' }, 
+    { id: 'achievements', label: 'Impact' },
+    { id: 'support', label: 'Support' },
     { id: 'assemblymen', label: 'Assemblymen' },
     { id: 'ongoing-projects', label: 'Projects' },
     { id: 'events', label: 'Events' },
     { id: 'polls', label: 'Polls' },
-    { id: 'admin', label: 'My Page' }, 
+    ...(user
+      ? [{ id: 'admin', label: profile?.full_name || 'My Page' }]
+      : [{ id: 'login', label: 'Sign In' }]
+    ),
   ];
 
   const mobileNavItems = [
@@ -84,7 +88,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </button>
             <div className="hidden md:flex items-center" style={{ gap: `${desktopNavGap}px` }}>
               {navItems.map((item) => (
-                <button key={item.id} onClick={() => handleNavClick(item.id)} className={`rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${currentPage === item.id ? 'bg-blue-900 text-white shadow-lg shadow-blue-500/50' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700'} ${item.id === 'admin' ? 'border-2 border-red-100 text-red-700' : ''}`} style={{ padding: `${desktopNavPaddingY}px ${desktopNavPaddingX}px`, fontSize: `${desktopNavFontSize}px` }}>
+                <button key={item.id} onClick={() => handleNavClick(item.id)} className={`rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${currentPage === item.id ? 'bg-blue-900 text-white shadow-lg shadow-blue-500/50' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700'} ${item.id === 'admin' || item.id === 'login' ? 'border-2 border-red-100 text-red-700' : ''}`} style={{ padding: `${desktopNavPaddingY}px ${desktopNavPaddingX}px`, fontSize: `${desktopNavFontSize}px` }}>
                   {item.label}
                 </button>
               ))}
@@ -99,14 +103,33 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             {mobileMenuOpen && (
               <motion.div initial="closed" animate="open" exit="closed" variants={menuVariants} className="md:hidden absolute top-[10px] right-[10px] w-[300px] origin-top-right">
                 <div className="relative bg-[#CE1126] pt-24 pb-6 px-6 shadow-2xl h-full w-full overflow-hidden border-4 border-white/20 rounded-[40px] max-h-[85vh] overflow-y-auto">
-                  <motion.div variants={itemVariants} className="mb-6 relative z-10">
-                    <button onClick={() => handleNavClick('admin')} className="w-full bg-white text-[#CE1126] rounded-2xl p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <LayoutDashboard className="w-5 h-5" />
-                        <span className="font-black text-xl">MY PAGE</span>
-                      </div>
-                      <LogIn className="w-5 h-5" />
-                    </button>
+                  <motion.div variants={itemVariants} className="mb-6 relative z-10 space-y-2.5">
+                    {user ? (
+                      <>
+                        <button onClick={() => handleNavClick('admin')} className="w-full bg-white text-[#CE1126] rounded-2xl p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <LayoutDashboard className="w-5 h-5" />
+                            <span className="font-black text-xl">MY PAGE</span>
+                          </div>
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={async () => { await signOut(); handleNavClick('home'); }}
+                          className="w-full bg-white/90 text-slate-700 rounded-2xl p-3.5 flex items-center justify-center gap-2 font-semibold text-sm"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <button onClick={() => handleNavClick('login')} className="w-full bg-white text-[#CE1126] rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <LogIn className="w-5 h-5" />
+                          <span className="font-black text-xl">SIGN IN</span>
+                        </div>
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    )}
                   </motion.div>
                   <div className="flex flex-col space-y-2.5 relative z-10 pb-4">
                     {mobileNavItems.map((item) => {

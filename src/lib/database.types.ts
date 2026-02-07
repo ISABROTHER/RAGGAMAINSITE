@@ -346,6 +346,47 @@ export interface Database {
           updated_at?: string
         }
       }
+      profiles: {
+        Row: {
+          id: string
+          email: string | null
+          phone: string | null
+          full_name: string
+          role: string
+          zone: string | null
+          avatar_url: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          zone_id: string | null
+        }
+        Insert: {
+          id: string
+          email?: string | null
+          phone?: string | null
+          full_name?: string
+          role?: string
+          zone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          zone_id?: string | null
+        }
+        Update: {
+          id?: string
+          email?: string | null
+          phone?: string | null
+          full_name?: string
+          role?: string
+          zone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          zone_id?: string | null
+        }
+      }
       contributions: {
         Row: {
           id: string
