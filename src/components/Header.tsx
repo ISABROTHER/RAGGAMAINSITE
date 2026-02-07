@@ -42,7 +42,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     { id: 'events', label: 'Events' },
     { id: 'polls', label: 'Polls' },
     ...(user
-      ? [{ id: 'admin', label: profile?.full_name || 'My Page' }]
+      ? [{ id: 'dashboard', label: profile?.full_name || 'Dashboard' }]
       : [{ id: 'login', label: 'Sign In' }]
     ),
   ];
@@ -88,7 +88,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </button>
             <div className="hidden md:flex items-center" style={{ gap: `${desktopNavGap}px` }}>
               {navItems.map((item) => (
-                <button key={item.id} onClick={() => handleNavClick(item.id)} className={`rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${currentPage === item.id ? 'bg-blue-900 text-white shadow-lg shadow-blue-500/50' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700'} ${item.id === 'admin' || item.id === 'login' ? 'border-2 border-red-100 text-red-700' : ''}`} style={{ padding: `${desktopNavPaddingY}px ${desktopNavPaddingX}px`, fontSize: `${desktopNavFontSize}px` }}>
+                <button key={item.id} onClick={() => handleNavClick(item.id)} className={`rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${currentPage === item.id ? 'bg-blue-900 text-white shadow-lg shadow-blue-500/50' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700'} ${item.id === 'dashboard' || item.id === 'login' ? 'border-2 border-red-100 text-red-700' : ''}`} style={{ padding: `${desktopNavPaddingY}px ${desktopNavPaddingX}px`, fontSize: `${desktopNavFontSize}px` }}>
                   {item.label}
                 </button>
               ))}
@@ -106,10 +106,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   <motion.div variants={itemVariants} className="mb-6 relative z-10 space-y-2.5">
                     {user ? (
                       <>
-                        <button onClick={() => handleNavClick('admin')} className="w-full bg-white text-[#CE1126] rounded-2xl p-4 flex items-center justify-between">
+                        <button onClick={() => handleNavClick('dashboard')} className="w-full bg-white text-[#CE1126] rounded-2xl p-4 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <LayoutDashboard className="w-5 h-5" />
-                            <span className="font-black text-xl">MY PAGE</span>
+                            <span className="font-black text-xl">DASHBOARD</span>
                           </div>
                           <ChevronRight className="w-5 h-5" />
                         </button>

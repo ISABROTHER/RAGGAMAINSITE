@@ -428,6 +428,70 @@ export interface Database {
           created_at?: string
         }
       }
+      messages: {
+        Row: {
+          id: string
+          sender_id: string
+          recipient_id: string | null
+          subject: string
+          body: string
+          is_read: boolean
+          message_type: string
+          priority: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          recipient_id?: string | null
+          subject?: string
+          body?: string
+          is_read?: boolean
+          message_type?: string
+          priority?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          recipient_id?: string | null
+          subject?: string
+          body?: string
+          is_read?: boolean
+          message_type?: string
+          priority?: string
+          created_at?: string
+        }
+      }
+      announcements: {
+        Row: {
+          id: string
+          author_id: string
+          title: string
+          body: string
+          target_role: string
+          is_pinned: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          author_id: string
+          title?: string
+          body?: string
+          target_role?: string
+          is_pinned?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          author_id?: string
+          title?: string
+          body?: string
+          target_role?: string
+          is_pinned?: boolean
+          created_at?: string
+        }
+      }
     }
   }
 }

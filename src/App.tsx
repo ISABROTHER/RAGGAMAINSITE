@@ -10,11 +10,11 @@ import { Achievements } from './pages/Achievements';
 import { Issues } from './pages/Issues';
 import { Events } from './pages/Events';
 import { Polls } from './pages/Polls';
-import { Admin } from './pages/Admin';
 import { Volunteer } from './pages/Volunteer';
 import { ReadStory } from './pages/ReadStory';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -50,11 +50,11 @@ function App() {
     }
   };
 
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const hideChrome = ['/login', '/register', '/dashboard', '/admin'].some(p => location.pathname.startsWith(p));
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isAuthPage && <Header currentPage={getCurrentPage()} onNavigate={handleNavigate} />}
+      {!hideChrome && <Header currentPage={getCurrentPage()} onNavigate={handleNavigate} />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home onNavigate={handleNavigate} />} />
@@ -65,23 +65,23 @@ function App() {
           <Route path="/ongoing-projects" element={<OngoingProjects />} />
           <Route path="/events" element={<Events />} />
           <Route path="/polls" element={<Polls />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute onNavigate={handleNavigate}>
-                <Admin />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/issues" element={<Issues />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/read-story/:id" element={<ReadStoryPage />} />
           <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
           <Route path="/register" element={<Register onNavigate={handleNavigate} />} />
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin"
+            element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+          />
         </Routes>
       </main>
-      {!isAuthPage && <Footer />}
+      {!hideChrome && <Footer />}
     </div>
   );
 }

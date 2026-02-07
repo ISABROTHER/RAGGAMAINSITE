@@ -1,13 +1,29 @@
+import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  onNavigate: (page: string) => void;
+  requiredRole?: string;
+  onNavigate?: (page: string) => void;
 }
 
-export function ProtectedRoute({ children, onNavigate }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+  const { user, profile, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!loading && user && requiredRole && profile && profile.role !== requiredRole) {
+      navigate('/dashboard');
+    }
+  }, [user, profile, loading, requiredRole, navigate]);
 
   if (loading) {
     return (
@@ -17,10 +33,7 @@ export function ProtectedRoute({ children, onNavigate }: ProtectedRouteProps) {
     );
   }
 
-  if (!user) {
-    onNavigate('login');
-    return null;
-  }
+  if (!user) return null;
 
   return <>{children}</>;
 }
