@@ -89,26 +89,30 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
+      {/* Main Content Area - pb values moved content down */}
+      <div className="absolute inset-0 flex flex-col justify-end pb-16 md:pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
+            {/* 1. Pill Label */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-3">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest">
-                Cape Coast North Constituency
+                Welcome to the official website of
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
+            {/* 2. Main Name */}
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter sm:tracking-tight mb-3 max-w-3xl">
               Hon. Dr. Kwamena{" "}
               <span className="text-green-400">Minta Nyarku</span>
             </h1>
 
-            <div className="h-8 md:h-10 mb-8 overflow-hidden">
+            {/* 3. Animated Tagline */}
+            <div className="h-6 md:h-8 mb-5 overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.p
                   key={taglineIndex}
@@ -123,6 +127,7 @@ export function HeroSection() {
               </AnimatePresence>
             </div>
 
+            {/* 4. Action Buttons */}
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/issues"
@@ -141,6 +146,7 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* Stats Bar */}
       <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 grid grid-cols-3 md:flex md:gap-16 items-center">
           {STATS.map((stat) => (
@@ -154,6 +160,7 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* Pagination Dots */}
       <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
         {HERO_IMAGES.map((_, idx) => (
           <button
@@ -168,5 +175,5 @@ export function HeroSection() {
         ))}
       </div>
     </section>
-  ); 
+  );
 }
