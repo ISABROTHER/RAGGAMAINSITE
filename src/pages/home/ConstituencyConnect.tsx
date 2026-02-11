@@ -1,28 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search,
-  UserCheck,
   UserPlus,
-  X,
   ShieldCheck,
   MapPin,
   ArrowLeft,
-  Fingerprint,
   CheckCircle2,
-  CreditCard,
-  Database,
-  ScanSearch,
-  ShieldAlert,
+  Briefcase,
+  Users,
+  BellRing,
+  ClipboardList
 } from "lucide-react";
 
-const MOCK_DB = [
-  { id: "23491005", firstName: "Kwame", surname: "Mensah", phone: "0241234567", year: "1985", pollingStation: "Roman Catholic Prim. Sch. A" },
-  { id: "99283741", firstName: "Ama", surname: "Osei", phone: "0209876543", year: "1992", pollingStation: "Methodist JHS B" },
-  { id: "30587612", firstName: "Kofi", surname: "Adjei", phone: "0576040260", year: "1990", pollingStation: "D/A Primary Sch. C" },
-];
-
-type ViewState = "search" | "searching" | "login" | "register" | "verified";
+type ViewState = "intro" | "register" | "success";
 
 const anim = {
   initial: { opacity: 0, y: 12 },
@@ -34,356 +24,184 @@ const anim = {
 const inputCls =
   "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
 
-const SEARCH_STEPS = [
-  { label: "Connecting to database", icon: Database, duration: 600 },
-  { label: "Scanning records", icon: ScanSearch, duration: 500 },
-  { label: "Verifying match", icon: ShieldAlert, duration: 400 },
-];
-
-function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
-  const [step, setStep] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let totalElapsed = 0;
-    const totalDuration = SEARCH_STEPS.reduce((s, st) => s + st.duration, 0);
-    const interval = setInterval(() => {
-      totalElapsed += 30;
-      const pct = Math.min((totalElapsed / totalDuration) * 100, 100);
-      setProgress(pct);
-
-      let accumulated = 0;
-      for (let i = 0; i < SEARCH_STEPS.length; i++) {
-        accumulated += SEARCH_STEPS[i].duration;
-        if (totalElapsed < accumulated) {
-          setStep(i);
-          break;
-        }
-      }
-
-      if (totalElapsed >= totalDuration) {
-        clearInterval(interval);
-        setTimeout(onComplete, 200);
-      }
-    }, 30);
-    return () => clearInterval(interval);
-  }, [onComplete]);
-
-  const Icon = SEARCH_STEPS[step].icon;
-
-  return (
-    <motion.div {...anim} className="py-6 px-5">
-      <div className="flex items-center gap-3 mb-5">
-        <motion.div
-          key={step}
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20"
-        >
-          <Icon className="w-4 h-4 text-white" />
-        </motion.div>
-        <div className="flex-1">
-          <motion.p
-            key={step}
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-sm font-semibold text-slate-800"
-          >
-            {SEARCH_STEPS[step].label}
-          </motion.p>
-          <p className="text-[11px] text-slate-400 font-mono">
-            Step {step + 1} of {SEARCH_STEPS.length}
-          </p>
-        </div>
-        <span className="text-xs font-bold text-green-600 tabular-nums">
-          {Math.round(progress)}%
-        </span>
-      </div>
-
-      <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
-        <motion.div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"
-          style={{ width: `${progress}%` }}
-          transition={{ duration: 0.05 }}
-        />
-        <motion.div
-          className="absolute inset-y-0 left-0 rounded-full bg-white/30"
-          style={{ width: `${progress}%` }}
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ repeat: Infinity, duration: 1 }}
-        />
-      </div>
-
-      <div className="flex justify-between mt-3">
-        {SEARCH_STEPS.map((s, i) => (
-          <div key={i} className="flex items-center gap-1">
-            <div
-              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                i <= step ? "bg-green-500" : "bg-slate-200"
-              }`}
-            />
-            <span
-              className={`text-[10px] transition-colors duration-300 ${
-                i <= step ? "text-green-600 font-semibold" : "text-slate-300"
-              }`}
-            >
-              {s.label.split(" ").slice(-1)[0]}
-            </span>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 export function ConstituencyConnect() {
-  const [query, setQuery] = useState("");
-  const [found, setFound] = useState<typeof MOCK_DB[0] | null>(null);
-  const [notFound, setNotFound] = useState(false);
-  const [view, setView] = useState<ViewState>("search");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [view, setView] = useState<ViewState>("intro");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    surname: "",
+    phone: "",
+    community: "",
+    skill: ""
+  });
 
   const reset = () => {
-    setQuery("");
-    setFound(null);
-    setNotFound(false);
-    setView("search");
-    setSearchQuery("");
+    setView("intro");
+    setFormData({ firstName: "", surname: "", phone: "", community: "", skill: "" });
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    setSearchQuery(query.trim());
-    setFound(null);
-    setNotFound(false);
-    setView("searching");
-  };
-
-  const handleSearchComplete = () => {
-    const q = searchQuery.toLowerCase();
-    const r = MOCK_DB.find(
-      (u) =>
-        u.surname.toLowerCase().includes(q) ||
-        u.firstName.toLowerCase().includes(q) ||
-        u.phone.includes(q)
-    );
-    if (r) {
-      setFound(r);
-    } else {
-      setNotFound(true);
-    }
-    setView("search");
+    setView("success");
   };
 
   return (
-    <section className="relative py-10 md:py-16 bg-slate-900 overflow-hidden">
+    <section className="relative py-12 md:py-20 bg-slate-900 overflow-hidden">
       <div className="absolute inset-0">
         <img
           src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-900/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/60" />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12">
-
-          <div className="lg:flex-1 lg:pt-4 mb-6 lg:mb-0">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              Constituency{" "}
+        <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+          
+          {/* Left Side: Info */}
+          <div className="mb-10 lg:mb-0">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              Talent & Opportunity{" "}
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                Connect
+                Hub
               </span>
             </h2>
-            <p className="mt-3 text-slate-400 text-sm md:text-base leading-relaxed max-w-sm">
-              Verify your membership, find your polling station, and access constituency records instantly.
+            <p className="mt-4 text-slate-400 text-base md:text-lg leading-relaxed max-w-md">
+              Are you a constituent of Cape Coast North? Register your profile in our community database to stay informed about jobs, skills training, and empowerment initiatives.
             </p>
 
-            <div className="hidden lg:flex flex-col gap-3 mt-8">
+            <div className="flex flex-col gap-4 mt-8">
               {[
-                { label: "Instant Lookup", desc: "Search by name or phone number" },
-                { label: "Verified Records", desc: "Access your polling station details" },
-                { label: "Join Network", desc: "Register if you're not yet listed" },
+                { label: "Skills Matching", desc: "Get notified when roles match your profession", icon: Briefcase },
+                { label: "Direct Access", desc: "Be part of the MP's priority resource list", icon: Users },
+                { label: "Community Alerts", desc: "Real-time updates on local opportunities", icon: BellRing },
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3 group">
-                  <div className="mt-0.5 w-6 h-6 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-green-500/20 transition-colors">
-                    <CheckCircle2 className="w-3 h-3 text-green-400" />
+                <div key={i} className="flex items-start gap-4 group">
+                  <div className="mt-1 w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-green-500/20 transition-colors">
+                    <item.icon className="w-5 h-5 text-green-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">{item.label}</p>
-                    <p className="text-xs text-slate-500">{item.desc}</p>
+                    <p className="text-base font-semibold text-white">{item.label}</p>
+                    <p className="text-sm text-slate-500">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="lg:w-[400px] flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 overflow-hidden ring-1 ring-white/10">
+          {/* Right Side: Interactive Card */}
+          <div className="w-full max-w-[440px] mx-auto lg:mr-0">
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5">
               <AnimatePresence mode="wait">
-                {view === "searching" && (
-                  <motion.div key="searching" {...anim}>
-                    <SearchLoadingBar onComplete={handleSearchComplete} />
-                  </motion.div>
-                )}
-
-                {view === "search" && (
-                  <motion.div key="search" {...anim} className="p-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20">
-                          <Fingerprint className="w-4 h-4 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 leading-tight">Search Records</p>
-                          <p className="text-[10px] text-slate-400 leading-tight">Name or phone lookup</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 bg-green-50 border border-green-200/60 text-green-700 px-2.5 py-1 rounded-full">
-                        <span className="relative flex h-1.5 w-1.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
-                      </div>
+                
+                {view === "intro" && (
+                  <motion.div key="intro" {...anim} className="p-8">
+                    <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mb-6">
+                      <ClipboardList className="w-8 h-8 text-green-600" />
                     </div>
-
-                    <form onSubmit={handleSearch}>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                        <input
-                          type="text"
-                          placeholder="Enter name or phone number..."
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                          className={`${inputCls} !pl-9`}
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={!query.trim()}
-                        className="mt-3 w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-semibold py-2.5 rounded-lg transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
-                      >
-                        <Search className="w-3.5 h-3.5" />
-                        Check Status
-                      </button>
-                    </form>
-
-                    <AnimatePresence mode="wait">
-                      {found && (
-                        <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                              <UserCheck className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-bold text-green-900 text-sm">{found.firstName} {found.surname}</p>
-                              <p className="text-green-700 text-xs">Born {found.year}</p>
-                            </div>
-                            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          </div>
-                          <button onClick={() => setView("login")} className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 rounded-lg transition-all text-sm">
-                            Login to View Details
-                          </button>
-                        </motion.div>
-                      )}
-                      {notFound && (
-                        <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                              <UserPlus className="w-4 h-4 text-white" />
-                            </div>
-                            <p className="font-bold text-amber-900 text-sm">No record for "{searchQuery}"</p>
-                          </div>
-                          <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm">
-                            Request to Join
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-
-                {view === "login" && (
-                  <motion.div key="login" {...anim} className="p-5">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-sm mb-5 transition-colors">
-                      <ArrowLeft className="w-3.5 h-3.5" /> Back
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Join the Database</h3>
+                    <p className="text-slate-500 mb-8">Register your details today to ensure you don't miss out on community-specific opportunities.</p>
+                    
+                    <button 
+                      onClick={() => setView("register")}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-600/20 group"
+                    >
+                      <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      Register My Profile
                     </button>
-                    <div className="text-center mb-5">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/20">
-                        <ShieldCheck className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="text-base font-bold text-slate-900">Verify Identity</h3>
-                    </div>
-                    <form onSubmit={(e) => { e.preventDefault(); setView("verified"); }} className="space-y-2.5">
-                      <input type="tel" placeholder="Phone Number" className={inputCls} required />
-                      <input type="text" placeholder="Year of Birth" className={inputCls} required />
-                      <input type="password" placeholder="Password" className={inputCls} required />
-                      <button type="submit" className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 rounded-lg transition-all text-sm mt-1">
-                        Verify & Login
-                      </button>
-                    </form>
+                    <p className="text-center text-[11px] text-slate-400 mt-4 uppercase tracking-widest font-bold">
+                      Strictly for Cape Coast North Residents
+                    </p>
                   </motion.div>
                 )}
 
                 {view === "register" && (
-                  <motion.div key="register" {...anim} className="p-5">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-sm mb-5 transition-colors">
-                      <ArrowLeft className="w-3.5 h-3.5" /> Back
+                  <motion.div key="register" {...anim} className="p-6 md:p-8">
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-sm mb-6 transition-colors">
+                      <ArrowLeft className="w-4 h-4" /> Back
                     </button>
-                    <div className="text-center mb-5">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/20">
-                        <UserPlus className="w-6 h-6 text-white" />
+                    
+                    <h3 className="text-xl font-bold text-slate-900 mb-6">Constituent Registration</h3>
+                    
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <input 
+                          type="text" 
+                          placeholder="First Name" 
+                          className={inputCls} 
+                          required 
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Surname" 
+                          className={inputCls} 
+                          required 
+                          value={formData.surname}
+                          onChange={(e) => setFormData({...formData, surname: e.target.value})}
+                        />
                       </div>
-                      <h3 className="text-base font-bold text-slate-900">Join the Network</h3>
-                    </div>
-                    <div className="space-y-2.5">
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <input type="text" placeholder="First Name" className={inputCls} />
-                        <input type="text" placeholder="Surname" className={inputCls} />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <input type="text" placeholder="Year of Birth" className={inputCls} />
-                        <input type="tel" placeholder="Phone" className={inputCls} />
-                      </div>
-                      <input type="password" placeholder="Create Password" className={inputCls} />
-                      <input type="text" placeholder="Where do you stay?" className={inputCls} />
-                      <button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm">
-                        Submit Request
+                      <input 
+                        type="tel" 
+                        placeholder="Phone Number (WhatsApp preferred)" 
+                        className={inputCls} 
+                        required 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Residential Community (e.g., Abura, Pedu)" 
+                        className={inputCls} 
+                        required 
+                        value={formData.community}
+                        onChange={(e) => setFormData({...formData, community: e.target.value})}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Your Profession or Main Skill" 
+                        className={inputCls} 
+                        required 
+                        value={formData.skill}
+                        onChange={(e) => setFormData({...formData, skill: e.target.value})}
+                      />
+                      
+                      <button 
+                        type="submit" 
+                        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-xl mt-2"
+                      >
+                        Submit Information
                       </button>
-                    </div>
+                    </form>
                   </motion.div>
                 )}
 
-                {view === "verified" && found && (
-                  <motion.div key="verified" {...anim}>
-                    <div className="bg-gradient-to-br from-green-600 to-emerald-700 p-6 text-center text-white">
-                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 15 }}>
-                        <ShieldCheck className="w-8 h-8 mx-auto mb-3" />
-                      </motion.div>
-                      <p className="text-lg font-extrabold uppercase tracking-wider">{found.firstName} {found.surname}</p>
-                      <div className="flex items-center justify-center gap-1.5 mt-1.5 text-green-200 font-mono text-xs">
-                        <CreditCard className="w-3.5 h-3.5" />
-                        <span className="tracking-widest">{found.id}</span>
-                      </div>
-                      <span className="mt-3 inline-flex items-center gap-1 bg-white/15 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                        <CheckCircle2 className="w-3 h-3" /> Verified
-                      </span>
+                {view === "success" && (
+                  <motion.div key="success" {...anim} className="p-10 text-center">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <ShieldCheck className="w-10 h-10 text-green-600" />
                     </div>
-                    <div className="p-5">
-                      <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 text-green-600 flex-shrink-0" />
-                        <span className="font-semibold text-slate-800">{found.pollingStation}</span>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Registration Complete</h3>
+                    <p className="text-slate-500 mb-8">
+                      Thank you, <span className="font-bold text-slate-900">{formData.firstName}</span>. Your details have been securely added to the Cape Coast North Talent Hub.
+                    </p>
+                    <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3 text-left mb-8 border border-slate-100">
+                      <MapPin className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Assigned Area</p>
+                        <p className="text-sm font-bold text-slate-800">{formData.community} Zone</p>
                       </div>
-                      <button onClick={reset} className="mt-3 w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-600 text-sm py-2 transition-colors">
-                        <X className="w-3.5 h-3.5" /> Close
-                      </button>
                     </div>
+                    <button 
+                      onClick={reset}
+                      className="text-green-600 font-bold hover:text-green-700 transition-colors"
+                    >
+                      Done
+                    </button>
                   </motion.div>
                 )}
+
               </AnimatePresence>
             </div>
           </div>
