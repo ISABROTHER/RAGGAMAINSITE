@@ -97,7 +97,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* Eyebrow / Label - Updated Text */}
+            {/* Eyebrow / Label */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest">
@@ -105,8 +105,8 @@ export function HeroSection() {
               </span>
             </div>
 
-            {/* Name Heading - Adjusted font sizes and tracking to prevent awkward breaks on mobile */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter mb-2 max-w-4xl">
+            {/* Name Heading - Adjusted for mobile fitting */}
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter sm:tracking-tight mb-2 max-w-3xl">
               Hon. Dr. Kwamena{" "}
               <span className="text-green-400">Minta Nyarku</span>
             </h1>
@@ -146,7 +146,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Stats Bar */}
+      {/* Stats Bar at the very bottom */}
       <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-5 grid grid-cols-3 md:flex md:gap-16 items-center">
           {STATS.map((stat) => (
