@@ -19,41 +19,6 @@ const TAGLINES = [
   "Your MP, Working Tirelessly for You",
 ];
 
-const STATS = [
-  { label: "Communities", value: 107, suffix: "+" },
-  { label: "Projects Delivered", value: 150, suffix: "+" },
-  { label: "Active Initiatives", value: 12, suffix: "" },
-];
-
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      let current = 0;
-      const step = target / 60;
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-          setCount(target);
-          clearInterval(timer);
-        } else {
-          setCount(Math.floor(current));
-        }
-      }, 16);
-      return () => clearInterval(timer);
-    }, 600);
-    return () => clearTimeout(timeout);
-  }, [target]);
-
-  return (
-    <span className="text-2xl md:text-3xl font-black tabular-nums text-white">
-      {count}
-      {suffix}
-    </span>
-  );
-}
-
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(
     () => Math.floor(Math.random() * HERO_IMAGES.length)
@@ -141,19 +106,6 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 grid grid-cols-3 md:flex md:gap-16 items-center">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="text-center md:text-left">
-              <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-              <p className="text-[9px] md:text-[10px] text-white/50 font-bold uppercase tracking-wider mt-0.5">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
         {HERO_IMAGES.map((_, idx) => (
           <button
@@ -168,5 +120,5 @@ export function HeroSection() {
         ))}
       </div>
     </section>
-  ); 
-} 
+  );
+}
