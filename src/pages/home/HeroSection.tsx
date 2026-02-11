@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
+// --- MANUAL ADJUSTMENT SECTION ---
+// Increase numbers to move DOWN, decrease (or use negative) to move UP
+const VIBE_OFFSETS = {
+  welcomePill: 0,   // Adjust "Welcome to the official website..."
+  mainName: 0,      // Adjust "Hon. Dr. Kwamena Minta Nyarku"
+  tagline: 0,       // Adjust the animated scrolling text
+};
+
 const HERO_IMAGES = [
   "https://i.imgur.com/XC8k4zQ.jpeg",
   "https://i.imgur.com/NSWtjdU.jpeg",
@@ -97,22 +105,31 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* 1. Pill Label - welcome message */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-3">
+            {/* 1. Pill Label */}
+            <div 
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-3"
+              style={{ transform: `translateY(${VIBE_OFFSETS.welcomePill}px)` }}
+            >
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest">
                 Welcome to the official website of
               </span>
             </div>
 
-            {/* 2. Main Name - Hon. Dr. Kwamena Minta Nyarku */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter sm:tracking-tight mb-3 max-w-3xl">
+            {/* 2. Main Name */}
+            <h1 
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter sm:tracking-tight mb-3 max-w-3xl"
+              style={{ transform: `translateY(${VIBE_OFFSETS.mainName}px)` }}
+            >
               Hon. Dr. Kwamena{" "}
               <span className="text-green-400">Minta Nyarku</span>
             </h1>
 
             {/* 3. Animated Tagline */}
-            <div className="h-6 md:h-8 mb-5 overflow-hidden">
+            <div 
+              className="h-6 md:h-8 mb-5 overflow-hidden"
+              style={{ transform: `translateY(${VIBE_OFFSETS.tagline}px)` }}
+            >
               <AnimatePresence mode="wait">
                 <motion.p
                   key={taglineIndex}
@@ -127,7 +144,7 @@ export function HeroSection() {
               </AnimatePresence>
             </div>
 
-            {/* 4. Action Buttons - Report an Issue / Track Projects (Position preserved) */}
+            {/* 4. Action Buttons (Position Fixed) */}
             <div className="flex flex-wrap gap-3 mt-2">
               <Link
                 to="/issues"
@@ -146,7 +163,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Stats Bar at the very bottom */}
+      {/* Stats Bar */}
       <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4 grid grid-cols-3 md:flex md:gap-16 items-center">
           {STATS.map((stat) => (
@@ -160,7 +177,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Side pagination dots */}
+      {/* Pagination Dots */}
       <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
         {HERO_IMAGES.map((_, idx) => (
           <button
