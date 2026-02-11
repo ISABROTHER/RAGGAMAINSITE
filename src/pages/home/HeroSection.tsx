@@ -47,7 +47,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   }, [target]);
 
   return (
-    <span className="text-2xl md:text-3xl font-black tabular-nums text-white">
+    <span className="text-xl sm:text-2xl md:text-3xl font-black tabular-nums text-white">
       {count}
       {suffix}
     </span>
@@ -75,7 +75,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full h-[75vh] md:h-[92vh] overflow-hidden bg-slate-900">
+    <section className="relative w-full h-[80vh] md:h-[92vh] overflow-hidden bg-slate-900">
       {HERO_IMAGES.map((url, idx) => (
         <img
           key={idx}
@@ -86,10 +86,11 @@ export function HeroSection() {
         />
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <div className="absolute inset-0 flex flex-col justify-end pb-32 md:pb-40 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -141,28 +142,32 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 grid grid-cols-3 md:flex md:gap-16">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="text-center md:text-left">
-              <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-              <p className="text-[9px] md:text-[10px] text-white/50 font-bold uppercase tracking-wider mt-0.5">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+      {/* Stats Bar - Positioned at bottom with better padding */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-lg border-t border-white/10 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-6">
+          <div className="grid grid-cols-3 gap-4 md:flex md:gap-20">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center md:items-start">
+                <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                <p className="text-[8px] md:text-[10px] text-white/60 font-black uppercase tracking-widest mt-1">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
+      {/* Indicators - Moved up to not overlap stats */}
+      <div className="absolute bottom-32 right-4 md:right-8 flex flex-col gap-2 z-20">
         {HERO_IMAGES.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentIndex(idx)}
-            className={`w-2 rounded-full transition-all duration-300 ${
+            className={`w-1.5 rounded-full transition-all duration-300 ${
               idx === currentIndex
-                ? "h-8 bg-white"
-                : "h-2 bg-white/30 hover:bg-white/50"
+                ? "h-6 md:h-8 bg-green-400"
+                : "h-1.5 bg-white/30 hover:bg-white/50"
             }`}
           />
         ))}
