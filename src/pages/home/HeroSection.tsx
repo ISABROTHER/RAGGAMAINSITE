@@ -142,7 +142,7 @@ export function HeroSection() {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 grid grid-cols-3 md:flex md:gap-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 grid grid-cols-3 md:flex md:gap-16">
           {STATS.map((stat) => (
             <div key={stat.label} className="text-center md:text-left">
               <AnimatedCounter target={stat.value} suffix={stat.suffix} />
