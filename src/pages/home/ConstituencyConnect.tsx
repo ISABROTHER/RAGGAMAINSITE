@@ -1,3 +1,4 @@
+// src/pages/home/ConstituencyConnect.tsx
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -285,7 +286,8 @@ export function ConstituencyConnect() {
                       <h3 className="text-base font-bold text-slate-900">Registration</h3>
                     </div>
                     <div className="space-y-2.5">
-                      <div className="grid grid-cols-2 gap-2.5">
+                      {/* Added items-start to grid */}
+                      <div className="grid grid-cols-2 gap-2.5 items-start">
                         <input type="text" placeholder="First Name" className={inputCls} />
                         <input type="text" placeholder="Surname" className={inputCls} />
                       </div>
