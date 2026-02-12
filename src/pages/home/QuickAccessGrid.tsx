@@ -42,7 +42,6 @@ const quickLinks: QuickLink[] = [
   },
   {
     title: "Donation",
-    // Updated Description
     desc: "Be part of a change",
     icon: Heart,
     image: "https://i.imgur.com/eF6PPA9.jpeg", 
@@ -90,8 +89,8 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
           </div>
         </div>
 
-        {/* Grid: 2 Columns on Mobile, 3 on Desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
+        {/* Grid: Added 'items-start' to prevent Android flex-stretch distortion */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start">
           {quickLinks.map((link, idx) => (
             <button 
               key={idx} 
@@ -99,7 +98,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
               className={`
                 group relative aspect-[4/5] overflow-hidden rounded-none 
                 transition-all duration-300 active:scale-95 hover:shadow-2xl hover:-translate-y-1
-                w-full text-left bg-slate-100 shadow-md
+                w-full text-left bg-slate-100 shadow-md block
               `}
             >
               {/* Top: The Picture */}
@@ -135,4 +134,4 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
       </div>
     </section>
   );
-} 
+}
