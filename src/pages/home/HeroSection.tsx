@@ -1,3 +1,4 @@
+// src/pages/home/HeroSection.tsx
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -81,23 +82,24 @@ export function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="text-base md:text-xl text-white/70 font-medium"
+                  className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate"
                 >
                   {TAGLINES[taglineIndex]}
                 </motion.p>
               </AnimatePresence>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            {/* Added items-start to prevent button stretching */}
+            <div className="flex flex-wrap gap-3 items-start">
               <Link
                 to="/issues"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5 whitespace-nowrap"
               >
                 Report an Issue <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/ongoing-projects"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap"
               >
                 Track Projects
               </Link>
