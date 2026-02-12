@@ -66,15 +66,11 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
     <section className="relative z-20 -mt-8 md:-mt-16 pt-4 pb-10 md:pb-20 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block: Centered & Compact */}
+        {/* Header Block */}
         <div className="text-center mb-8 md:mb-12">
-          
-          {/* Eyebrow: Centered, No Bottom Margin */}
           <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-0 inline-block">
             Constituency Services
           </h4>
-
-          {/* Main Title: Zero Top Margin, Fluid Font Size to Fit One Line */}
           <div className="mt-0 flex flex-col items-center justify-center group">
             <h2 className="
               text-[5.5vw] sm:text-4xl md:text-5xl 
@@ -89,7 +85,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
           </div>
         </div>
 
-        {/* Grid: Added 'items-start' to prevent Android flex-stretch distortion */}
+        {/* Grid: items-start prevents vertical stretching of neighbors */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start">
           {quickLinks.map((link, idx) => (
             <button 
@@ -101,7 +97,7 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 w-full text-left bg-slate-100 shadow-md block
               `}
             >
-              {/* Top: The Picture */}
+              {/* Image Layer */}
               <div className="absolute inset-0 h-full w-full">
                 <img 
                   src={link.image} 
@@ -111,19 +107,20 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Bottom: The "Part that contains name" with PROPER RED */}
+              {/* Text Layer */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
                   bg-gradient-to-r from-red-600/95 to-red-700/95
                   backdrop-blur-md border border-white/10 
-                  rounded-none px-4 py-2.5 shadow-lg
+                  rounded-none px-3 py-2.5 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
                 ">
-                  {/* Text Content */}
-                  <h3 className="text-base md:text-2xl font-bold text-white leading-tight break-words">
+                  {/* Title: 'whitespace-nowrap' forces single line. 'truncate' handles overflow gently. */}
+                  <h3 className="text-sm sm:text-base md:text-2xl font-bold text-white leading-tight whitespace-nowrap truncate">
                     {link.title}
                   </h3>
-                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-0.5 break-words leading-snug">
+                  {/* Description: 'line-clamp-1' ensures it stays on one line */}
+                  <p className="text-[10px] md:text-sm text-white/90 font-medium mt-0.5 whitespace-nowrap truncate leading-snug">
                     {link.desc}
                   </p>
                 </div>
