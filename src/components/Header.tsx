@@ -144,7 +144,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle (Visible when menu is closed) */}
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
               <AnimatePresence>
                 {!mobileMenuOpen && (
@@ -166,41 +166,40 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
-                {/* 1. Invisible Click Overlay (Tap outside to close) */}
+                {/* 1. Invisible Click Overlay */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="fixed inset-0 z-[60] bg-black/5 backdrop-blur-[2px]" // Subtle blur on the rest of screen
+                  className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
                 />
 
-                {/* 2. The Frozen Menu */}
+                {/* 2. The Frozen Menu Card */}
                 <motion.div
                   initial="closed"
                   animate="open"
                   exit="closed"
                   variants={menuVariants}
-                  className="fixed top-4 right-4 z-[70] w-[260px] origin-top-right"
+                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
                 >
-                  {/* Glass Container */}
-                  <div className="relative bg-gradient-to-b from-[#CE1126]/90 to-[#CE1126]/70 backdrop-blur-2xl shadow-2xl overflow-hidden border border-white/30 ring-1 ring-white/20 rounded-[24px]">
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
                     
-                    {/* Header with Innovative Close Button */}
-                    <div className="flex items-center justify-between pl-5 pr-3 pt-3 pb-2">
-                        <span className="text-white/80 text-[10px] font-bold uppercase tracking-widest">
+                    {/* Compact Header: Label + Close Button */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
                             Menu
                         </span>
                         <button 
                             onClick={() => setMobileMenuOpen(false)}
-                            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors border border-white/10"
+                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
                         >
-                            <X className="w-4 h-4 text-white" strokeWidth={3} />
+                            <X className="w-4 h-4" strokeWidth={3} />
                         </button>
                     </div>
 
                     {/* Scrollable Nav Items */}
-                    <div className="px-3 pb-3 max-h-[60vh] overflow-y-auto space-y-1">
+                    <div className="overflow-y-auto py-2 px-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = currentPage === item.id;
@@ -209,7 +208,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`flex items-center justify-between px-3.5 py-2 rounded-xl w-full text-left transition-all ${
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
                               isActive
                                 ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
                                 : 'text-white hover:bg-white/10 font-medium'
@@ -225,38 +224,32 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                       })}
                     </div>
 
-                    {/* Divider */}
-                    <div className="h-px bg-white/20 mx-4 my-1" />
-
-                    {/* Compact Sign In / Dashboard Section at Bottom */}
-                    <div className="p-3 bg-black/10">
+                    {/* Compact Footer: Sign In / Dashboard */}
+                    <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
                         <motion.div variants={itemVariants}>
                             {user ? (
-                            <div className="space-y-1">
+                            <div className="grid grid-cols-[1fr_auto] gap-2">
                                 <button
                                 onClick={() => handleNavClick('dashboard')}
-                                className="w-full bg-white text-[#CE1126] rounded-xl py-2 px-3 flex items-center justify-between shadow-sm"
+                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
                                 >
-                                <div className="flex items-center gap-2">
                                     <LayoutDashboard className="w-3.5 h-3.5" />
-                                    <span className="font-bold text-xs">DASHBOARD</span>
-                                </div>
+                                    <span className="font-black text-xs">DASHBOARD</span>
                                 </button>
                                 <button
                                 onClick={async () => { await signOut(); handleNavClick('home'); }}
-                                className="w-full bg-white/10 text-white rounded-xl py-1.5 px-3 flex items-center justify-center gap-2 font-semibold text-[10px] hover:bg-white/20 transition-colors"
+                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
                                 >
-                                <LogOut className="w-3 h-3" />
-                                Sign Out
+                                    <LogOut className="w-4 h-4" />
                                 </button>
                             </div>
                             ) : (
                             <button
                                 onClick={() => handleNavClick('login')}
-                                className="w-full bg-white text-[#CE1126] rounded-xl py-2 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
                             >
-                                <LogIn className="w-3.5 h-3.5" />
-                                <span className="font-bold text-xs">SIGN IN</span>
+                                <LogIn className="w-4 h-4" />
+                                <span className="font-black text-xs">SIGN IN</span>
                             </button>
                             )}
                         </motion.div>
