@@ -63,25 +63,6 @@ export function Support() {
   const featured = projects.find(p => p.is_featured);
   const others = projects.filter(p => !p.is_featured);
 
-  // Animation variants for the title letters
-  const titleContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08, delayChildren: 0.2 }
-    }
-  };
-
-  const titleLetter = {
-    hidden: { y: 50, opacity: 0, rotateX: -90 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      rotateX: 0,
-      transition: { type: "spring", stiffness: 100, damping: 10 }
-    }
-  };
-
   return (
     // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
     <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
@@ -91,46 +72,15 @@ export function Support() {
           {/* Reduced pt-1 to pt-0 on mobile */}
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
-            {/* 1. Innovative Animated Title */}
-            <style>{`
-              @keyframes hueShift {
-                0% { filter: hue-rotate(0deg); }
-                25% { filter: hue-rotate(45deg); }
-                50% { filter: hue-rotate(90deg); }
-                75% { filter: hue-rotate(45deg); }
-                100% { filter: hue-rotate(0deg); }
-              }
-              @keyframes gradientMove {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-              }
-              .ragga-title {
-                background: linear-gradient(270deg, #dc2626, #16a34a, #eab308, #dc2626, #16a34a);
-                background-size: 300% 300%;
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-                animation: gradientMove 6s ease infinite, hueShift 8s ease-in-out infinite;
-              }
-            `}</style>
+            {/* 1. Minimal Animated Title */}
             <motion.div 
-              variants={titleContainer}
-              initial="hidden"
-              animate="visible"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="mb-1"
             >
-              <h1 className="ragga-title text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase perspective-1000">
-                {Array.from("Ragga Foundation").map((letter, i) => (
-                  <motion.span
-                    key={i}
-                    variants={titleLetter}
-                    className="inline-block origin-bottom"
-                    whileHover={{ scale: 1.2, rotate: [-5, 5, 0], transition: { duration: 0.3 } }}
-                  >
-                    {letter === " " ? "\u00A0" : letter}
-                  </motion.span>
-                ))}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase">
+                Ragga Foundation
               </h1>
             </motion.div>
 
