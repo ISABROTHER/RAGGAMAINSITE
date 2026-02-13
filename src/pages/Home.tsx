@@ -28,4 +28,4 @@ export function Home({ onNavigate }: HomeProps) {
       <PrioritiesSection onNavigate={onNavigate} />
     </div>
   );
-}
+} 
