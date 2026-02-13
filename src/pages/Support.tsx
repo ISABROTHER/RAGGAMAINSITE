@@ -299,19 +299,21 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               animate={{
+                scale: [1, 1.03, 1],
                 boxShadow: [
-                  '0 4px 15px rgba(22, 163, 74, 0.3)',
-                  '0 4px 30px rgba(22, 163, 74, 0.6)',
-                  '0 4px 15px rgba(22, 163, 74, 0.3)',
+                  '0 0 0 0 rgba(220, 38, 38, 0.5), 0 4px 20px rgba(220, 38, 38, 0.3)',
+                  '0 0 0 6px rgba(220, 38, 38, 0), 0 4px 30px rgba(220, 38, 38, 0.5)',
+                  '0 0 0 0 rgba(220, 38, 38, 0.5), 0 4px 20px rgba(220, 38, 38, 0.3)',
                 ],
               }}
               transition={{
-                boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+                scale: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
+                boxShadow: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
               }}
               onClick={onContribute}
-              className="flex-1 py-3.5 bg-green-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-widest flex items-center justify-center relative overflow-hidden"
+              className="flex-1 py-4 bg-red-600 text-white rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center relative overflow-hidden"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[shimmer_1.5s_infinite]" />
               <style>{`
                 @keyframes shimmer {
                   0% { transform: translateX(-100%); }
