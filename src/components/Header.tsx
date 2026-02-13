@@ -1,5 +1,5 @@
 // src/components/Header.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Menu, X, Home, User, Users, HardHat, Award,
   Calendar, MessageSquareWarning,
@@ -17,6 +17,18 @@ interface HeaderProps {
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
+
+  // Lock body scroll when menu is open ("Frozen" background)
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
 
   const headerHeightBase = 90; 
   const headerScale = 1.1; 
@@ -103,7 +115,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div initial="closed" animate="open" exit="closed" variants={menuVariants} className="md:hidden absolute top-[12px] right-[12px] w-[250px] origin-top-right">
-                <div className="relative bg-[#CE1126] pt-16 pb-4 px-4 shadow-2xl h-full w-full overflow-hidden border-2 border-white/20 rounded-[24px] max-h-[85vh] overflow-y-auto">
+                {/* UPDATED: Added backdrop-blur-xl and reduced opacity (bg-[#CE1126]/85) 
+                  to create the "Frozen/Frosted" Glass effect.
+                */}
+                <div className="relative bg-[#CE1126]/85 backdrop-blur-xl pt-16 pb-4 px-4 shadow-2xl h-full w-full overflow-hidden border-2 border-white/20 rounded-[24px] max-h-[85vh] overflow-y-auto">
                   <motion.div variants={itemVariants} className="mb-3 relative z-10 space-y-2">
                     {user ? (
                       <>
