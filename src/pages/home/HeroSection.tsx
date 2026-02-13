@@ -71,9 +71,31 @@ export function HeroSection() {
           >
             {/* Badge Removed per previous instruction */}
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-1 max-w-3xl">
-              Building the Constituency <br className="block md:hidden" />
-              <span className="text-green-400">We Want Together</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight mb-1 max-w-3xl">
+              <motion.span
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="block"
+              >
+                Building the
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="block"
+              >
+                Constituency
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="text-green-400 block"
+              >
+                We Want Together
+              </motion.span>
             </h1>
 
             {/* Typewriter Animation Container */}
