@@ -296,29 +296,40 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           {/* Buttons */}
           <div className="flex items-center gap-2">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               animate={{
                 boxShadow: [
-                  '0 0 0 0 rgba(22, 163, 74, 0.3)',
-                  '0 0 0 8px rgba(22, 163, 74, 0)',
+                  '0 0 0 0 rgba(22, 163, 74, 0.4)',
+                  '0 0 0 10px rgba(22, 163, 74, 0)',
                   '0 0 0 0 rgba(22, 163, 74, 0)',
                 ],
+                y: [0, -3, 0],
               }}
               transition={{
-                boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+                boxShadow: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' },
+                y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
               }}
               onClick={onContribute}
-              className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-green-500 transition-colors"
+              className="flex-1 py-3 bg-gradient-to-r from-green-600 via-green-500 to-green-600 bg-[length:200%_100%] animate-[shimmer_2s_infinite] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 relative overflow-hidden"
             >
+              <style>{`
+                @keyframes shimmer {
+                  0% { background-position: 200% 0; }
+                  100% { background-position: -200% 0; }
+                }
+              `}</style>
               <motion.span
-                animate={{ scale: [1, 1.15, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  rotate: [0, -10, 10, 0],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 className="text-sm"
               >
                 🎁
               </motion.span>
-              Contribute
+              Please Donate
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
