@@ -307,8 +307,9 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           />
         ) : (
           <img
-            src="https://i.imgur.com/4yctvPb.jpeg"
+            src="https://i.imgur.com/4yctvPb.jpg"
             alt={project.title}
+            referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         )}
