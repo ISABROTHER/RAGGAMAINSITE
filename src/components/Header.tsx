@@ -4,7 +4,7 @@ import {
   Menu, X, Home, User, Users, HardHat, Award,
   Calendar, MessageSquareWarning,
   LayoutDashboard, LogIn, ChevronRight, Vote,
-  UserCircle, Heart, LogOut
+  UserCircle, Heart, LogOut, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -46,7 +46,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     };
   }, [mobileMenuOpen]);
 
-  // RESTORED ORIGINAL HEADER DIMENSIONS
+  // Original Header Dimensions
   const headerHeightBase = 90;
   const headerScale = 1.1; 
   const headerHeight = headerHeightBase * headerScale;
@@ -61,9 +61,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   const desktopNavPaddingY = 8;
   const desktopNavPaddingX = 12;
   const desktopNavFontSize = 14;
-
-  // DROP ENLARGEMENT FACTOR (30% Increase)
-  const dropEnlargement = 1.3;
 
   const navItems = [
     { id: 'home', label: 'Home' },
@@ -97,6 +94,42 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     onNavigate(pageId);
   };
 
+  // --------------------------------------------------------------------------
+  // INNOVATIVE ANIMATION VARIANTS
+  // --------------------------------------------------------------------------
+  
+  const containerVariants = {
+    closed: { 
+      opacity: 0, 
+      scale: 0.9,
+      y: 20,
+      transition: { 
+        type: "spring",
+        stiffness: 400,
+        damping: 40,
+        staggerChildren: 0.05,
+        staggerDirection: -1
+      }
+    },
+    open: { 
+      opacity: 1, 
+      scale: 1,
+      y: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+        staggerChildren: 0.07,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    closed: { opacity: 0, x: 20, transition: { duration: 0.2 } },
+    open: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
     <div className="relative w-full">
       <header
@@ -105,7 +138,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
           <div className="flex justify-between items-center h-full">
-            {/* Logo - Restored to Original Scale */}
+            {/* Logo - Standard Position */}
             <button
               onClick={() => handleNavClick('home')}
               className="flex items-center space-x-3 group transition-transform hover:scale-[1.01] focus:outline-none"
@@ -128,7 +161,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               />
             </button>
 
-            {/* Desktop Navigation - Restored to Original Scale */}
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center" style={{ gap: `${desktopNavGap}px` }}>
               {navItems.map((item) => (
                 <button
@@ -153,87 +186,143 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle - Rectangular Sharp Design */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className="flex items-center gap-1.5 px-2 py-1.5 bg-[#CE1126] text-white border border-[#b00e1f] shadow-md hover:bg-[#b00e1f] transition-colors rounded-none"
+                className="flex items-center gap-2 px-3 py-2 bg-[#CE1126] text-white border-l-4 border-black/10 shadow-lg active:scale-95 transition-all rounded-none"
               >
-                <span className="font-bold text-[10px] uppercase tracking-tighter">MENU</span>
-                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" strokeWidth={3} />}
+                <span className="font-black text-[10px] uppercase tracking-widest">MENU</span>
+                {mobileMenuOpen ? <X className="w-4 h-4" strokeWidth={3} /> : <Menu className="w-4 h-4" strokeWidth={3} />}
               </button>
             </div>
           </div>
 
-          {/* INNOVATIVE ENLARGED MOBILE DROPDOWN (30% Larger) */}
+          {/* --------------------------------------------------------------------------
+             INNOVATIVE MOBILE DROPDOWN - 500x MODE
+             -------------------------------------------------------------------------- */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
+                {/* 1. Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
+                  className="fixed inset-0 z-[60] bg-slate-900/20 backdrop-blur-[2px]"
                 />
+                
+                {/* 2. The Ruby Glass Card */}
                 <motion.div
                   ref={menuRef}
-                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  // Width increased to 300px (approx 30% increase from 240px)
-                  className="fixed right-3 z-[70] w-[310px] origin-top-right shadow-2xl"
-                  style={{ top: `${headerHeight + 5}px` }}
+                  initial="closed"
+                  animate="open"
+                  exit="closed"
+                  variants={containerVariants}
+                  className="fixed right-3 z-[70] w-[320px] origin-top-right"
+                  style={{ top: `${headerHeight + 6}px` }}
                 >
-                  <div className="flex flex-col bg-gradient-to-b from-[#CE1126]/95 to-[#b00e1f]/95 backdrop-blur-xl border border-white/20 rounded-none overflow-hidden max-h-[85vh]">
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
-                      <span className="text-white/80 text-[11px] font-black uppercase tracking-widest">Navigation</span>
+                  <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
+                    
+                    {/* --- INNOVATION: AUTH ON TOP --- */}
+                    <motion.div 
+                      variants={itemVariants}
+                      className="relative p-4 bg-black/10 border-b border-white/10 overflow-hidden"
+                    >
+                        {/* Decorative background glow */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
+
+                        {user ? (
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-white text-[#CE1126] flex items-center justify-center font-bold text-lg shadow-inner">
+                                            {profile?.full_name?.charAt(0) || 'U'}
+                                        </div>
+                                        <div>
+                                            <p className="text-white text-sm font-bold leading-tight">{profile?.full_name || 'Constituent'}</p>
+                                            <p className="text-white/60 text-[10px] uppercase tracking-wider">Active Member</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={async () => { await signOut(); handleNavClick('home'); }}
+                                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => handleNavClick('dashboard')}
+                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                                >
+                                    <LayoutDashboard className="w-4 h-4" />
+                                    Open Dashboard
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="relative z-10 text-center">
+                                <div className="mb-3 flex justify-center">
+                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                                        <UserCircle className="w-6 h-6 text-white" />
+                                    </div>
+                                </div>
+                                <h3 className="text-white font-bold text-sm mb-3">Welcome to Ragga Main Site</h3>
+                                <button
+                                    onClick={() => handleNavClick('login')}
+                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform group"
+                                >
+                                    <Sparkles className="w-4 h-4 text-yellow-500 fill-yellow-500 group-hover:animate-pulse" />
+                                    Sign In / Register
+                                </button>
+                            </div>
+                        )}
+                    </motion.div>
+
+                    {/* --- INNOVATION: SCROLLABLE NAV LIST --- */}
+                    <div className="overflow-y-auto max-h-[55vh] p-2 space-y-1">
+                      {mobileNavItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = currentPage === item.id;
+                        return (
+                          <motion.button
+                            key={item.id}
+                            variants={itemVariants}
+                            onClick={() => handleNavClick(item.id)}
+                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded w-full text-left transition-all overflow-hidden ${
+                              isActive
+                                ? 'bg-white/10 text-white shadow-inner ring-1 ring-white/20'
+                                : 'text-white/80 hover:bg-white/5 hover:text-white'
+                            }`}
+                          >
+                            {/* Hover Highlight Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                            
+                            <div className="flex items-center gap-3 relative z-10">
+                              <Icon 
+                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-white/70'}`} 
+                                strokeWidth={isActive ? 2.5 : 2}
+                              />
+                              <span className={`text-xs uppercase tracking-wider ${isActive ? 'font-black' : 'font-medium'}`}>
+                                {item.label}
+                              </span>
+                            </div>
+                            
+                            {isActive && (
+                                <motion.div 
+                                    layoutId="activeIndicator"
+                                    className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                                />
+                            )}
+                          </motion.button>
+                        );
+                      })}
                     </div>
-                    <div className="overflow-y-auto py-2 px-2 space-y-1.5">
-                      {mobileNavItems.map((item, i) => (
-                        <motion.button
-                          key={item.id}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.03 }}
-                          onClick={() => handleNavClick(item.id)}
-                          // Padding and text size increased for enlargement vibe
-                          className={`flex items-center justify-between px-5 py-4 rounded-none w-full text-left transition-all ${
-                            currentPage === item.id
-                              ? 'bg-white text-[#CE1126] font-black shadow-sm'
-                              : 'text-white hover:bg-white/10 font-medium'
-                          }`}
-                        >
-                          <div className="flex items-center gap-4">
-                            <item.icon className={`w-5 h-5 ${currentPage === item.id ? 'text-[#CE1126]' : 'text-white/60'}`} />
-                            <span className="text-[13px] uppercase tracking-wide">{item.label}</span>
-                          </div>
-                          {currentPage === item.id && <ChevronRight className="w-5 h-5 opacity-50" />}
-                        </motion.button>
-                      ))}
-                    </div>
-                    <div className="p-3 border-t border-white/10 bg-black/20">
-                      {user ? (
-                        <button
-                          onClick={() => handleNavClick('dashboard')}
-                          className="w-full bg-white text-[#CE1126] py-4 flex items-center justify-center gap-3 rounded-none font-black text-[12px] shadow-lg"
-                        >
-                          <LayoutDashboard className="w-5 h-5" />
-                          DASHBOARD
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleNavClick('login')}
-                          className="w-full bg-white text-[#CE1126] py-4 flex items-center justify-center gap-3 rounded-none font-black text-[12px] shadow-lg"
-                        >
-                          <LogIn className="w-5 h-5" />
-                          SIGN IN
-                        </button>
-                      )}
-                    </div>
+
+                    {/* Footer Decoration */}
+                    <div className="h-1.5 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full" />
                   </div>
                 </motion.div>
               </>
