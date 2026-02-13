@@ -62,7 +62,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-[12%] md:pb-[18%] pl-[2%] z-30">
+      <div className="absolute inset-0 flex flex-col justify-end pb-[12%] md:pb-[18%] pl-[5%] z-30">
         <div className="max-w-7xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -84,8 +84,7 @@ export function HeroSection() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className="block ml-[7%] text-yellow-400 font-serif italic"
-                style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                className="block"
               >
                 Constituency
               </motion.span>
@@ -101,13 +100,13 @@ export function HeroSection() {
 
             {/* Typewriter Animation Container */}
             <div className="h-8 md:h-10 mb-2 overflow-hidden flex items-center">
-              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
+              <p className="text-base md:text-xl text-yellow-400 font-medium whitespace-nowrap truncate italic" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 {displayedText}
                 {/* Blinking Cursor */}
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                  className="inline-block ml-1 w-0.5 h-5 bg-green-400 align-middle"
+                  className="inline-block ml-1 w-0.5 h-5 bg-yellow-400 align-middle"
                 />
               </p>
             </div>
