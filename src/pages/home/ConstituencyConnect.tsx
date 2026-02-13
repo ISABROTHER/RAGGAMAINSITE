@@ -69,13 +69,13 @@ export function ConstituencyConnect() {
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        {/* HEADER SECTION - TEXT RESTORED */}
+        {/* HEADER SECTION - UPDATED TEXT */}
         <div className="mb-10">
           <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">
             My <span className="text-green-300">Constituents</span>
           </h2>
-          <p className="mt-4 text-green-50 text-sm md:text-base leading-relaxed max-w-lg mx-auto font-medium opacity-90">
-            Are you a student, business person or resident in Cape Coast North? Join my database so we can support you when opportunities arise.
+          <p className="mt-4 text-green-50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-medium opacity-90">
+            Cape Coast North constituents, students, workers, business owners, and residents, register your details so my office can reach you, confirm your status, and act on your issues when support or opportunities are available. Obiara ka ho!
           </p>
         </div>
 
@@ -174,16 +174,10 @@ export function ConstituencyConnect() {
                         <div className="space-y-3">
                           <input type="text" placeholder="Full Name" className={inputCls} />
                           
-                          {/* PHONE AND DOB GRID */}
+                          {/* PHONE AND DATE OF BIRTH GRID */}
                           <div className="grid grid-cols-2 gap-3">
                             <input type="tel" placeholder="Phone Number" className={inputCls} />
-                            <div className="relative">
-                                <input 
-                                    type="date" 
-                                    className={`${inputCls} text-slate-500 uppercase text-[10px] font-bold`} 
-                                    placeholder="Date of Birth"
-                                />
-                            </div>
+                            <input type="date" className={`${inputCls} text-slate-500 uppercase text-[10px] font-bold`} />
                           </div>
                           
                           {userType === "Resident" && (
