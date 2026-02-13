@@ -5,7 +5,7 @@ import {
   Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, ArrowLeft,
   Fingerprint, CheckCircle2, Database, ScanSearch, ShieldAlert,
   Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone, 
-  Bot, Sparkles
+  Bot, Sparkles, Cpu
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -90,10 +90,10 @@ export function ConstituencyConnect() {
                   <motion.div key="search" {...anim} className="p-5">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
-                          <Fingerprint className="w-4 h-4 text-white" />
+                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shadow-lg shadow-green-900/10">
+                          <Sparkles className="w-4 h-4 text-green-400" />
                         </div>
-                        <p className="text-sm font-black text-slate-900 uppercase">Database Access</p>
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">AI POWERED DATABASE</p>
                       </div>
                       <button onClick={() => setShowInfo(!showInfo)} className="px-3 py-1.5 rounded-lg border bg-green-50 border-green-200 text-green-700 text-[10px] font-bold uppercase flex items-center gap-2 hover:bg-green-100 transition-colors">
                         {showInfo ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
@@ -101,7 +101,7 @@ export function ConstituencyConnect() {
                       </button>
                     </div>
 
-                    {/* PRIVACY INFO BLOCK - UPDATED TEXT & ICON */}
+                    {/* PRIVACY INFO BLOCK */}
                     {showInfo && (
                       <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left border border-slate-100 flex items-start gap-3">
                          <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
