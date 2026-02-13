@@ -99,7 +99,7 @@ export function ConstituencyConnect() {
                       </button>
                     </div>
 
-                    {/* COMPREHENSIVE INFO BLOCK RESTORED HERE */}
+                    {/* COMPREHENSIVE INFO BLOCK */}
                     {showInfo && (
                       <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left space-y-4 border border-slate-100">
                          <div>
