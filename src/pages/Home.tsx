@@ -1,5 +1,6 @@
 // src/pages/Home.tsx
 import { HeroSection } from "./home/HeroSection";
+import { QuickAccessGrid } from "./home/QuickAccessGrid";
 import { ConstituencyConnect } from "./home/ConstituencyConnect";
 import { LatestUpdatesSection } from "./home/LatestUpdatesSection";
 import { PrioritiesSection } from "./home/PrioritiesSection";
@@ -13,14 +14,17 @@ export function Home({ onNavigate }: HomeProps) {
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* 1. Hero / Introduction */}
       <HeroSection />
+
+      {/* 2. Quick Links to Services - This is your Information & Support Grid */}
+      <QuickAccessGrid onNavigate={onNavigate} />
       
-      {/* 2. Constituency Connect (Data Portal) */}
+      {/* 3. Constituency Connect (Data Portal) */}
       <ConstituencyConnect />
       
-      {/* 3. Latest News & Stories */}
+      {/* 4. Latest News & Stories */}
       <LatestUpdatesSection onNavigate={onNavigate} />
       
-      {/* 4. Constituency Priorities & Vision */}
+      {/* 5. Constituency Priorities & Vision */}
       <PrioritiesSection onNavigate={onNavigate} />
     </div>
   );
