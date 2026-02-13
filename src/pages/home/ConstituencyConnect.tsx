@@ -161,18 +161,18 @@ export function ConstituencyConnect() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-900/80" />
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <div className="mb-10">
           <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight uppercase">
             My <span className="text-green-400">Constituents</span>
           </h2>
           <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed max-w-lg mx-auto">
-            Are you a student in Cape Coast North, business person or resident? Let me know so we can build a constituency together and support you when there is an opportunity.
+            Are you a student, business person or resident in Cape Coast North? Join my database so we can support you when opportunities arise.
           </p>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-[500px]">
+          <div className="w-full max-w-[440px]">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
               <AnimatePresence mode="wait">
                 {view === "searching" && (
@@ -186,31 +186,23 @@ export function ConstituencyConnect() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20">
-                          {showInfo ? (
-                            <Info className="w-4 h-4 text-white" />
-                          ) : (
-                            <Fingerprint className="w-4 h-4 text-white" />
-                          )}
+                          {showInfo ? <Info className="w-4 h-4 text-white" /> : <Fingerprint className="w-4 h-4 text-white" />}
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">
-                            {showInfo ? "Why register your details" : "Constituent Access"}
-                          </p>
-                        </div>
+                        <p className="text-sm font-bold text-slate-900 uppercase tracking-tight">
+                          {showInfo ? "Why Register your Details" : (activeTab === 'check' ? "Check Status" : "Constituent Access")}
+                        </p>
                       </div>
                       
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
-                        className={`px-3 py-2 rounded-lg transition-all border flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-lg transition-all border flex items-center gap-1.5 ${
                           showInfo 
                             ? "bg-slate-900 border-slate-900 text-white" 
                             : "bg-green-50 border-green-100 text-green-700 hover:bg-green-100"
                         }`}
                       >
                         {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
-                        <span className="text-[10px] font-bold uppercase tracking-wider">
-                          {showInfo ? "Close" : "Why register?"}
-                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{showInfo ? "Close" : "Why register?"}</span>
                       </button>
                     </div>
 
@@ -223,86 +215,54 @@ export function ConstituencyConnect() {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden mb-2"
                         >
-                          {/* INFO CONTENT */}
-                          <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100">
+                          <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100 text-left">
                             <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
-                              <p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose & Privacy</h4>
+                              <p>We confirm you are a constituent to respond to issues quickly. Information is used only for constituency work and never shared.</p>
                             </div>
                             <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4>
-                              <p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
-                            </div>
-                            <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Privacy</h4>
-                              <p>Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Registration Benefits</h4>
+                              <p>Receive updates, opportunity alerts, and formal follow-ups on your submitted concerns.</p>
                             </div>
                             <div className="border-t border-slate-200 pt-3">
-                              <p className="font-bold mb-1">Common Questions:</p>
-                              <ul className="list-disc pl-3 space-y-1 opacity-90">
-                                <li><strong>Duplicates:</strong> We match records automatically.</li>
-                                <li><strong>Wrong details:</strong> Update your info anytime.</li>
-                                <li><strong>No smartphone:</strong> Register at our office.</li>
-                              </ul>
+                              <p className="font-bold">Common Items:</p>
+                              <p className="opacity-80">No smartphone? Register at our office. Details wrong? Update anytime.</p>
                             </div>
-                            <button 
-                                onClick={() => setShowInfo(false)}
-                                className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-lg text-[10px] uppercase mt-2 transition-colors"
-                            >
-                                Back to Access
-                            </button>
                           </div>
                         </motion.div>
                       ) : (
-                        <motion.div
-                          key="form-content"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="space-y-4"
-                        >
-                          {/* --- THE TWO SIDE-BY-SIDE BUTTONS (The "Split Search Bar") --- */}
+                        <motion.div key="form-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                           {!activeTab && (
-                              <div className="grid grid-cols-2 gap-3 h-14">
+                              <div className="grid grid-cols-2 gap-3">
                                 <button 
                                     onClick={() => setActiveTab('check')}
-                                    className="h-full flex flex-col items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-slate-700 transition-all active:scale-[0.98] group"
+                                    className="py-3 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-slate-700 transition-all active:scale-[0.98]"
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <Search className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
-                                        <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
-                                    </div>
-                                    <span className="text-[9px] font-medium text-slate-400 mt-0.5">Verify your status</span>
+                                    <Search className="w-3.5 h-3.5 text-slate-500" />
+                                    <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
                                 </button>
                                 
                                 <button 
                                     onClick={() => { setActiveTab('register'); setView('register'); }}
-                                    className="h-full flex flex-col items-center justify-center bg-green-600 hover:bg-green-700 border border-green-600 rounded-xl text-white transition-all active:scale-[0.98] shadow-lg shadow-green-600/20"
+                                    className="py-3 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 border border-green-600 rounded-xl text-white transition-all active:scale-[0.98] shadow-lg shadow-green-600/20"
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <UserPlus className="w-4 h-4" />
-                                        <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
-                                    </div>
-                                    <span className="text-[9px] font-medium text-green-100 mt-0.5">New Constituent</span>
+                                    <UserPlus className="w-3.5 h-3.5" />
+                                    <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
                                 </button>
                               </div>
                           )}
 
-                          {/* SEARCH INPUT - Visible only when "Check" is clicked */}
                           {activeTab === 'check' && (
                               <div className="relative">
-                                  <button 
-                                    onClick={() => setActiveTab(null)}
-                                    className="absolute -top-8 right-0 text-[10px] text-slate-400 hover:text-slate-600 uppercase font-bold flex items-center gap-1"
-                                  >
-                                    Cancel <X className="w-3 h-3" />
+                                  <button onClick={() => setActiveTab(null)} className="absolute -top-7 right-0 text-[9px] text-slate-400 hover:text-slate-600 uppercase font-black flex items-center gap-1">
+                                    Cancel <X className="w-2.5 h-2.5" />
                                   </button>
                                   <form onSubmit={handleSearch}>
                                     <div className="relative">
                                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                       <input
                                         type="text"
-                                        placeholder="Enter name or phone number..."
+                                        placeholder="Name or phone number..."
                                         value={query}
                                         onChange={(e) => setQuery(e.target.value)}
                                         className={`${inputCls} !pl-9`}
@@ -312,9 +272,9 @@ export function ConstituencyConnect() {
                                     <button
                                       type="submit"
                                       disabled={!query.trim()}
-                                      className="mt-3 w-full bg-slate-900 text-white font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
+                                      className="mt-3 w-full bg-slate-900 text-white font-black py-3 rounded-xl transition-all text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
                                     >
-                                      Check Status
+                                      Verify Status
                                     </button>
                                   </form>
                               </div>
@@ -322,32 +282,31 @@ export function ConstituencyConnect() {
 
                           <AnimatePresence mode="wait">
                             {found && (
-                              <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg">
+                              <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg text-left">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center shrink-0">
                                     <UserCheck className="w-4 h-4 text-white" />
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p>
-                                    <p className="text-green-700 text-[10px] font-bold">REGISTERED</p>
+                                    <p className="text-green-700 text-[10px] font-bold">MATCH FOUND</p>
                                   </div>
-                                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                                 </div>
-                                <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
-                                  View Details
+                                <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">
+                                  Access Profile
                                 </button>
                               </motion.div>
                             )}
                             {notFound && (
-                              <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg">
+                              <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg text-left">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center shrink-0">
                                     <UserPlus className="w-4 h-4 text-white" />
                                   </div>
-                                  <p className="font-bold text-amber-900 text-xs">Not found: "{searchQuery}"</p>
+                                  <p className="font-bold text-amber-900 text-xs">No record for "{searchQuery}"</p>
                                 </div>
-                                <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
-                                  Register My Info
+                                <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">
+                                  Create Record
                                 </button>
                               </motion.div>
                             )}
@@ -359,12 +318,12 @@ export function ConstituencyConnect() {
                 )}
 
                 {view === "register" && (
-                  <motion.div key="register" {...anim} className="p-5">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-[10px] uppercase font-bold mb-5 transition-colors">
+                  <motion.div key="register" {...anim} className="p-5 text-left">
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-[10px] uppercase font-black mb-5 transition-colors">
                       <ArrowLeft className="w-3.5 h-3.5" /> Back
                     </button>
                     <div className="text-center mb-5">
-                      <h3 className="text-sm font-bold text-slate-900 uppercase">Registration</h3>
+                      <h3 className="text-xs font-black text-slate-900 uppercase">New Constituent Registration</h3>
                     </div>
                     <div className="space-y-2.5">
                       <div className="grid grid-cols-2 gap-2.5">
@@ -374,8 +333,8 @@ export function ConstituencyConnect() {
                       <input type="tel" placeholder="Phone (WhatsApp)" className={inputCls} />
                       <input type="text" placeholder="Residential Community" className={inputCls} />
                       <input type="text" placeholder="Profession or Skill" className={inputCls} />
-                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-bold py-3 rounded-xl text-xs uppercase mt-2 shadow-lg">
-                        Submit Information
+                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-2 shadow-lg">
+                        Submit Details
                       </button>
                     </div>
                   </motion.div>
@@ -385,14 +344,14 @@ export function ConstituencyConnect() {
                   <motion.div key="verified" {...anim}>
                     <div className="bg-gradient-to-br from-green-600 to-emerald-700 p-6 text-center text-white">
                       <ShieldCheck className="w-8 h-8 mx-auto mb-3" />
-                      <p className="text-lg font-black uppercase tracking-wider">Profile Verified</p>
+                      <p className="text-lg font-black uppercase tracking-wider">Access Verified</p>
                     </div>
                     <div className="p-5">
-                      <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2 text-[10px] font-bold uppercase">
-                        <MapPin className="w-4 h-4 text-green-600 flex-shrink-0" />
-                        <span>Cape Coast North Resource Hub</span>
+                      <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2 text-[10px] font-black uppercase">
+                        <MapPin className="w-4 h-4 text-green-600 shrink-0" />
+                        <span>Cape Coast North Hub</span>
                       </div>
-                      <button onClick={reset} className="mt-3 w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase py-2 transition-colors">
+                      <button onClick={reset} className="mt-3 w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-600 text-[10px] font-black uppercase py-2">
                         <X className="w-3.5 h-3.5" /> Close
                       </button>
                     </div>
