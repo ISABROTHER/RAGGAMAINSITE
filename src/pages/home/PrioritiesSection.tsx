@@ -152,10 +152,27 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             </h3>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
-          {/* Updated Vision Statement */}
-          <p className="mt-6 text-base md:text-lg text-slate-600 max-w-4xl mr-auto leading-relaxed">
-            With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
-          </p>
+          
+          {/* DEEP GREEN FROSTED HUE VISION BOX */}
+          <div className="mt-8 relative inline-block max-w-4xl rounded-2xl overflow-hidden shadow-2xl border border-white/20">
+            {/* Background Image Base with Deep Hue Shift */}
+            <img 
+              src="https://i.imgur.com/5H0XBuV.jpeg" 
+              className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.4] hue-rotate-[120deg] saturate-[3]"
+              alt="" 
+            />
+            {/* Frosted Emerald Layer */}
+            <div className="absolute inset-0 bg-emerald-950/60 backdrop-blur-2xl"></div>
+            {/* Gradient Hue Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 via-transparent to-emerald-900/40 mix-blend-overlay"></div>
+            
+            {/* Content Layer */}
+            <div className="relative p-7 md:p-10 z-10">
+              <p className="text-sm md:text-lg text-white leading-relaxed font-bold tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* =========================
