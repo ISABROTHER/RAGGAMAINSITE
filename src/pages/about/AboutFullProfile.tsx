@@ -32,13 +32,12 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
-  // Profile details configured for the new narrower column width
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
       { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
       { icon: Flag, label: "Nationality", value: "Ghanaian", colSpan: "col-span-1" },
-      { icon: DesignationIcon, label: "Designation", value: "MP Cape Coast North", colSpan: "col-span-2" }, // Shortened for fit
-      { icon: MapPin, label: "Birthplace", value: "Apewosika, C. Coast", colSpan: "col-span-2" }, // Shortened for fit
+      { icon: DesignationIcon, label: "Designation", value: "MP Cape Coast North", colSpan: "col-span-2" },
+      { icon: MapPin, label: "Birthplace", value: "Apewosika, C. Coast", colSpan: "col-span-2" },
       { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho", colSpan: "col-span-2" },
   ];
 
@@ -83,19 +82,19 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO REEL (Middle - 4 Columns) - INNOVATION: AUTOMATIC PLAYBACK CONTAINER */}
+            {/* 2. VIDEO REEL (Middle - 4 Columns) - FIXED: PURE VIDEO CONTAINER */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="lg:col-span-4 bg-black rounded-3xl shadow-2xl overflow-hidden relative group h-[400px] lg:h-auto border-4 border-slate-900"
+                className="lg:col-span-4 bg-black rounded-3xl shadow-2xl overflow-hidden relative h-[400px] lg:h-auto"
             >
-                 <div className="absolute inset-0 bg-slate-900 flex items-center justify-center z-0">
-                    <span className="text-white/20 font-black animate-pulse">LOADING REEL...</span>
+                 <div className="absolute inset-0 bg-black flex items-center justify-center z-0">
+                    <span className="text-white/20 font-black text-[10px] animate-pulse">LOADING...</span>
                  </div>
                  
-                 {/* Instagram Embed Iframe */}
+                 {/* Instagram Embed Iframe - Full Size, No Borders */}
                  <iframe 
                     src="https://www.instagram.com/reel/DFfroZCOCf4/embed/captioned/?autoplay=1" 
                     className="absolute inset-0 w-full h-full object-cover z-10"
@@ -105,9 +104,6 @@ export function AboutFullProfile() {
                     allow="autoplay; encrypted-media; picture-in-picture"
                     title="Ragga Instagram Reel"
                  ></iframe>
-
-                 {/* Decorative Frame Overlay */}
-                 <div className="absolute inset-0 border-[6px] border-slate-900/10 pointer-events-none z-20 rounded-[20px]" />
             </motion.div>
 
             {/* 3. POLITICAL AFFILIATION (Right - 4 Columns) */}
