@@ -52,13 +52,6 @@ export function ConstituencyConnect() {
   // Registration Flow State
   const [regStep, setRegStep] = useState(1);
   const [userType, setUserType] = useState<ConstituentType | null>(null);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phone: "",
-    location: "",
-    community: "",
-    category: ""
-  });
 
   const reset = () => {
     setView("search");
@@ -122,36 +115,59 @@ export function ConstituencyConnect() {
                 {/* --- REGISTRATION FLOW (3 STEPS) --- */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-6 text-left">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-6"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-4"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
                     
-                    {/* STEP 1: CHOOSE TYPE */}
+                    {/* STEP 1: CHOOSE TYPE - COMPACT UI */}
                     {regStep === 1 && (
-                      <div className="space-y-4">
-                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
-                        <div className="grid grid-cols-1 gap-3">
-                          <button onClick={() => { setUserType("Resident"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group">
-                            <Home className="w-5 h-5 text-green-600" />
-                            <div className="text-left">
-                              <p className="text-xs font-black text-slate-900 uppercase">I live in Cape Coast North</p>
-                              <p className="text-[10px] text-slate-500">Local Resident</p>
-                            </div>
-                          </button>
-                          <button onClick={() => { setUserType("Diaspora"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all">
-                            <Globe className="w-5 h-5 text-green-600" />
-                            <div className="text-left">
-                              <p className="text-xs font-black text-slate-900 uppercase">Constituent Living Outside</p>
-                              <p className="text-[10px] text-slate-500">Diaspora / Working Away</p>
-                            </div>
-                          </button>
-                          <button onClick={() => { setUserType("Non-constituent"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all">
-                            <MessageSquare className="w-5 h-5 text-green-600" />
-                            <div className="text-left">
-                              <p className="text-xs font-black text-slate-900 uppercase">Not a constituent</p>
-                              <p className="text-[10px] text-slate-500">General Inquiry / Business</p>
-                            </div>
-                          </button>
+                      <div>
+                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-5 tracking-widest">Step 1: Who are you?</h3>
+                        
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                            {/* Card 1: Resident */}
+                            <button 
+                                onClick={() => { setUserType("Resident"); setRegStep(2); }} 
+                                className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-100 rounded-xl hover:bg-green-100 hover:border-green-300 hover:shadow-md transition-all group h-32"
+                            >
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+                                    <Home className="w-5 h-5 text-green-600" />
+                                </div>
+                                <p className="text-[11px] font-black text-slate-900 uppercase text-center leading-tight">I live in<br/>Cape Coast North</p>
+                                <span className="text-[9px] text-green-700 font-medium mt-1">Local Resident</span>
+                            </button>
+
+                            {/* Card 2: Diaspora */}
+                            <button 
+                                onClick={() => { setUserType("Diaspora"); setRegStep(2); }} 
+                                className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-white hover:border-green-300 hover:shadow-md transition-all group h-32"
+                            >
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+                                    <Globe className="w-5 h-5 text-slate-600 group-hover:text-green-600 transition-colors" />
+                                </div>
+                                <p className="text-[11px] font-black text-slate-900 uppercase text-center leading-tight">Constituent<br/>Living Outside</p>
+                                <span className="text-[9px] text-slate-500 font-medium mt-1">Diaspora / Working Away</span>
+                            </button>
                         </div>
-                        <p className="text-[9px] text-slate-400 text-center italic mt-4">“Your information is used only for constituency work and is not sold or published.”</p>
+
+                        {/* Card 3: Non-Constituent (Full Width) */}
+                        <button 
+                            onClick={() => { setUserType("Non-constituent"); setRegStep(2); }} 
+                            className="w-full flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-white hover:border-slate-300 transition-all group"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                    <MessageSquare className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[11px] font-black text-slate-900 uppercase">Not a constituent</p>
+                                    <p className="text-[9px] text-slate-500">General Inquiry / Business</p>
+                                </div>
+                            </div>
+                            <ArrowLeft className="w-4 h-4 text-slate-300 rotate-180 group-hover:text-slate-500 transition-colors" />
+                        </button>
+
+                        <p className="text-[9px] text-slate-400 text-center mt-5 pt-4 border-t border-slate-50">
+                            “Your information is used only for constituency work and is not sold or published.”
+                        </p>
                       </div>
                     )}
 
