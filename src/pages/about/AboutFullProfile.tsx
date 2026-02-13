@@ -2,29 +2,9 @@
 import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Users, Landmark, Quote, Star, GraduationCap, Award
+  CheckSquare, Users, Landmark, Quote, Star, GraduationCap, Award, Briefcase
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-// Helper component for Profile items with 500x Innovation (Glass + Hover Glow)
-const ProfileItem = ({ icon: Icon, label, value, delay }: { icon: React.ElementType, label: string, value: string, delay: number }) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: delay * 0.1, duration: 0.5 }}
-      whileHover={{ y: -5, boxShadow: "0 10px 30px -10px rgba(0, 128, 0, 0.2)" }}
-      className="bg-white/80 backdrop-blur-md p-5 rounded-xl border border-white/40 shadow-sm hover:border-green-500/30 transition-all duration-300 flex items-start space-x-4 group"
-    >
-        <div className="p-3 bg-green-50 rounded-lg group-hover:bg-green-600 transition-colors duration-300 shadow-inner">
-            <Icon className="w-5 h-5 text-green-700 group-hover:text-white transition-colors duration-300"/>
-        </div>
-        <div>
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</h4>
-            <p className="text-sm font-bold text-slate-900 leading-snug">{value}</p>
-        </div>
-    </motion.div>
-);
 
 export function AboutFullProfile() {
   const electionResults = [
@@ -52,6 +32,16 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
+  // Personal Profile Data
+  const profileDetails = [
+      { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku" },
+      { icon: Smile, label: "Nickname", value: "Ragga" },
+      { icon: Flag, label: "Nationality", value: "Ghanaian" },
+      { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North" },
+      { icon: MapPin, label: "Place of Birth", value: "Apewosika, Cape Coast" },
+      { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho" },
+  ];
+
   return (
     <div className="bg-slate-50 relative overflow-hidden font-sans">
       {/* Background Ambience */}
@@ -59,121 +49,167 @@ export function AboutFullProfile() {
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
         
-        <div className="space-y-24">
+        <div className="space-y-20">
             
-            {/* PERSONAL PROFILE SECTION */}
+            {/* 1. AFFILIATION / PARTY (Moved to Top) */}
+            <motion.section
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="w-full"
+            >
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[300px] group">
+                    {/* Background Image */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                        style={{ 
+                            backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` 
+                        }}
+                    />
+                    {/* Dark Overlay for Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
+                    
+                    {/* Content */}
+                    <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-center">
+                        <motion.div 
+                            initial={{ x: -20, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                             <div className="flex items-center gap-3 mb-4">
+                                <Flag className="w-6 h-6 text-green-500" />
+                                <span className="text-white/80 font-bold tracking-widest uppercase text-sm">Political Affiliation</span>
+                            </div>
+                            <h2 className="text-4xl md:text-6xl font-black text-white leading-none mb-2">
+                                NATIONAL <br/>DEMOCRATIC <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-white">CONGRESS</span>
+                            </h2>
+                            <div className="mt-6 flex items-center gap-4">
+                                <span className="px-6 py-2 bg-green-600 text-white font-bold rounded-full shadow-[0_0_20px_rgba(22,163,74,0.4)]">NDC</span>
+                                <span className="text-white/60 font-medium">Cape Coast North Constituency</span>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </motion.section>
+
+            {/* 2. PERSONAL PROFILE (Innovative "Holographic Dossier" Design) */}
             <section>
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="mb-10 flex items-center gap-4"
+                    className="mb-8 flex items-center gap-4"
                 >
                   <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
                   <div>
                       <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Personal Profile</h2>
-                      <p className="text-slate-500 font-medium">The man behind the vision</p>
+                      <p className="text-slate-500 font-medium">Identity & Roots</p>
                   </div>
                 </motion.div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <ProfileItem icon={User} label="Full Name" value="Hon. Dr. Kwamena Minta Nyarku, PhD" delay={1} />
-                    <ProfileItem icon={Smile} label="Nickname" value="Ragga" delay={2} />
-                    <ProfileItem icon={Flag} label="Nationality" value="Ghanaian" delay={3} />
-                    <ProfileItem icon={DesignationIcon} label="Designation" value="MP for Cape Coast North" delay={4} />
-                    <ProfileItem icon={MapPin} label="Place of Birth" value="Apewosika, Cape Coast" delay={5} />
-                    <ProfileItem icon={Megaphone} label="Slogan" value="Obiara Ka Ho (Everyone is involved)" delay={6} />
-                </div>
+                {/* Unified Glass Dossier */}
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden relative"
+                >
+                    {/* Decorative Top Bar */}
+                    <div className="h-2 w-full bg-gradient-to-r from-green-600 via-green-400 to-green-600" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                        {profileDetails.map((item, index) => (
+                            <div key={index} className="p-6 flex items-center gap-4 hover:bg-slate-50/80 transition-colors group">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center group-hover:bg-green-100 group-hover:scale-110 transition-all duration-300">
+                                    <item.icon className="w-6 h-6 text-slate-400 group-hover:text-green-700 transition-colors" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{item.label}</h4>
+                                    <p className="text-base font-bold text-slate-900 leading-tight">{item.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Watermark */}
+                    <User className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-50 -z-0 pointer-events-none" />
+                </motion.div>
             </section>
 
-            {/* EDUCATIONAL QUALIFICATIONS - TIMELINE STYLE */}
+            {/* 3. ACADEMIC JOURNEY (Compact Single-Line Layout) */}
             <section>
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex items-center gap-3 mb-8"
+                    className="flex items-center gap-3 mb-6"
                 >
                   <div className="p-2 bg-green-100 rounded-lg">
                     <GraduationCap className="w-6 h-6 text-green-700" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Academic Journey</h3>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Academic Qualifications</h3>
                 </motion.div>
 
-                <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                     {educationData.map((edu, index) => (
-                        <motion.div 
+                        <div 
                             key={edu.institution}
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className={`group relative p-6 sm:px-8 border-b border-slate-100 last:border-b-0 hover:bg-green-50/50 transition-colors duration-300`}
+                            className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
                         >
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-slate-900 text-lg group-hover:text-green-800 transition-colors">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-baseline gap-x-2">
+                                    <h4 className="font-bold text-slate-900 text-sm md:text-base truncate">
                                         {edu.institution}
                                     </h4>
-                                    <p className="text-slate-500 text-sm font-medium mt-1 flex items-center gap-2">
-                                        <Award className="w-3.5 h-3.5 text-green-600" />
-                                        <span className="text-slate-700">{edu.qualification}</span>
-                                    </p>
-                                </div>
-                                <div className="flex-shrink-0">
-                                    <span className="px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 group-hover:bg-green-600 group-hover:text-white group-hover:border-green-600 transition-all">
-                                        {getYear(edu.completed)}
-                                    </span>
+                                    <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300" />
+                                    <span className="text-xs md:text-sm font-medium text-green-700">{edu.qualification}</span>
                                 </div>
                             </div>
-                            {/* Decorative left accent */}
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-600 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-center" />
-                        </motion.div>
+                            <div className="flex-shrink-0">
+                                <span className="font-bold text-slate-500 text-sm tabular-nums bg-slate-100 px-2 py-1 rounded">
+                                    {getYear(edu.completed)}
+                                </span>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </section>
 
-            {/* EMPLOYMENT HISTORY */}
+            {/* 4. EMPLOYMENT HISTORY (Compact Layout) */}
             <section>
                  <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex items-center gap-3 mb-8"
+                    className="flex items-center gap-3 mb-6"
                 >
                   <div className="p-2 bg-green-100 rounded-lg">
                     <DesignationIcon className="w-6 h-6 text-green-700" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Professional Leadership</h3>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Employment History</h3>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                     {employmentData.map((job, index) => (
-                        <motion.div
+                        <div 
                             key={job.institution}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -5 }}
-                            className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 relative overflow-hidden group"
+                            className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
                         >
-                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <BriefcaseIcon className="w-24 h-24 rotate-12" />
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-slate-900 text-sm md:text-base">
+                                    {job.institution}
+                                </h4>
                             </div>
-                            <h4 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Institution</h4>
-                            <p className="font-black text-slate-900 text-lg mb-4">{job.institution}</p>
-                            
-                            <div className="h-px w-full bg-slate-100 mb-4" />
-                            
-                            <h4 className="text-green-600 text-xs font-bold uppercase tracking-widest mb-1">Position Held</h4>
-                            <p className="font-bold text-slate-700">{job.position}</p>
-                        </motion.div>
+                            <div className="flex-shrink-0 text-right">
+                                <span className="text-xs md:text-sm font-bold text-slate-600 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                                    {job.position}
+                                </span>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </section>
 
-            {/* SERVICE IN PARLIAMENT - INNOVATIVE VISUALIZERS */}
+            {/* 5. SERVICE IN PARLIAMENT (No subtitle) */}
             <section>
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
@@ -184,7 +220,7 @@ export function AboutFullProfile() {
                   <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
                   <div>
                       <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Service in Parliament</h2>
-                      <p className="text-slate-500 font-medium">The People's Mandate</p>
+                      {/* Subtitle Removed as requested */}
                   </div>
                 </motion.div>
 
@@ -231,51 +267,33 @@ export function AboutFullProfile() {
                     </div>
 
                     {/* COMMITTEES GRID */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Party Card */}
-                        <motion.div 
-                            whileHover={{ y: -5 }}
-                            className="bg-slate-900 p-8 rounded-3xl text-white relative overflow-hidden"
-                        >
-                            <div className="absolute top-0 right-0 p-8 opacity-10">
-                                <Flag className="w-32 h-32" />
-                            </div>
-                            <h4 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-4">Affiliation</h4>
-                            <div className="text-3xl font-black leading-tight">
-                                National<br/>Democratic<br/><span className="text-green-500">Congress</span>
-                            </div>
-                            <div className="mt-4 px-3 py-1 bg-white/10 w-fit rounded text-xs font-bold border border-white/20">NDC</div>
-                        </motion.div>
-
-                        {/* Committees List */}
-                        <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                <Landmark className="w-5 h-5 text-green-600" />
-                                Parliamentary Committees
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {[
-                                  "Committee on Defence & Interior",
-                                  "Committee on Environment, Science & Technology",
-                                  "Committee on Ways & Means",
-                                  "Vice-Chairman, Committee of Petitions"
-                                ].map((committee, i) => (
-                                  <motion.div 
-                                    key={i}
-                                    whileHover={{ scale: 1.02 }}
-                                    className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-700 font-bold flex items-center gap-3 hover:bg-green-50 hover:border-green-100 hover:text-green-800 transition-colors cursor-default"
-                                  >
-                                    <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                    {committee}
-                                  </motion.div>
-                                ))}
-                            </div>
+                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                        <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
+                            <Landmark className="w-5 h-5 text-green-600" />
+                            Parliamentary Committees
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {[
+                              "Committee on Defence & Interior",
+                              "Committee on Environment, Science & Technology",
+                              "Committee on Ways & Means",
+                              "Vice-Chairman, Committee of Petitions"
+                            ].map((committee, i) => (
+                              <motion.div 
+                                key={i}
+                                whileHover={{ scale: 1.02 }}
+                                className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-700 font-bold flex items-center gap-3 hover:bg-green-50 hover:border-green-100 hover:text-green-800 transition-colors cursor-default"
+                              >
+                                <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                {committee}
+                              </motion.div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* MY VISION - 500x PRESIDENTIAL MANIFESTO STYLE */}
+            {/* 6. MY VISION */}
             <section className="relative pt-12">
               <div className="absolute inset-0 bg-green-900 rounded-[3rem] transform -skew-y-1 opacity-5 translate-y-20 z-0" />
               
@@ -289,8 +307,6 @@ export function AboutFullProfile() {
 
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-16 border border-white shadow-2xl relative overflow-hidden">
-                  
-                  {/* Big Quote Icon Background */}
                   <Quote className="absolute top-8 left-8 w-32 h-32 text-green-500/10 rotate-180" />
                   
                   <div className="relative z-10 space-y-10 text-center">
@@ -324,22 +340,3 @@ export function AboutFullProfile() {
     </div>
   );
 }
-
-// Icon wrapper for local usage to prevent import errors if lucide version mismatch
-const BriefcaseIcon = (props: any) => (
-    <svg 
-      {...props} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
-      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-    </svg>
-);
