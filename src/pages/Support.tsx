@@ -73,12 +73,11 @@ export function Support() {
   };
 
   const titleLetter = {
-    hidden: { y: 50, opacity: 0, rotateX: -90 },
+    hidden: { y: 40, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      rotateX: 0,
-      transition: { type: "spring", stiffness: 100, damping: 10 }
+      transition: { type: "spring", stiffness: 120, damping: 8 }
     }
   };
 
