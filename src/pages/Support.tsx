@@ -83,19 +83,20 @@ export function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 pb-24">
+    // REDUCED pt-20 to pt-16 on mobile to pull everything up
+    <div className="min-h-screen bg-slate-50 pt-16 sm:pt-20 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          {/* Reduced pt-10 to pt-4 on mobile to close gap with header */}
-          <div className="text-center pt-4 sm:pt-16 pb-12 sm:pb-20">
+          {/* REDUCED pt-4 to pt-1 on mobile */}
+          <div className="text-center pt-1 sm:pt-16 pb-12 sm:pb-20">
             
             {/* 1. Innovative Animated Title */}
             <motion.div 
               variants={titleContainer}
               initial="hidden"
               animate="visible"
-              className="mb-1" /* Reduced margin to bring slogan closer */
+              className="mb-1"
             >
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
                 {Array.from("Ragga Foundation").map((letter, i) => (
@@ -106,7 +107,7 @@ export function Support() {
               </h1>
             </motion.div>
 
-            {/* 2. Slogan (Now closer to title) */}
+            {/* 2. Slogan */}
             <div className="flex items-center justify-center gap-4 mb-10">
               <div className="h-px w-8 sm:w-12 bg-slate-200" />
               <p className="text-base sm:text-lg font-bold uppercase tracking-[0.35em] text-green-700">
@@ -115,7 +116,7 @@ export function Support() {
               <div className="h-px w-8 sm:w-12 bg-slate-200" />
             </div>
             
-            {/* 3. Description Box (Red Background, White Big Text) */}
+            {/* 3. Description Box */}
             <motion.div 
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -404,4 +405,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       </div>
     </div>
   );
-} 
+}
