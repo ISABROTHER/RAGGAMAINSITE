@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Landmark, Quote, Star, GraduationCap, Award
+  CheckSquare, Landmark, GraduationCap, Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -86,7 +86,7 @@ export function AboutFullProfile() {
                 </motion.div>
             </section>
 
-            {/* 2. AFFILIATION / PARTY (Now After Personal Profile) */}
+            {/* 2. AFFILIATION / PARTY */}
             <motion.section
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -270,40 +270,6 @@ export function AboutFullProfile() {
                         </div>
                     </div>
                 </div>
-            </section>
-
-            {/* 6. MY VISION */}
-            <section className="relative pt-12">
-              <div className="absolute inset-0 bg-green-900 rounded-[3rem] transform -skew-y-1 opacity-5 translate-y-20 z-0" />
-              <div className="relative z-10 text-center mb-12">
-                <Star className="w-12 h-12 text-yellow-400 mx-auto mb-4 fill-current animate-pulse" />
-                <h2 className="text-5xl font-black tracking-tighter text-slate-900 uppercase mb-4">My Vision</h2>
-                <div className="h-1.5 w-24 bg-green-600 mx-auto rounded-full" />
-              </div>
-
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-16 border border-white shadow-2xl relative overflow-hidden">
-                  <Quote className="absolute top-8 left-8 w-32 h-32 text-green-500/10 rotate-180" />
-                  <div className="relative z-10 space-y-10 text-center">
-                    <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-relaxed">
-                      "For me, leadership is not about titles or recognition. It is about what endures 
-                      after one’s service—the systems, opportunities, and hope that remain."
-                    </p>
-                    <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-                    <p className="text-lg md:text-xl font-medium text-slate-600 leading-relaxed">
-                      "My vision is to help build a <span className="text-green-700 font-bold">Cape Coast North</span> where fairness, opportunity, and 
-                      respect are shared by all, where everyone feels they belong, and every young person 
-                      knows their dream matters."
-                    </p>
-                  </div>
-                  <div className="mt-12 pt-8 flex flex-col items-center">
-                    <div className="text-xl font-black text-slate-900 uppercase tracking-wide">Hon. Dr. Kwamena Minta Nyarku (Ragga)</div>
-                    <div className="text-xs font-bold text-green-600 bg-green-50 px-4 py-1.5 rounded-full mt-3 uppercase tracking-widest border border-green-100">
-                      Member of Parliament, Cape Coast North
-                    </div>
-                  </div>
-                </div>
-              </div>
             </section>
         </div>
       </div>
