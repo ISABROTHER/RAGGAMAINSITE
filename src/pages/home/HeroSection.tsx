@@ -14,10 +14,7 @@ const HERO_IMAGES = [
 ];
 
 const TAGLINES = [
-  "Building a Better Cape Coast North",
-  "Every Voice Matters, Every Community Counts",
-  "Transparent. Accountable. Results-Driven.",
-  "Your MP, Working Tirelessly for You",
+  "OBIARA KA HO (EVERYONE IS INVOLVED)",
 ];
 
 export function HeroSection() {
@@ -62,7 +59,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* BADGE REMOVED HERE */}
+            {/* Badge Removed per previous instruction */}
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
               Building the Constituency <br className="block md:hidden" />
