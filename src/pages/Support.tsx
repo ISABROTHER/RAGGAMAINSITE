@@ -63,24 +63,6 @@ export function Support() {
   const featured = projects.find(p => p.is_featured);
   const others = projects.filter(p => !p.is_featured);
 
-  // Animation variants for the title letters
-  const titleContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08, delayChildren: 0.2 }
-    }
-  };
-
-  const titleLetter = {
-    hidden: { y: 40, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 120, damping: 8 }
-    }
-  };
-
   return (
     // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
     <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
@@ -90,35 +72,16 @@ export function Support() {
           {/* Reduced pt-1 to pt-0 on mobile */}
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
-            {/* 1. Catchy Animated Title */}
-            <motion.div 
-              variants={titleContainer}
-              initial="hidden"
-              animate="visible"
-              className="mb-2"
+            {/* 1. Animated Title — smooth fade-in + slide up */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase mb-2"
             >
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase">
-                {Array.from("Ragga").map((letter, i) => (
-                  <motion.span
-                    key={`r-${i}`}
-                    variants={titleLetter}
-                    className="inline-block origin-bottom"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-                <span>{"\u00A0"}</span>
-                {Array.from("Foundation").map((letter, i) => (
-                  <motion.span
-                    key={`f-${i}`}
-                    variants={titleLetter}
-                    className="inline-block origin-bottom text-green-700"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </h1>
-            </motion.div>
+              <span className="text-slate-900">Ragga </span>
+              <span className="text-green-700">Foundation</span>
+            </motion.h1>
 
             {/* Animated underline */}
             <motion.div
