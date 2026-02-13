@@ -86,7 +86,6 @@ const priorities: Priority[] = [
   }
 ];
 
-// Simple Counter Component for Animation
 function Counter({ end, duration = 2000 }: { end: number, duration?: number }) {
   const [count, setCount] = useState(0);
 
@@ -141,7 +140,6 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
     <section className="py-12 md:py-24 bg-white">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
         <div className="text-left mb-10 md:mb-16">
           <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
             My Vision
@@ -152,15 +150,13 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             </h3>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
-          {/* Updated Vision Text: Acknowledging Government and Municipal Assembly Support */}
+          {/* UPDATED VISION TEXT - NO FLUFF */}
           <p className="mt-6 text-base md:text-lg text-slate-600 max-w-4xl mr-auto leading-relaxed">
-            With the invaluable support of the government and the municipal assembly, we are building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
+            With the support of the government and collaboration with the municipal assembly, I am focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
           </p>
         </div>
 
-        {/* =========================
-            MOBILE LAYOUT
-           ========================= */}
+        {/* MOBILE LAYOUT */}
         <div className="md:hidden space-y-4">
           {priorities.map((priority) => {
             const Icon = priority.icon;
@@ -190,9 +186,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
           })}
         </div>
 
-        {/* =========================
-            DESKTOP LAYOUT
-           ========================= */}
+        {/* DESKTOP LAYOUT */}
         <div className="hidden md:block relative group/section">
           
           {canScrollLeft && (
