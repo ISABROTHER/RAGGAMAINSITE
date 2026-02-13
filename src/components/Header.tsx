@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import { useState, useEffect, useRef } from 'react';
 import {
-  Menu, X, Home, User, Users, HardHat, Award,
+  MoreVertical, X, Home, User, Users, HardHat, Award,
   Calendar, MessageSquareWarning,
   LayoutDashboard, LogIn, ChevronRight, Vote,
   UserCircle, Heart, LogOut, Sparkles
@@ -170,22 +170,36 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle - CHANGED TO THREE DOTS */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className="flex items-center gap-2 px-3 py-2 bg-[#CE1126] text-white border-l-4 border-black/10 shadow-lg active:scale-95 transition-all rounded-none"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md ${
+                  mobileMenuOpen 
+                    ? 'bg-white text-[#CE1126] border border-[#CE1126]' 
+                    : 'bg-[#CE1126] text-white border border-transparent hover:bg-[#b00e1f]'
+                }`}
               >
-                <span className="font-black text-[10px] uppercase tracking-widest">MENU</span>
-                {mobileMenuOpen ? <X className="w-4 h-4" strokeWidth={3} /> : <Menu className="w-4 h-4" strokeWidth={3} />}
+                {/* Rotating Animation between Dots and X */}
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {mobileMenuOpen ? (
+                    <X className="w-6 h-6" strokeWidth={2.5} />
+                  ) : (
+                    <MoreVertical className="w-6 h-6" strokeWidth={2.5} />
+                  )}
+                </motion.div>
               </button>
             </div>
           </div>
 
-          {/* INNOVATIVE MOBILE DROPDOWN */}
+          {/* INNOVATIVE MOBILE DROPDOWN - Positioned Under the Dots */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
@@ -202,10 +216,11 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   animate="open"
                   exit="closed"
                   variants={containerVariants}
-                  className="fixed right-3 z-[70] w-[320px] origin-top-right"
-                  style={{ top: `${headerHeight + 6}px` }}
+                  // Adjusted 'top' and 'right' to align perfectly under the 3-dot icon
+                  className="fixed right-4 z-[70] w-[320px] origin-top-right"
+                  style={{ top: `${headerHeight - 10}px` }} 
                 >
-                  <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
+                  <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden ring-1 ring-white/10">
                     
                     {/* AUTH ON TOP */}
                     <motion.div 
@@ -255,7 +270,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded w-full text-left transition-all duration-300 ${
+                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl w-full text-left transition-all duration-300 ${
                               isActive
                                 ? 'bg-white shadow-xl scale-[1.02]' 
                                 : 'text-white/80 hover:bg-white/5 hover:text-white'
@@ -297,5 +312,5 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       {/* Spacer to prevent overlapping content below fixed header */}
       <div style={{ height: `${headerHeight}px` }} />
     </div>
-  ); 
+  );
 }
