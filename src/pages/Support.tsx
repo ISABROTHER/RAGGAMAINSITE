@@ -1,3 +1,4 @@
+// src/pages/Support.tsx
 import { useState, useEffect } from 'react';
 import { Heart, BookOpen, Target, Users, ArrowRight, Loader2, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -68,12 +69,18 @@ export function Support() {
 
         <AnimatedSection>
           <div className="text-center pt-8 pb-10 sm:pb-12">
-            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-green-700 mb-3">The Ragga Foundation</p>
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-              Obiara Ka Ho
+            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tighter uppercase mb-6">
+              Ragga Foundation
             </h1>
-            <p className="mt-3 text-base sm:text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
-              Everyone has a role to play. Support our projects and make a lasting impact in Cape Coast North.
+            
+            <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm mb-8">
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium">
+                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
+              </p>
+            </div>
+
+            <p className="text-xl sm:text-2xl font-black uppercase tracking-[0.2em] text-green-700">
+              Obiara Ka Ho
             </p>
           </div>
         </AnimatedSection>
