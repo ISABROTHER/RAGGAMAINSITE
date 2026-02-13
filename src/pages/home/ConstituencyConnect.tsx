@@ -165,61 +165,12 @@ export function ConstituencyConnect() {
             My <span className="text-green-400">Constituents</span>
           </h2>
           <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed max-w-lg mx-auto">
-            Are you a student in cape coast north, business person or resident? Let me know so we can build a constituency together and support you when there is an opportunity.
+            Are you a student in Cape Coast North, business person or resident? Let me know so we can build a constituency together and support you when there is an opportunity.
           </p>
-          <button 
-            onClick={() => setShowInfo(!showInfo)}
-            className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all"
-          >
-            <Info className="w-4 h-4" />
-            {showInfo ? "Hide info" : "Why register?"}
-          </button>
         </div>
 
-        {showInfo && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="mb-10 bg-white rounded-2xl p-6 md:p-8 shadow-xl max-w-3xl mx-auto overflow-hidden"
-          >
-            <div className="space-y-6 text-slate-800">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-bold text-green-700 uppercase text-xs mb-2">Why we ask for your details</h4>
-                  <p className="text-xs leading-relaxed">We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-green-700 uppercase text-xs mb-2">What you get from registering</h4>
-                  <p className="text-xs leading-relaxed">You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-green-700 uppercase text-xs mb-2">How we protect your information</h4>
-                  <p className="text-xs leading-relaxed">Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-green-700 uppercase text-xs mb-2">What to register</h4>
-                  <p className="text-xs leading-relaxed">Name and phone number are enough to start. You can add your community and category later.</p>
-                </div>
-              </div>
-              <div className="border-t border-slate-100 pt-4">
-                <h4 className="font-bold text-green-700 uppercase text-xs mb-3">Common problems</h4>
-                <div className="grid md:grid-cols-2 gap-4 text-[10px]">
-                  <p><strong>Duplicates:</strong> We match records to prevent repeated entries.</p>
-                  <p><strong>Wrong details:</strong> Update your info anytime.</p>
-                  <p><strong>Verification:</strong> We may contact you to confirm community.</p>
-                  <p><strong>No smartphone:</strong> Register through a support person at our office.</p>
-                </div>
-              </div>
-              <div className="bg-slate-50 p-4 rounded-lg text-[10px] italic">
-                If you register and hear nothing, your record stays active. My office will reach out when there is a relevant update.
-              </div>
-              <p className="text-[10px] font-bold text-red-600">Report an issue: Use the platform to submit. If urgent, contact my office directly.</p>
-            </div>
-          </motion.div>
-        )}
-
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-[400px]">
+          <div className="w-full max-w-[420px]">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
               <AnimatePresence mode="wait">
                 {view === "searching" && (
@@ -236,61 +187,122 @@ export function ConstituencyConnect() {
                           <Fingerprint className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900 leading-tight uppercase">Database Access</p>
+                          <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">Database Access</p>
                         </div>
                       </div>
+                      
+                      {/* WHY REGISTER BUTTON INSIDE CARD */}
+                      <button 
+                        onClick={() => setShowInfo(!showInfo)}
+                        className={`p-2 rounded-lg transition-all border flex items-center gap-1.5 ${
+                          showInfo 
+                            ? "bg-green-600 border-green-600 text-white" 
+                            : "bg-green-50 border-green-100 text-green-700 hover:bg-green-100"
+                        }`}
+                        title="Why register?"
+                      >
+                        <Info className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Info</span>
+                      </button>
                     </div>
 
-                    <form onSubmit={handleSearch}>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                        <input
-                          type="text"
-                          placeholder="Enter name or phone number..."
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                          className={`${inputCls} !pl-9`}
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={!query.trim()}
-                        className="mt-3 w-full bg-slate-900 text-white font-bold py-2.5 rounded-lg transition-all text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
-                      >
-                        <Search className="w-3.5 h-3.5" />
-                        Check Status
-                      </button>
-                    </form>
-
-                    <AnimatePresence mode="wait">
-                      {found && (
-                        <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                              <UserCheck className="w-4 h-4 text-white" />
+                    <AnimatePresence>
+                      {showInfo ? (
+                        <motion.div 
+                          key="info-content"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden mb-6"
+                        >
+                          <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100">
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Why we ask for your details</h4>
+                              <p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p>
-                              <p className="text-green-700 text-[10px] font-bold">REGISTERED</p>
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">What you get from registering</h4>
+                              <p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
                             </div>
-                            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">How we protect your information</h4>
+                              <p>Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p>
+                            </div>
+                            <div className="border-t border-slate-200 pt-3">
+                              <p className="font-bold">Common problems:</p>
+                              <ul className="list-disc pl-3 mt-1 space-y-1">
+                                <li><strong>Duplicates:</strong> We match records to prevent repeated entries.</li>
+                                <li><strong>Wrong details:</strong> Update your info anytime.</li>
+                                <li><strong>Verification:</strong> We may contact you to confirm community.</li>
+                                <li><strong>No smartphone:</strong> Register through a support person at our office.</li>
+                              </ul>
+                            </div>
+                            <div className="bg-white/50 p-2 rounded border border-green-100 italic text-[10px]">
+                              If you register and hear nothing, your record stays active. We will reach out when relevant updates arise.
+                            </div>
+                            <p className="text-[10px] font-bold text-red-600 uppercase pt-1">Report urgent issues directly to my office.</p>
                           </div>
-                          <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
-                            View Details
-                          </button>
                         </motion.div>
-                      )}
-                      {notFound && (
-                        <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                              <UserPlus className="w-4 h-4 text-white" />
+                      ) : (
+                        <motion.div
+                          key="form-content"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="space-y-4"
+                        >
+                          <form onSubmit={handleSearch}>
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                              <input
+                                type="text"
+                                placeholder="Enter name or phone number..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                className={`${inputCls} !pl-9`}
+                              />
                             </div>
-                            <p className="font-bold text-amber-900 text-xs">Not found: "{searchQuery}"</p>
-                          </div>
-                          <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
-                            Register My Info
-                          </button>
+                            <button
+                              type="submit"
+                              disabled={!query.trim()}
+                              className="mt-3 w-full bg-slate-900 text-white font-bold py-2.5 rounded-lg transition-all text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                            >
+                              <Search className="w-3.5 h-3.5" />
+                              Check Status
+                            </button>
+                          </form>
+
+                          <AnimatePresence mode="wait">
+                            {found && (
+                              <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <UserCheck className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p>
+                                    <p className="text-green-700 text-[10px] font-bold">REGISTERED</p>
+                                  </div>
+                                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                </div>
+                                <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
+                                  View Details
+                                </button>
+                              </motion.div>
+                            )}
+                            {notFound && (
+                              <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <UserPlus className="w-4 h-4 text-white" />
+                                  </div>
+                                  <p className="font-bold text-amber-900 text-xs">Not found: "{searchQuery}"</p>
+                                </div>
+                                <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-xs uppercase">
+                                  Register My Info
+                                </button>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </motion.div>
                       )}
                     </AnimatePresence>
