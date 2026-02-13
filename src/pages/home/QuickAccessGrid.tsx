@@ -107,13 +107,12 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Text Layer */}
+              {/* Text Layer - Updated with Frosted Glass styling */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="
-                  bg-gradient-to-r from-red-600/95 to-red-700/95
-                  backdrop-blur-md border border-white/10 
+                  bg-white/10 backdrop-blur-md border border-white/20 
                   rounded-none px-3 py-2.5 shadow-lg
-                  transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
+                  transform transition-all duration-300 group-hover:bg-white/20
                 ">
                   {/* Title: 'whitespace-nowrap' forces single line. 'truncate' handles overflow gently. */}
                   <h3 className="text-sm sm:text-base md:text-2xl font-bold text-white leading-tight whitespace-nowrap truncate">
