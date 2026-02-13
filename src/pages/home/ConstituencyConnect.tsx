@@ -17,10 +17,10 @@ import {
   Info,
   Server,
   Briefcase,
-  GraduationCap
+  GraduationCap,
+  Home
 } from "lucide-react";
 
-// List of towns based on constituency data
 const COMMUNITIES = [
   "Abura", "Adisadel", "Akotokyir", "Ankaful", "Antem", "Brabedze", 
   "Duakor", "Efutu", "Kakumdo", "Kwaprow", "Nkanfoa", "Nyinasin", 
@@ -85,7 +85,8 @@ export function ConstituencyConnect() {
   const [showInfo, setShowInfo] = useState(false);
   const [activeTab, setActiveTab] = useState<"check" | "register" | null>(null);
 
-  // Registration Form States
+  // Registration states
+  const [livesInNorth, setLivesInNorth] = useState<boolean | null>(null);
   const [isStudent, setIsStudent] = useState<boolean | null>(null);
   const [isEmployed, setIsEmployed] = useState<boolean | null>(null);
 
@@ -96,6 +97,7 @@ export function ConstituencyConnect() {
     setView("search");
     setSearchQuery("");
     setActiveTab(null);
+    setLivesInNorth(null);
     setIsStudent(null);
     setIsEmployed(null);
   };
@@ -150,11 +152,9 @@ export function ConstituencyConnect() {
                         <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
                           {showInfo ? <Info className="w-4 h-4 text-white" /> : <Fingerprint className="w-4 h-4 text-white" />}
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
-                            {showInfo ? "Information" : "Database Access"}
-                          </p>
-                        </div>
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                          {showInfo ? "Information" : "Database Access"}
+                        </p>
                       </div>
                       <button onClick={() => setShowInfo(!showInfo)} className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all ${showInfo ? "bg-slate-900 border-slate-900 text-white" : "bg-green-50 border-green-200 text-green-700"}`}>
                         {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
@@ -168,7 +168,6 @@ export function ConstituencyConnect() {
                           <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100 text-left">
                             <div><h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4><p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p></div>
                             <div><h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4><p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p></div>
-                            <div><h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Privacy</h4><p>Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p></div>
                           </div>
                         </motion.div>
                       ) : (
@@ -224,52 +223,71 @@ export function ConstituencyConnect() {
                   <motion.div key="register" {...anim} className="p-5 text-left">
                     <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-5"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
                     
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="First Name" className={inputCls} />
-                        <input type="text" placeholder="Surname" className={inputCls} />
-                      </div>
-                      <input type="tel" placeholder="Phone Number" className={inputCls} />
-                      
-                      {/* Community Dropdown */}
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
-                        <select className={`${selectCls} pl-9`}>
-                          <option value="">Select Residential Community</option>
-                          {COMMUNITIES.map(town => <option key={town} value={town}>{town}</option>)}
-                        </select>
-                      </div>
-
-                      {/* Status Selection: Student */}
-                      <div className="pt-1">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Are you a student?</p>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button onClick={() => setIsStudent(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                            <div className="flex items-center justify-center gap-2"><GraduationCap className="w-3.5 h-3.5" /> Yes</div>
+                    {/* STEP 1: RESIDENCY CHECK */}
+                    {livesInNorth === null ? (
+                      <div className="py-4 space-y-4">
+                        <div className="text-center">
+                          <Home className="w-10 h-10 text-green-600 mx-auto mb-3" />
+                          <h3 className="text-xs font-black text-slate-900 uppercase">Residency Verification</h3>
+                          <p className="text-[10px] text-slate-500 mt-1">This registration is exclusively for residents of Cape Coast North.</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-3">
+                          <button onClick={() => setLivesInNorth(true)} className="w-full bg-green-600 text-white font-black py-3 rounded-xl text-[10px] uppercase transition-all hover:bg-green-700">
+                            I live in Cape Coast North
                           </button>
-                          <button onClick={() => setIsStudent(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === false ? 'bg-slate-900 border-slate-900 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                            No
+                          <button onClick={() => setLivesInNorth(false)} className="w-full bg-slate-100 text-slate-600 font-black py-3 rounded-xl text-[10px] uppercase transition-all hover:bg-slate-200">
+                            I live elsewhere
                           </button>
                         </div>
                       </div>
-
-                      {/* Status Selection: Employment */}
-                      <div className="pt-1">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Employment Status</p>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button onClick={() => setIsEmployed(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                            <div className="flex items-center justify-center gap-2"><Briefcase className="w-3.5 h-3.5" /> Employed</div>
-                          </button>
-                          <button onClick={() => setIsEmployed(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === false ? 'bg-red-600 border-red-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                            Unemployed
-                          </button>
-                        </div>
+                    ) : livesInNorth === false ? (
+                      /* BLOCKER FOR NON-RESIDENTS */
+                      <div className="py-8 text-center space-y-4">
+                        <X className="w-12 h-12 text-red-500 mx-auto" />
+                        <h3 className="text-xs font-black text-slate-900 uppercase">Access Restricted</h3>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">This portal is reserved for constituents of Cape Coast North. Please contact your local representative for assistance in your area.</p>
+                        <button onClick={reset} className="text-[10px] font-black text-green-700 uppercase underline">Return to Search</button>
                       </div>
+                    ) : (
+                      /* STEP 2: REGISTRATION FORM */
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <input type="text" placeholder="First Name" className={inputCls} />
+                          <input type="text" placeholder="Surname" className={inputCls} />
+                        </div>
+                        <input type="tel" placeholder="Phone Number" className={inputCls} />
+                        
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+                          <select className={`${selectCls} pl-9`}>
+                            <option value="">Select Residential Community</option>
+                            {COMMUNITIES.map(town => <option key={town} value={town}>{town}</option>)}
+                          </select>
+                        </div>
 
-                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-4 shadow-lg active:scale-[0.98] transition-all">
-                        Submit Details
-                      </button>
-                    </div>
+                        <div className="pt-1">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Are you a student?</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button onClick={() => setIsStudent(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
+                              <div className="flex items-center justify-center gap-2"><GraduationCap className="w-3.5 h-3.5" /> Yes</div>
+                            </button>
+                            <button onClick={() => setIsStudent(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === false ? 'bg-slate-900 border-slate-900 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>No</button>
+                          </div>
+                        </div>
+
+                        <div className="pt-1">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Employment Status</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button onClick={() => setIsEmployed(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
+                              <div className="flex items-center justify-center gap-2"><Briefcase className="w-3.5 h-3.5" /> Employed</div>
+                            </button>
+                            <button onClick={() => setIsEmployed(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === false ? 'bg-red-600 border-red-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>Unemployed</button>
+                          </div>
+                        </div>
+
+                        <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-4 shadow-lg active:scale-[0.98] transition-all">Submit Details</button>
+                      </div>
+                    )}
                   </motion.div>
                 )}
 
