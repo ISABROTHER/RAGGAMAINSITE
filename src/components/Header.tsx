@@ -46,16 +46,16 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     };
   }, [mobileMenuOpen]);
 
-  // ENLARGED LOGO & HEADER DIMENSIONS
-  const headerHeightBase = 110; // Increased base height to fit larger logo
+  // --- UPDATED DIMENSIONS: LARGER & NUDGED LEFT ---
+  const headerHeightBase = 115; 
   const headerScale = 1.0; 
   const headerHeight = headerHeightBase * headerScale;
 
-  const logoScale = 1.4; // 40% Increase for prominence
+  const logoScale = 1.5; // Increased by 10% from previous 1.4
   const logoTopOffset = 10;
   const logoBottomOffset = 4;
   const logoVerticalAdjust = -2;
-  const logoLeftAdjust = 15;
+  const logoLeftAdjust = 5; // Nudged left (decreased from 15)
 
   const desktopNavGap = 16;
   const desktopNavPaddingY = 10;
@@ -122,7 +122,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
           <div className="flex justify-between items-center h-full">
-            {/* Enlarged Logo */}
+            {/* Larger Logo, Positioned Left */}
             <button
               onClick={() => handleNavClick('home')}
               className="flex items-center space-x-3 group transition-transform hover:scale-[1.02] focus:outline-none"
@@ -170,7 +170,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle - Stacked Design */}
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
@@ -197,7 +197,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </div>
           </div>
 
-          {/* INNOVATIVE MOBILE DROPDOWN */}
+          {/* Mobile Dropdown */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
@@ -219,7 +219,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 >
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden ring-1 ring-white/10">
                     
-                    {/* AUTH ON TOP */}
+                    {/* Auth Section */}
                     <motion.div 
                       variants={itemVariants}
                       className="relative p-5 bg-black/10 border-b border-white/10"
@@ -257,7 +257,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                         )}
                     </motion.div>
 
-                    {/* NAV LIST */}
+                    {/* Nav Items */}
                     <div className="overflow-y-auto max-h-[55vh] p-2.5 space-y-1.5">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
@@ -306,7 +306,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           </AnimatePresence>
         </nav>
       </header>
+      {/* Dynamic Spacer */}
       <div style={{ height: `${headerHeight}px` }} />
     </div>
   );
-} 
+}
