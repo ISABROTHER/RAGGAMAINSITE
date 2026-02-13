@@ -1,54 +1,421 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="robots" content="index, follow" />
-    
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/fJJ4An5.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="https://i.imgur.com/fJJ4An5.png" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+// src/pages/Support.tsx
+import { useState, useEffect, useMemo } from 'react';
+import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { AnimatedSection } from '../components/AnimatedSection';
+import { ContributeModal } from '../components/ContributeModal';
+import { supabase } from '../lib/supabase';
 
-    <title>Hon. Dr. Kwamena Minta Nyarku (Ragga) | MP for Cape Coast North | Obiara Ka Ho</title>
-    
-    <meta name="description" content="Official website for Hon. Dr. Kwamena Minta Nyarku (Ragga), the MP for Cape Coast North. Discover his 'Obiara Ka Ho' vision, track development projects, and stay updated on progress in Cape Coast." />
-    
-    <meta name="keywords" content="mp for cape coast north, ragga mp, ragga, kwamena minta, kwamena minta nyarku, obiara ka ho, cape coast, cape coast north, development, parliament, Ghana" />
-    <meta name="author" content="Office of Hon. Ragga" />
+interface Project {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  category: string;
+  image_url: string | null;
+  target_units: number;
+  unit_label: string;
+  unit_price_ghs: number;
+  is_featured: boolean;
+}
 
-    <link rel="canonical" href="https://kwamenamintanyarku.com">
+interface ProjectWithProgress extends Project {
+  raised_units: number;
+  donor_count: number;
+  percent: number;
+}
 
-    <link rel="preconnect" href="https://i.imgur.com">
+export function Support() {
+  const [projects, setProjects] = useState<ProjectWithProgress[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<ProjectWithProgress | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
 
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/fJJ4An5.png">
+  const fetchProjects = async () => {
+    const { data: projectRows } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('is_active', true)
+      .order('is_featured', { ascending: false });
 
-    <meta property="og:title" content="Hon. Dr. Kwamena Minta Nyarku (Ragga) | MP for Cape Coast North" />
-    <meta property="og:description" content="Join the movement for development in Cape Coast North. Tracking infrastructure, education support, and healthcare initiatives. Obiara Ka Ho!" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://kwamenamintanyarku.com" />
-    <meta property="og:image" content="https://i.imgur.com/4yctvPb.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    if (!projectRows) { setLoading(false); return; }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hon. Dr. Kwamena Minta Nyarku (Ragga) | MP for Cape Coast North" />
-    <meta name="twitter:description" content="Official website for development and progress in Cape Coast North. Obiara Ka Ho!" />
-    <meta name="twitter:image" content="https://i.imgur.com/4yctvPb.jpg" />
+    const withProgress: ProjectWithProgress[] = await Promise.all(
+      projectRows.map(async (p) => {
+        const { data: contribs } = await supabase
+          .from('contributions')
+          .select('units_contributed')
+          .eq('project_id', p.id)
+          .eq('status', 'completed');
 
-    <meta name="theme-color" content="#004528" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  </head>
-  <body>
-    <noscript>
-      <div style="padding: 40px; text-align: center; font-family: system-ui;">
-        <h1>Hon. Dr. Kwamena Minta Nyarku (Ragga)</h1>
-        <p>MP for Cape Coast North</p>
-        <p>JavaScript is required to view this website. Please enable JavaScript in your browser.</p>
+        const raised = contribs?.reduce((sum, c) => sum + (c.units_contributed || 0), 0) || 0;
+        const donorCount = contribs?.length || 0;
+        const percent = p.target_units > 0 ? Math.min(100, Math.round((raised / p.target_units) * 100)) : 0;
+        return { ...p, raised_units: raised, donor_count: donorCount, percent };
+      })
+    );
+
+    setProjects(withProgress);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchProjects(); }, []);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(projects.map(p => p.category)));
+    return ['All', ...cats];
+  }, [projects]);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      const matchesSearch = searchQuery === '' || 
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [projects, searchQuery, activeCategory]);
+
+  return (
+    // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
+    <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <AnimatedSection>
+          {/* Reduced pt-1 to pt-0 on mobile */}
+          <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
+            
+            {/* 1. Animated Title — smooth fade-in + slide up */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase mb-2"
+            >
+              <span className="text-green-700">Ragga </span>
+              <span className="text-green-700">Foundation</span>
+            </motion.h1>
+
+            {/* Animated underline */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+              className="mx-auto w-24 sm:w-32 h-1 bg-gradient-to-r from-red-500 via-yellow-400 to-green-600 rounded-full origin-left mb-4"
+            />
+
+            
+            {/* 3. Description Box */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 1, duration: 0.5, type: "spring" }}
+              className="max-w-4xl mx-auto bg-red-600 rounded-3xl p-6 sm:p-12 shadow-xl shadow-red-600/20 transform rotate-1 hover:rotate-0 transition-transform duration-300"
+            >
+              <p className="text-sm sm:text-base font-medium text-white leading-relaxed text-center">
+                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
+              </p>
+            </motion.div>
+
+          </div>
+        </AnimatedSection>
+
+        {/* Search & Filter Bar — always visible */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mb-10"
+        >
+          {/* Search Input */}
+          <div className="relative mb-5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-12 py-4 bg-white rounded-2xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 shadow-sm transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-3.5 h-3.5 text-slate-500" />
+              </button>
+            )}
+          </div>
+
+          {/* Category Filter Pills */}
+          {categories.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <SlidersHorizontal className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                    activeCategory === cat
+                      ? 'bg-green-600 text-white shadow-md shadow-green-600/20'
+                      : 'bg-white text-slate-500 border border-slate-200 hover:border-green-300 hover:text-green-700'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-32">
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+              <Loader2 className="w-8 h-8 text-green-700" />
+            </motion.div>
+          </div>
+        ) : (
+          <>
+            {/* Results Count */}
+            <div className="flex items-center gap-4 mb-8 mt-10 px-1">
+              <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
+                {filteredProjects.length} {filteredProjects.length === 1 ? 'Project' : 'Projects'}
+              </h2>
+              <div className="h-px flex-1 bg-slate-200" />
+            </div>
+
+            {filteredProjects.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {filteredProjects.map((p, i) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.08, duration: 0.4 }}
+                  >
+                    <ProjectCard project={p} onContribute={() => setSelectedProject(p)} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <Search className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                <p className="text-sm font-medium">No projects match your search.</p>
+                <button
+                  onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
+                  className="mt-3 text-xs font-bold text-green-600 hover:text-green-700 uppercase tracking-wider"
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+
+      {selectedProject && (
+        <ContributeModal
+          project={selectedProject}
+          onClose={() => { setSelectedProject(null); fetchProjects(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+const BOOK_PROJECT_IMAGE = 'https://i.imgur.com/4yctvPb.jpg';
+
+function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
+  const isBookProject = project.title.toLowerCase().includes('book') || project.title.toLowerCase().includes('obiara');
+  const displayImage = isBookProject ? BOOK_PROJECT_IMAGE : project.image_url;
+  const [showShare, setShowShare] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = `${window.location.origin}/support?project=${project.slug}`;
+  const shareText = `Support "${project.title}" on Ragga Foundation!`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
+  };
+
+  return (
+    <>
+      <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        {/* Image */}
+        <div className="relative h-44 sm:h-52 overflow-hidden">
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={project.title}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-slate-300" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/90 text-slate-800 rounded-full backdrop-blur-sm">
+            {project.category}
+          </span>
+          <span className="absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-extrabold tabular-nums bg-green-600 text-white rounded-full">
+            {project.percent}%
+          </span>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 sm:p-5">
+          <h3 className="text-base font-bold text-slate-900 mb-1 leading-snug group-hover:text-green-700 transition-colors line-clamp-1">
+            {project.title}
+          </h3>
+          <p className="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-2">
+            {project.description}
+          </p>
+
+          {/* Progress */}
+          <div className="mb-4">
+            <div className="flex justify-between text-[11px] mb-1.5">
+              <span className="font-semibold text-slate-600 tabular-nums">
+                {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${project.percent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              animate={{
+                boxShadow: [
+                  '0 0 0 0 rgba(22, 163, 74, 0.3)',
+                  '0 0 0 8px rgba(22, 163, 74, 0)',
+                  '0 0 0 0 rgba(22, 163, 74, 0)',
+                ],
+              }}
+              transition={{
+                boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+              }}
+              onClick={onContribute}
+              className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.15, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Heart className="w-3.5 h-3.5 fill-current" />
+              </motion.span>
+              Contribute
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowShare(true)}
+              className="w-11 h-11 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      {/* Share Bottom Sheet */}
+      {showShare && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowShare(false)}
+        >
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-white rounded-t-3xl p-6 pb-10"
+          >
+            {/* Handle */}
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
+
+            <h3 className="text-sm font-bold text-slate-900 text-center mb-6 uppercase tracking-wider">
+              Share this project
+            </h3>
+
+            {/* Share Options */}
+            <div className="flex justify-center gap-6 mb-8">
+              <button
+                onClick={() => {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">WhatsApp</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center">
+                  <Twitter className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">X</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">f</span>
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">Facebook</span>
+              </button>
+
+              <button
+                onClick={handleCopy}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${copied ? 'bg-green-500' : 'bg-slate-200'} transition-colors`}>
+                  {copied ? <Check className="w-6 h-6 text-white" /> : <Copy className="w-6 h-6 text-slate-600" />}
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">{copied ? 'Copied!' : 'Copy Link'}</span>
+              </button>
+            </div>
+
+            {/* Cancel */}
+            <button
+              onClick={() => setShowShare(false)}
+              className="w-full py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
+  );
+} 
