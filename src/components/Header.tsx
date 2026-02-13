@@ -262,18 +262,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           </AnimatePresence>
         </nav>
       </header>
-
-      {/* Marquee Bar */}
-      <div
-        className="bg-red-600 h-5 overflow-hidden relative flex items-center"
-        style={{ marginTop: `${headerHeight}px` }}
-      >
-        <div className="marquee-track absolute top-0 left-0 h-full flex items-center whitespace-nowrap font-bold text-white text-[0.65rem] tracking-widest uppercase">
-          <span>
-            SUPPORT HON. RAGGA’S OPERATION 1000 DESKS FOR STUDENTS 'II' OBIARA KA HO 'II'
-          </span>
-        </div>
-      </div>
     </div>
   );
 } 
