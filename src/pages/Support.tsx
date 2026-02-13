@@ -79,7 +79,7 @@ export function Support() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase mb-2"
             >
-              <span className="text-slate-900">Ragga </span>
+              <span className="text-green-700">Ragga </span>
               <span className="text-green-700">Foundation</span>
             </motion.h1>
 
