@@ -95,52 +95,52 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
             <div className="md:hidden relative z-50">
-              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className={`w-14 h-14 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-4 border-white ${mobileMenuOpen ? 'rotate-90' : ''}`}>
-                {mobileMenuOpen ? <X className="w-7 h-7" strokeWidth={3} /> : <Menu className="w-7 h-7" strokeWidth={3} />}
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className={`w-12 h-12 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-2 border-white transition-transform ${mobileMenuOpen ? 'rotate-90' : ''}`}>
+                {mobileMenuOpen ? <X className="w-6 h-6" strokeWidth={3} /> : <Menu className="w-6 h-6" strokeWidth={3} />}
               </button>
             </div>
           </div>
           <AnimatePresence>
             {mobileMenuOpen && (
-              <motion.div initial="closed" animate="open" exit="closed" variants={menuVariants} className="md:hidden absolute top-[10px] right-[10px] w-[260px] origin-top-right">
-                <div className="relative bg-[#CE1126] pt-20 pb-6 px-5 shadow-2xl h-full w-full overflow-hidden border-4 border-white/20 rounded-[32px] max-h-[85vh] overflow-y-auto">
-                  <motion.div variants={itemVariants} className="mb-4 relative z-10 space-y-2">
+              <motion.div initial="closed" animate="open" exit="closed" variants={menuVariants} className="md:hidden absolute top-[12px] right-[12px] w-[250px] origin-top-right">
+                <div className="relative bg-[#CE1126] pt-16 pb-4 px-4 shadow-2xl h-full w-full overflow-hidden border-2 border-white/20 rounded-[24px] max-h-[85vh] overflow-y-auto">
+                  <motion.div variants={itemVariants} className="mb-3 relative z-10 space-y-2">
                     {user ? (
                       <>
-                        <button onClick={() => handleNavClick('dashboard')} className="w-full bg-white text-[#CE1126] rounded-xl p-3 flex items-center justify-between">
+                        <button onClick={() => handleNavClick('dashboard')} className="w-full bg-white text-[#CE1126] rounded-xl p-2.5 flex items-center justify-between shadow-sm">
                           <div className="flex items-center gap-2">
                             <LayoutDashboard className="w-4 h-4" />
-                            <span className="font-black text-lg">DASHBOARD</span>
+                            <span className="font-black text-sm">DASHBOARD</span>
                           </div>
                           <ChevronRight className="w-4 h-4" />
                         </button>
                         <button
                           onClick={async () => { await signOut(); handleNavClick('home'); }}
-                          className="w-full bg-white/90 text-slate-700 rounded-xl p-3 flex items-center justify-center gap-2 font-semibold text-xs"
+                          className="w-full bg-white/90 text-slate-700 rounded-xl p-2.5 flex items-center justify-center gap-2 font-semibold text-xs shadow-sm"
                         >
                           <LogOut className="w-3.5 h-3.5" />
                           Sign Out
                         </button>
                       </>
                     ) : (
-                      <button onClick={() => handleNavClick('login')} className="w-full bg-white text-[#CE1126] rounded-xl p-3 flex items-center justify-between">
+                      <button onClick={() => handleNavClick('login')} className="w-full bg-white text-[#CE1126] rounded-xl p-2.5 flex items-center justify-between shadow-sm">
                         <div className="flex items-center gap-2">
                           <LogIn className="w-4 h-4" />
-                          <span className="font-black text-lg">SIGN IN</span>
+                          <span className="font-black text-sm">SIGN IN</span>
                         </div>
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     )}
                   </motion.div>
-                  <div className="flex flex-col space-y-2 relative z-10 pb-2">
+                  <div className="flex flex-col space-y-1.5 relative z-10 pb-2">
                     {mobileNavItems.map((item) => {
                       const Icon = item.icon;
                       const isActive = currentPage === item.id;
                       return (
-                        <motion.button key={item.id} variants={itemVariants} onClick={() => handleNavClick(item.id)} className={`flex items-center justify-between px-4 py-2.5 rounded-lg w-full text-left transition-all ${isActive ? 'bg-white text-[#CE1126] font-extrabold translate-x-1' : 'bg-white/90 text-slate-800 font-semibold'}`}>
-                          <div className="flex items-center gap-3">
+                        <motion.button key={item.id} variants={itemVariants} onClick={() => handleNavClick(item.id)} className={`flex items-center justify-between px-4 py-2.5 rounded-lg w-full text-left transition-all ${isActive ? 'bg-white text-[#CE1126] font-extrabold translate-x-1 shadow-sm' : 'bg-white/90 text-slate-800 font-semibold'}`}>
+                          <div className="flex items-center gap-2.5">
                             <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-slate-400'}`} />
-                            <span className="text-sm">{item.label}</span>
+                            <span className="text-xs">{item.label}</span>
                           </div>
                           {isActive && <ChevronRight className="w-3 h-3" />}
                         </motion.button>
