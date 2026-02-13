@@ -68,20 +68,33 @@ export function Support() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          <div className="text-center pt-8 pb-10 sm:pb-12">
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tighter uppercase mb-6">
-              Ragga Foundation
+          <div className="relative pt-8 pb-12 sm:pt-14 sm:pb-20 text-center">
+            {/* Background Decor */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-gradient-to-b from-green-50/40 via-transparent to-transparent -z-10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Main Title */}
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase mb-8 sm:mb-10 leading-[0.9]">
+              Ragga<br className="sm:hidden" /> <span className="text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-600">Foundation</span>
             </h1>
             
-            <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm mb-8">
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium">
-                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
-              </p>
+            {/* Description Box */}
+            <div className="max-w-3xl mx-auto relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-green-200 to-slate-200 rounded-[2.2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+              <div className="relative bg-white border border-slate-100 rounded-[2rem] p-6 sm:p-10 shadow-xl shadow-slate-200/50">
+                <p className="text-base sm:text-xl text-slate-600 leading-relaxed font-medium">
+                  The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
+                </p>
+              </div>
             </div>
 
-            <p className="text-xl sm:text-2xl font-black uppercase tracking-[0.2em] text-green-700">
-              Obiara Ka Ho
-            </p>
+            {/* Slogan */}
+            <div className="mt-8 sm:mt-12 flex items-center justify-center gap-3 opacity-90">
+              <div className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-green-300" />
+              <p className="text-sm sm:text-lg font-extrabold uppercase tracking-[0.3em] text-green-700">
+                Obiara Ka Ho
+              </p>
+              <div className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-green-300" />
+            </div>
           </div>
         </AnimatedSection>
 
@@ -101,9 +114,12 @@ export function Support() {
 
             {others.length > 0 && (
               <AnimatedSection>
-                <div className="mt-12 sm:mt-16">
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-300 mb-5 px-1">More Projects</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                <div className="mt-12 sm:mt-24">
+                  <div className="flex items-center gap-4 mb-8 px-1">
+                    <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">More Projects</h2>
+                    <div className="h-px flex-1 bg-slate-100" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                     {others.map((p, i) => (
                       <motion.div
                         key={p.id}
@@ -120,8 +136,8 @@ export function Support() {
             )}
 
             {projects.length === 0 && (
-              <div className="text-center py-32 text-slate-400">
-                <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-40" />
+              <div className="text-center py-32 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm mx-4">
+                <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                 <p className="text-sm font-medium">No active projects at the moment.</p>
               </div>
             )}
@@ -141,65 +157,72 @@ export function Support() {
 
 function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-slate-900/20">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group">
       <div className="absolute inset-0">
         {project.image_url && (
-          <img src={project.image_url} alt="" className="w-full h-full object-cover opacity-25" />
+          <img 
+            src={project.image_url} 
+            alt="" 
+            className="w-full h-full object-cover opacity-30 scale-100 group-hover:scale-105 transition-transform duration-[2s]" 
+          />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/85 to-slate-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/90 to-slate-900/40" />
       </div>
 
-      <div className="relative z-10 p-6 sm:p-10 lg:p-14">
-        <div className="max-w-2xl">
-          <span className="inline-block px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-green-600 text-white rounded-full mb-5">
+      <div className="relative z-10 p-6 sm:p-12 lg:p-16">
+        <div className="max-w-3xl">
+          <span className="inline-flex items-center px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-green-500/10 border border-green-500/20 text-green-400 rounded-full mb-6 backdrop-blur-md">
             {project.category}
           </span>
 
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-3">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-5">
             {project.title}
           </h2>
 
-          <p className="text-white/50 text-sm sm:text-base leading-relaxed mb-8 max-w-lg">
+          <p className="text-white/60 text-sm sm:text-lg leading-relaxed mb-10 max-w-xl font-medium">
             {project.description}
           </p>
 
-          <div className="mb-8">
-            <div className="flex items-end justify-between mb-3">
+          <div className="mb-10 bg-white/5 rounded-3xl p-6 sm:p-8 border border-white/5 backdrop-blur-sm">
+            <div className="flex items-end justify-between mb-4">
               <div>
-                <p className="text-3xl sm:text-4xl font-extrabold text-white tabular-nums">
-                  {project.raised_units.toLocaleString()}
-                </p>
-                <p className="text-[11px] text-white/40 font-medium uppercase tracking-wider mt-1">
-                  of {project.target_units.toLocaleString()} {project.unit_label}
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-4xl sm:text-5xl font-black text-white tabular-nums tracking-tight">
+                    {project.raised_units.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-white/40 font-bold uppercase tracking-wider mb-1.5">
+                    / {project.target_units.toLocaleString()} {project.unit_label}
+                  </p>
+                </div>
               </div>
-              <p className="text-2xl font-extrabold text-green-400 tabular-nums">{project.percent}%</p>
+              <p className="text-3xl font-black text-green-400 tabular-nums">{project.percent}%</p>
             </div>
-            <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${project.percent}%` }}
-                transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
-                className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full"
+                transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
+                className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,0.5)]"
               />
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 sm:gap-6 mb-8">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-8 mb-10">
             <Stat icon={Users} label="Contributors" value={project.donor_count.toLocaleString()} />
-            <Stat icon={Target} label="Target" value={`${project.target_units.toLocaleString()} ${project.unit_label}`} />
+            <Stat icon={Target} label="Goal" value={`${project.target_units.toLocaleString()} ${project.unit_label}`} />
             <Stat icon={BookOpen} label="Per Unit" value={`GH\u20B5${project.unit_price_ghs.toFixed(2)}`} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-4">
             <motion.button
-              whileTap={{ scale: 0.96 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onContribute}
-              className="flutter-btn group inline-flex items-center gap-3 px-7 sm:px-8 py-4 bg-green-600 text-white rounded-2xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-green-600/20"
+              className="flutter-btn group inline-flex items-center gap-3 px-8 sm:px-10 py-5 bg-green-600 text-white rounded-2xl font-bold text-sm sm:text-base uppercase tracking-wider shadow-lg shadow-green-600/25 hover:bg-green-500 transition-colors"
             >
-              <Heart className="w-4 h-4" />
+              <Heart className="w-5 h-5 fill-current" />
               Contribute Now
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             <ShareButtons slug={project.slug} title={project.title} variant="dark" />
           </div>
@@ -240,7 +263,7 @@ function ShareButtons({ slug, title, variant }: { slug: string; title: string; v
   const isDark = variant === 'dark';
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       {[
         { action: shareNative, icon: Share2, label: 'Share' },
         { action: shareWhatsApp, icon: MessageCircle, label: 'WhatsApp' },
@@ -248,27 +271,33 @@ function ShareButtons({ slug, title, variant }: { slug: string; title: string; v
       ].map(({ action, icon: Icon, label }) => (
         <motion.button
           key={label}
-          whileTap={{ scale: 0.85 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={action}
-          className={`flutter-btn w-11 h-11 rounded-xl flex items-center justify-center ${
-            isDark ? 'bg-white/10 text-white/60' : 'bg-white border border-slate-100 text-slate-400 shadow-sm'
+          className={`flutter-btn w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
+            isDark 
+              ? 'bg-white/5 hover:bg-white/10 text-white/70 border border-white/5' 
+              : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-400 shadow-sm'
           }`}
           title={label}
         >
-          <Icon className="w-4 h-4" />
+          <Icon className="w-5 h-5" />
         </motion.button>
       ))}
       <motion.button
-        whileTap={{ scale: 0.85 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={copyLink}
-        className={`flutter-btn w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+        className={`flutter-btn w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
           copied
-            ? 'bg-green-500/20 text-green-400'
-            : isDark ? 'bg-white/10 text-white/60' : 'bg-white border border-slate-100 text-slate-400 shadow-sm'
+            ? 'bg-green-500/20 text-green-400 border border-green-500/20'
+            : isDark 
+              ? 'bg-white/5 hover:bg-white/10 text-white/70 border border-white/5' 
+              : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-400 shadow-sm'
         }`}
         title="Copy link"
       >
-        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+        {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
       </motion.button>
     </div>
   );
@@ -276,11 +305,13 @@ function ShareButtons({ slug, title, variant }: { slug: string; title: string; v
 
 function Stat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <Icon className="w-4 h-4 text-white/25" />
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
+        <Icon className="w-5 h-5 text-white/40" />
+      </div>
       <div>
-        <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-sm font-bold text-white">{value}</p>
+        <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider mb-0.5">{label}</p>
+        <p className="text-lg font-bold text-white leading-none">{value}</p>
       </div>
     </div>
   );
@@ -288,52 +319,52 @@ function Stat({ icon: Icon, label, value }: { icon: React.ElementType; label: st
 
 function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
   return (
-    <div className="flutter-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
-      <div className="relative h-44 sm:h-48 overflow-hidden">
+    <div className="flutter-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+      <div className="relative h-56 overflow-hidden">
         {project.image_url ? (
           <img
             src={project.image_url}
             alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
-          <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-            <BookOpen className="w-10 h-10 text-slate-300" />
+          <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+            <BookOpen className="w-12 h-12 text-slate-200" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        <span className="absolute top-3 left-3 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-white/90 text-slate-900 rounded-full backdrop-blur-sm">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <span className="absolute top-4 left-4 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-white/95 text-slate-900 rounded-full shadow-sm backdrop-blur-sm">
           {project.category}
         </span>
       </div>
 
-      <div className="p-5">
-        <h3 className="text-[15px] font-bold text-slate-900 mb-1.5 leading-snug">{project.title}</h3>
-        <p className="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-2">{project.description}</p>
+      <div className="p-6">
+        <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight group-hover:text-green-700 transition-colors">{project.title}</h3>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6 line-clamp-2">{project.description}</p>
 
-        <div className="mb-5">
-          <div className="flex justify-between text-xs mb-2">
-            <span className="font-bold text-slate-900 tabular-nums">{project.raised_units.toLocaleString()} {project.unit_label}</span>
-            <span className="font-bold text-green-700 tabular-nums">{project.percent}%</span>
+        <div className="mb-6 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+          <div className="flex justify-between text-xs mb-2.5">
+            <span className="font-bold text-slate-700 tabular-nums">
+              {project.raised_units.toLocaleString()} <span className="text-slate-400 font-normal">/ {project.target_units.toLocaleString()}</span>
+            </span>
+            <span className="font-extrabold text-green-600 tabular-nums">{project.percent}%</span>
           </div>
-          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-600 rounded-full transition-all duration-700"
+              className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${project.percent}%` }}
             />
           </div>
-          <p className="text-[10px] text-slate-400 mt-1.5">
-            Target: {project.target_units.toLocaleString()} {project.unit_label}
-          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <motion.button
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onContribute}
-            className="flutter-btn flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10"
+            className="flutter-btn flex-1 py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-colors"
           >
-            <Heart className="w-3.5 h-3.5" />
+            <Heart className="w-4 h-4" />
             Contribute
           </motion.button>
           <ShareButtons slug={project.slug} title={project.title} variant="light" />
