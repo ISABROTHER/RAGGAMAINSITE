@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, BookOpen, Target, Users, ArrowRight, Loader2, Share2, Copy, Check, MessageCircle, Twitter, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Heart, BookOpen, Loader2, Share2, Copy, Check, MessageCircle, Twitter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -61,8 +61,6 @@ export function Support() {
   };
 
   useEffect(() => { fetchProjects(); }, []);
-
-  const featured = projects.find(p => p.is_featured);
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(projects.map(p => p.category)));
@@ -179,12 +177,6 @@ export function Support() {
           </div>
         ) : (
           <>
-            {featured && !searchQuery && activeCategory === 'All' && (
-              <AnimatedSection>
-                <FeaturedCard project={featured} onContribute={() => setSelectedProject(featured)} />
-              </AnimatedSection>
-            )}
-
             {/* Results Count */}
             <div className="flex items-center gap-4 mb-8 mt-10 px-1">
               <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
@@ -228,83 +220,6 @@ export function Support() {
           onClose={() => { setSelectedProject(null); fetchProjects(); }}
         />
       )}
-    </div>
-  );
-}
-
-function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
-  return (
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group">
-      <div className="absolute inset-0">
-        {project.image_url && (
-          <img 
-            src={project.image_url} 
-            alt="" 
-            className="w-full h-full object-cover opacity-30 scale-100 group-hover:scale-105 transition-transform duration-[2s]" 
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/90 to-slate-900/40" />
-      </div>
-
-      <div className="relative z-10 p-6 sm:p-12 lg:p-16">
-        <div className="max-w-3xl">
-          <span className="inline-flex items-center px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-green-500/10 border border-green-500/20 text-green-400 rounded-full mb-6 backdrop-blur-md">
-            {project.category}
-          </span>
-
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-5">
-            {project.title}
-          </h2>
-
-          <p className="text-white/60 text-sm sm:text-lg leading-relaxed mb-10 max-w-xl font-medium">
-            {project.description}
-          </p>
-
-          <div className="mb-10 bg-white/5 rounded-3xl p-6 sm:p-8 border border-white/5 backdrop-blur-sm">
-            <div className="flex items-end justify-between mb-4">
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <p className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums tracking-tight">
-                    {project.raised_units.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-white/40 font-bold uppercase tracking-wider mb-1.5">
-                    / {project.target_units.toLocaleString()} {project.unit_label}
-                  </p>
-                </div>
-              </div>
-              <p className="text-3xl font-extrabold text-green-400 tabular-nums">{project.percent}%</p>
-            </div>
-            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${project.percent}%` }}
-                transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
-                className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,0.5)]"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 sm:gap-8 mb-10">
-            <Stat icon={Users} label="Contributors" value={project.donor_count.toLocaleString()} />
-            <Stat icon={Target} label="Goal" value={`${project.target_units.toLocaleString()} ${project.unit_label}`} />
-            <Stat icon={BookOpen} label="Per Unit" value={`GH\u20B5${project.unit_price_ghs.toFixed(2)}`} />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onContribute}
-              className="flutter-btn group inline-flex items-center gap-3 px-8 sm:px-10 py-5 bg-green-600 text-white rounded-2xl font-bold text-sm sm:text-base uppercase tracking-wider shadow-lg shadow-green-600/25 hover:bg-green-500 transition-colors"
-            >
-              <Heart className="w-5 h-5 fill-current" />
-              Contribute Now
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-            <ShareButtons slug={project.slug} title={project.title} variant="dark" />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -376,20 +291,6 @@ function ShareButtons({ slug, title, variant }: { slug: string; title: string; v
       >
         {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
       </motion.button>
-    </div>
-  );
-}
-
-function Stat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
-        <Icon className="w-5 h-5 text-white/40" />
-      </div>
-      <div>
-        <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider mb-0.5">{label}</p>
-        <p className="text-lg font-bold text-white leading-none">{value}</p>
-      </div>
     </div>
   );
 }
