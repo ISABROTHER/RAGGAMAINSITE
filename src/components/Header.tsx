@@ -79,8 +79,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   };
 
   const menuVariants = {
-    closed: { scale: 0.95, opacity: 0, y: -10, transition: { duration: 0.2 } },
-    open: { scale: 1, opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+    closed: { opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.2 } },
+    open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 30 } }
   };
 
   const itemVariants = {
@@ -153,11 +153,11 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     onClick={() => setMobileMenuOpen(true)}
-                    // CHANGED: Rectangular shape, white background (Not Red), compact padding
-                    className="flex items-center gap-2 px-3 py-2 bg-white text-slate-900 border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors rounded-md"
+                    // CHANGED: Red background, White text, Rectangular (rounded-md), Compact padding (px-2 py-1.5)
+                    className="flex items-center gap-1.5 px-2 py-1.5 bg-[#CE1126] text-white border border-[#b00e1f] shadow-md hover:bg-[#b00e1f] transition-colors rounded-md"
                   >
-                    <span className="font-bold text-xs uppercase tracking-wider">Menu</span>
-                    <Menu className="w-5 h-5" strokeWidth={2.5} />
+                    <span className="font-bold text-[11px] uppercase tracking-wider">Menu</span>
+                    <Menu className="w-4 h-4" strokeWidth={2.5} />
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -177,26 +177,28 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
                 />
 
-                {/* 2. The Frozen Menu Card */}
+                {/* 2. The Frozen Menu Card - Positioned BELOW the header */}
                 <motion.div
                   initial="closed"
                   animate="open"
                   exit="closed"
                   variants={menuVariants}
-                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
+                  // CHANGED: Fixed positioning uses headerHeight to drop perfectly below
+                  className="fixed right-3 z-[70] w-[250px] origin-top-right"
+                  style={{ top: `${headerHeight + 5}px` }}
                 >
-                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[10px] overflow-hidden max-h-[70vh]">
                     
                     {/* Compact Header: Label + Close Button */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 shrink-0">
                         <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
-                            Menu
+                            Navigation
                         </span>
                         <button 
                             onClick={() => setMobileMenuOpen(false)}
-                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+                            className="w-6 h-6 rounded-md bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
                         >
-                            <X className="w-4 h-4" strokeWidth={3} />
+                            <X className="w-3.5 h-3.5" strokeWidth={3} />
                         </button>
                     </div>
 
@@ -210,14 +212,14 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
+                            className={`flex items-center justify-between px-3 py-2 rounded-lg w-full text-left transition-all ${
                               isActive
                                 ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
                                 : 'text-white hover:bg-white/10 font-medium'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
+                            <div className="flex items-center gap-2">
+                              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
                               <span className="text-xs">{item.label}</span>
                             </div>
                             {isActive && <ChevronRight className="w-3 h-3" />}
@@ -233,25 +235,25 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             <div className="grid grid-cols-[1fr_auto] gap-2">
                                 <button
                                 onClick={() => handleNavClick('dashboard')}
-                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                className="bg-white text-[#CE1126] rounded-lg py-2 px-3 flex items-center justify-center gap-2 shadow-sm"
                                 >
                                     <LayoutDashboard className="w-3.5 h-3.5" />
-                                    <span className="font-black text-xs">DASHBOARD</span>
+                                    <span className="font-black text-[10px]">DASHBOARD</span>
                                 </button>
                                 <button
                                 onClick={async () => { await signOut(); handleNavClick('home'); }}
-                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                className="bg-white/10 text-white rounded-lg py-2 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
                                 >
-                                    <LogOut className="w-4 h-4" />
+                                    <LogOut className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                             ) : (
                             <button
                                 onClick={() => handleNavClick('login')}
-                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                className="w-full bg-white text-[#CE1126] rounded-lg py-2 px-3 flex items-center justify-center gap-2 shadow-sm"
                             >
-                                <LogIn className="w-4 h-4" />
-                                <span className="font-black text-xs">SIGN IN</span>
+                                <LogIn className="w-3.5 h-3.5" />
+                                <span className="font-black text-[10px]">SIGN IN</span>
                             </button>
                             )}
                         </motion.div>
