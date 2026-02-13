@@ -18,7 +18,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
 
-  // Lock body scroll when menu is open to create a "frozen" background effect
+  // Lock body scroll when menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -30,7 +30,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     };
   }, [mobileMenuOpen]);
 
-  // Standard sizing constants for a professional vertical rhythm
   const headerHeightBase = 90;
   const headerScale = 1.1;
   const headerHeight = headerHeightBase * headerScale;
@@ -97,7 +96,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
           <div className="flex justify-between items-center h-full">
-            {/* Logo Section */}
+            {/* Logo */}
             <button
               onClick={() => handleNavClick('home')}
               className="flex items-center space-x-3 group transition-transform hover:scale-[1.01] focus:outline-none"
@@ -120,7 +119,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               />
             </button>
 
-            {/* Desktop Navigation Link Cluster */}
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center" style={{ gap: `${desktopNavGap}px` }}>
               {navItems.map((item) => (
                 <button
@@ -145,7 +144,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle (Triggers the Frosted Glass Menu) */}
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
               <AnimatePresence>
                 {!mobileMenuOpen && (
@@ -163,11 +162,11 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </div>
           </div>
 
-          {/* Mobile Overlay & Frosted Menu Content */}
+          {/* Mobile Menu Overlay & Content */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
-                {/* Invisible Click Overlay - Tap outside to close */}
+                {/* 1. Invisible Click Overlay */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -176,31 +175,31 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
                 />
 
-                {/* The Innovative "Frozen" Menu Card */}
+                {/* 2. The Frozen Menu Card */}
                 <motion.div
                   initial="closed"
                   animate="open"
                   exit="closed"
                   variants={menuVariants}
-                  className="fixed top-3 right-3 z-[70] w-[230px] origin-top-right"
+                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
                 >
-                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/85 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[18px] overflow-hidden max-h-[85vh]">
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
                     
-                    {/* Compact Header: Innovative Close Button Placement */}
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-white/20 shrink-0 bg-black/5">
-                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest pl-1">
+                    {/* Compact Header: Label + Close Button */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
                             Menu
                         </span>
                         <button 
                             onClick={() => setMobileMenuOpen(false)}
-                            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors text-white border border-white/10"
+                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
                         >
-                            <X className="w-3.5 h-3.5" strokeWidth={3} />
+                            <X className="w-4 h-4" strokeWidth={3} />
                         </button>
                     </div>
 
-                    {/* Nav Items with Faint Horizontal Lines */}
-                    <div className="overflow-y-auto">
+                    {/* Scrollable Nav Items */}
+                    <div className="overflow-y-auto py-2 px-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = currentPage === item.id;
@@ -209,48 +208,48 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`flex items-center justify-between px-4 py-2 w-full text-left transition-all border-b border-white/10 last:border-0 ${
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
                               isActive
-                                ? 'bg-white/10 text-white font-extrabold'
-                                : 'text-white hover:bg-white/5 font-medium'
+                                ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
+                                : 'text-white hover:bg-white/10 font-medium'
                             }`}
                           >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-white/70'}`} />
-                              <span className="text-[11px] uppercase tracking-wide">{item.label}</span>
+                            <div className="flex items-center gap-3">
+                              <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
+                              <span className="text-xs">{item.label}</span>
                             </div>
-                            {isActive && <ChevronRight className="w-3 h-3 text-white" />}
+                            {isActive && <ChevronRight className="w-3 h-3" />}
                           </motion.button>
                         );
                       })}
                     </div>
 
-                    {/* Footer: Compact Integrated Sign In/Dashboard */}
-                    <div className="border-t border-white/20 bg-black/10 shrink-0">
+                    {/* Compact Footer: Sign In / Dashboard */}
+                    <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
                         <motion.div variants={itemVariants}>
                             {user ? (
-                            <div className="flex divide-x divide-white/20">
+                            <div className="grid grid-cols-[1fr_auto] gap-2">
                                 <button
                                 onClick={() => handleNavClick('dashboard')}
-                                className="flex-1 py-2.5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
                                 >
                                     <LayoutDashboard className="w-3.5 h-3.5" />
-                                    <span className="font-bold text-[10px] uppercase">Dashboard</span>
+                                    <span className="font-black text-xs">DASHBOARD</span>
                                 </button>
                                 <button
                                 onClick={async () => { await signOut(); handleNavClick('home'); }}
-                                className="px-3 py-2.5 flex items-center justify-center hover:bg-red-900/30 transition-colors text-white"
+                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
                                 >
-                                    <LogOut className="w-3.5 h-3.5" />
+                                    <LogOut className="w-4 h-4" />
                                 </button>
                             </div>
                             ) : (
                             <button
                                 onClick={() => handleNavClick('login')}
-                                className="w-full py-2.5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
+                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
                             >
-                                <LogIn className="w-3.5 h-3.5" />
-                                <span className="font-bold text-[10px] uppercase">Sign In</span>
+                                <LogIn className="w-4 h-4" />
+                                <span className="font-black text-xs">SIGN IN</span>
                             </button>
                             )}
                         </motion.div>
@@ -264,7 +263,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
         </nav>
       </header>
 
-      {/* Marquee Ticker Bar */}
+      {/* Marquee Bar */}
       <div
         className="bg-red-600 h-5 overflow-hidden relative flex items-center"
         style={{ marginTop: `${headerHeight}px` }}
@@ -277,4 +276,4 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       </div>
     </div>
   );
-}
+} 
