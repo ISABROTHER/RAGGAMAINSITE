@@ -1,34 +1,12 @@
 // src/pages/about/AboutFullProfile.tsx
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Landmark, GraduationCap, Briefcase, Play, Pause, Volume2, VolumeX
+  CheckSquare, Landmark, GraduationCap, Briefcase
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function AboutFullProfile() {
-  // --- NATIVE VIDEO PLAYER STATE ---
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      if (isPlaying) videoRef.current.pause();
-      else videoRef.current.play();
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
   const electionResults = [
     { year: 2020, nyarkuVotes: 22972, nyarkuPercent: 51.48, opponentVotes: 21643, opponentPercent: 48.51, margin: "1,329" },
     { year: 2024, nyarkuVotes: 23521, nyarkuPercent: 57.6, opponentVotes: 17045, opponentPercent: 41.7, margin: "6,476" }
@@ -69,15 +47,15 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + NATIVE TV-STYLE VIDEO */}
+        {/* ROW 1: PERSONAL PROFILE + AFFILIATION (Balanced Grid) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
-            {/* 1. PERSONAL PROFILE (Left - 7 Columns) */}
+            {/* 1. PERSONAL PROFILE (Left - 5 Columns) */}
             <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-7 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-full"
+                className="lg:col-span-5 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-full"
             >
                 <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
                     <h2 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -104,95 +82,47 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO PLAYER (Right - 5 Columns) - NATIVE & CLEAN */}
+            {/* 2. AFFILIATION (Right - 7 Columns) - Text Overlap Fixed */}
             <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group isolate cursor-pointer"
-                onClick={togglePlay}
+                className="lg:col-span-7 relative rounded-3xl overflow-hidden shadow-2xl group min-h-[350px] lg:h-auto"
             >
-                 {/* IMPORTANT: To use your specific Instagram video, download the MP4 file, 
-                    upload it to your project (e.g., public/videos/ragga.mp4), and update the 'src' below.
-                    Instagram links CANNOT be played in a native player without their UI overlay.
-                 */}
-                 <video 
-                    ref={videoRef}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-phone-with-a-green-screen-42938-large.mp4" 
-                    poster="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&q=80"
-                    autoPlay 
-                    loop 
-                    muted={isMuted}
-                    playsInline
-                 />
-                 
-                 {/* Clean Play/Pause Overlay */}
-                 <div className={`absolute inset-0 bg-black/30 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center text-white shadow-xl">
-                        {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+                    style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
+                
+                <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-center items-start">
+                    <div className="flex items-center gap-2 mb-4 bg-green-600/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-green-500/30">
+                        <Flag className="w-4 h-4 text-green-400" />
+                        <span className="text-green-100 font-bold text-xs uppercase tracking-widest">Affiliation</span>
                     </div>
-                 </div>
-
-                 {/* Sound Toggle */}
-                 <div className="absolute bottom-4 right-4 z-20">
-                     <button 
-                        onClick={toggleMute}
-                        className="p-2 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-colors"
-                     >
-                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                     </button>
-                 </div>
-                 
-                 {/* Live Badge */}
-                 <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg flex items-center gap-2">
-                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                     Live
-                 </div>
+                    
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[0.9] mb-6">
+                        NATIONAL <br/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">DEMOCRATIC</span> <br/>
+                        <span className="text-green-500">CONGRESS</span>
+                    </h2>
+                    
+                    {/* FIXED: Using flex-wrap and responsive width to prevent overlap */}
+                    <div className="flex flex-wrap items-center gap-4 mt-auto w-full">
+                        <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center justify-center shadow-lg shadow-green-900/50 text-lg shrink-0">
+                            NDC
+                        </span>
+                        
+                        <div className="h-auto min-h-[3rem] py-2 px-4 md:px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-white/90 text-xs md:text-sm font-bold uppercase tracking-wide leading-tight text-center max-w-full">
+                            Cape Coast North Constituency
+                        </div>
+                    </div>
+                </div>
             </motion.div>
         </div>
 
-        {/* ROW 2: AFFILIATION (Restored Wide Banner Design) */}
-        <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="relative rounded-3xl overflow-hidden shadow-2xl group min-h-[300px] w-full mb-6"
-        >
-            <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
-            
-            <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-center items-start">
-                <div className="flex items-center gap-2 mb-4 bg-green-600/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-green-500/30">
-                    <Flag className="w-4 h-4 text-green-400" />
-                    <span className="text-green-100 font-bold text-xs uppercase tracking-widest">Affiliation</span>
-                </div>
-                
-                <h2 className="text-4xl md:text-6xl font-black text-white leading-[0.9] mb-6">
-                    NATIONAL <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">DEMOCRATIC</span> <br/>
-                    <span className="text-green-500">CONGRESS</span>
-                </h2>
-                
-                <div className="flex flex-wrap items-center gap-4 mt-auto w-full max-w-2xl">
-                    <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50 text-lg shrink-0">
-                        NDC
-                    </span>
-                    
-                    {/* FIXED: Text Container that adapts to length without scattering */}
-                    <div className="h-auto min-h-[3rem] py-2 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-sm font-bold uppercase tracking-wide leading-tight">
-                        Cape Coast North Constituency
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-
-        {/* ROW 3: PROFESSIONAL DUAL TRACK */}
+        {/* ROW 2: PROFESSIONAL DUAL TRACK */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             
             {/* ACADEMIC QUALIFICATIONS */}
@@ -200,7 +130,7 @@ export function AboutFullProfile() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}
                 className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full"
             >
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
@@ -229,7 +159,7 @@ export function AboutFullProfile() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.3 }}
                 className="flex flex-col gap-6"
             >
                 {/* Employment */}
@@ -276,12 +206,12 @@ export function AboutFullProfile() {
             </motion.div>
         </div>
 
-        {/* ROW 4: SERVICE & MANDATE */}
+        {/* ROW 3: SERVICE & MANDATE */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.4 }}
             className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-8"
         >
             <div className="flex items-center justify-between mb-6">
