@@ -32,7 +32,7 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
-  // Profile details: Nickname & Nationality share a row (col-span-1)
+  // Profile details
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
       { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
@@ -48,7 +48,7 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + VIDEO */}
+        {/* ROW 1: PERSONAL PROFILE + BANNER-STYLE VIDEO */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
             {/* 1. PERSONAL PROFILE (Left - 7 Columns) */}
@@ -83,27 +83,33 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO (Right - 5 Columns) - PURE & CLEAN */}
+            {/* 2. VIDEO (Right - 5 Columns) - INNOVATION: ZOOM CROP FOR CLEAN VIDEO */}
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative h-[380px] lg:h-auto"
+                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative h-[400px] lg:h-auto group"
             >
-                 <iframe 
-                    src="https://www.instagram.com/reel/DFfroZCOCf4/embed/captioned/?autoplay=1&muted=0" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                    frameBorder="0" 
-                    scrolling="no" 
-                    allowTransparency={true}
-                    allow="autoplay; encrypted-media; picture-in-picture"
-                    title="Ragga Instagram Reel"
-                 />
+                 {/* CSS HACK: Scale iframe to 145% to push Instagram UI (username, likes) out of view */}
+                 <div className="absolute inset-0 w-full h-full overflow-hidden">
+                     <iframe 
+                        src="https://www.instagram.com/reel/DFfroZCOCf4/embed/?autoplay=1&muted=1&controls=0&loop=1" 
+                        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                        style={{ transform: 'scale(1.45)' }}
+                        frameBorder="0" 
+                        scrolling="no" 
+                        allowTransparency={true}
+                        allow="autoplay; encrypted-media;"
+                        title="Ragga Instagram Reel"
+                     />
+                 </div>
+                 {/* Invisible overlay to prevent clicking the hidden/broken UI elements */}
+                 <div className="absolute inset-0 z-10 bg-transparent" />
             </motion.div>
         </div>
 
-        {/* ROW 2: AFFILIATION (Full Width - RESTORED DESIGN) */}
+        {/* ROW 2: AFFILIATION (Full Width - RESTORED ORIGINAL DESIGN) */}
         <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
