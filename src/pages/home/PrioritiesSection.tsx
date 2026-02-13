@@ -163,7 +163,6 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
         <div className="md:hidden space-y-4">
           {priorities.map((priority) => {
             const Icon = priority.icon;
-            // Removed specific "Key Priority" badging check here as requested
             return (
               <button
                 key={priority.id}
@@ -176,7 +175,8 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                 </div>
                 <div className="flex-1 py-4 pr-4 text-left">
                   <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2">{priority.title}</h4>
-                  <p className="text-[10px] font-semibold text-emerald-700 mt-1">
+                  {/* Updated Text: Bolder and Red Color */}
+                  <p className="text-[11px] font-black text-red-600 mt-1 uppercase tracking-wide">
                     <Counter end={achievementCounts[priority.id]} /> initiatives delivered
                   </p>
                   <p className="text-xs text-slate-600 leading-snug mt-1 line-clamp-2">{priority.desc}</p>
@@ -222,7 +222,8 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                   </div>
 
                   <h4 className="text-2xl font-extrabold text-slate-900 mb-2">{priority.title}</h4>
-                  <p className="text-sm font-bold text-emerald-700 mb-3 uppercase tracking-wide">
+                  {/* Updated Text: Bolder and Red Color */}
+                  <p className="text-sm font-black text-red-600 mb-3 uppercase tracking-wide">
                     <Counter end={achievementCounts[priority.id]} /> initiatives delivered
                   </p>
                   <p className="text-slate-600 mb-6 leading-relaxed text-base flex-1">{priority.desc}</p>
