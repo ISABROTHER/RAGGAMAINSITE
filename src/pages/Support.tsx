@@ -68,32 +68,38 @@ export function Support() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          <div className="relative pt-8 pb-12 sm:pt-14 sm:pb-20 text-center">
-            {/* Background Decor */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-gradient-to-b from-green-50/40 via-transparent to-transparent -z-10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative pt-10 pb-16 sm:pt-20 sm:pb-24 text-center">
+            {/* Background Glows */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-b from-green-100/40 via-white/0 to-white/0 -z-10 rounded-full blur-[100px] pointer-events-none" />
 
-            {/* Main Title */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase mb-8 sm:mb-10 leading-[0.9]">
-              Ragga<br className="sm:hidden" /> <span className="text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-600">Foundation</span>
-            </h1>
+            {/* Main Title - RAGGA FOUNDATION */}
+            <div className="mb-10 sm:mb-14 relative">
+              <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-slate-900 tracking-tighter uppercase leading-[0.85]">
+                Ragga<br className="sm:hidden" /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-slate-800 to-slate-500">Foundation</span>
+              </h1>
+              {/* Decorative underline */}
+              <div className="hidden sm:block absolute -bottom-6 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-green-500 rounded-full opacity-80" />
+            </div>
             
-            {/* Description Box */}
+            {/* Description Box - The Focus */}
             <div className="max-w-3xl mx-auto relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-green-200 to-slate-200 rounded-[2.2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
-              <div className="relative bg-white border border-slate-100 rounded-[2rem] p-6 sm:p-10 shadow-xl shadow-slate-200/50">
-                <p className="text-base sm:text-xl text-slate-600 leading-relaxed font-medium">
+              {/* Subtle animated border gradient */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-200 via-slate-200 to-green-200 rounded-[2.2rem] opacity-60 blur-sm group-hover:opacity-100 transition duration-500" />
+              
+              <div className="relative bg-white/80 backdrop-blur-xl border border-white/50 rounded-[2rem] p-8 sm:p-12 shadow-2xl shadow-slate-200/50">
+                <p className="text-lg sm:text-2xl text-slate-700 leading-relaxed font-medium">
                   The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
                 </p>
               </div>
             </div>
 
-            {/* Slogan */}
-            <div className="mt-8 sm:mt-12 flex items-center justify-center gap-3 opacity-90">
-              <div className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-green-300" />
-              <p className="text-sm sm:text-lg font-extrabold uppercase tracking-[0.3em] text-green-700">
+            {/* Slogan - Obiara Ka Ho */}
+            <div className="mt-12 sm:mt-16 flex items-center justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
+              <div className="h-px w-10 sm:w-20 bg-gradient-to-r from-transparent to-green-400" />
+              <p className="text-base sm:text-lg font-black uppercase tracking-[0.35em] text-green-700">
                 Obiara Ka Ho
               </p>
-              <div className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-green-300" />
+              <div className="h-px w-10 sm:w-20 bg-gradient-to-l from-transparent to-green-400" />
             </div>
           </div>
         </AnimatedSection>
@@ -114,12 +120,12 @@ export function Support() {
 
             {others.length > 0 && (
               <AnimatedSection>
-                <div className="mt-12 sm:mt-24">
-                  <div className="flex items-center gap-4 mb-8 px-1">
+                <div className="mt-16 sm:mt-28">
+                  <div className="flex items-center gap-4 mb-8 px-2">
                     <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">More Projects</h2>
-                    <div className="h-px flex-1 bg-slate-100" />
+                    <div className="h-px flex-1 bg-slate-200/60" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {others.map((p, i) => (
                       <motion.div
                         key={p.id}
@@ -136,7 +142,7 @@ export function Support() {
             )}
 
             {projects.length === 0 && (
-              <div className="text-center py-32 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm mx-4">
+              <div className="text-center py-32 text-slate-400 bg-white rounded-[2rem] border border-slate-100 shadow-sm mx-4">
                 <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                 <p className="text-sm font-medium">No active projects at the moment.</p>
               </div>
@@ -157,7 +163,7 @@ export function Support() {
 
 function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group transform transition-all hover:scale-[1.01] duration-500">
       <div className="absolute inset-0">
         {project.image_url && (
           <img 
