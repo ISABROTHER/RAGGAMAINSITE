@@ -99,14 +99,14 @@ export function HeroSection() {
             </h1>
 
             {/* Typewriter Animation Container */}
-            <div className="h-6 md:h-8 mb-2 overflow-hidden flex items-center">
-              <p className="text-xs md:text-sm text-yellow-400 font-bold whitespace-nowrap truncate">
+            <div className="h-8 md:h-10 mb-2 overflow-hidden flex items-center">
+              <p className="text-base md:text-xl text-yellow-400 font-medium whitespace-nowrap truncate italic" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 {displayedText}
                 {/* Blinking Cursor */}
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                  className="inline-block ml-1 w-0.5 h-4 bg-yellow-400 align-middle"
+                  className="inline-block ml-1 w-0.5 h-5 bg-yellow-400 align-middle"
                 />
               </p>
             </div>
@@ -119,10 +119,10 @@ export function HeroSection() {
                 Report an Issue <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                to="/projects"
+                to="/ongoing-projects"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap"
               >
-                Ongoing Projects
+                Track Projects
               </Link>
             </div>
           </motion.div>

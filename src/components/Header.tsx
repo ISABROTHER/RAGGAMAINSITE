@@ -1,10 +1,10 @@
 // src/components/Header.tsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Menu, X, Home, User, Users, HardHat, Award,
   Calendar, MessageSquareWarning,
   LayoutDashboard, LogIn, ChevronRight, Vote,
-  UserCircle, Heart, LogOut, Sparkles
+  UserCircle, Heart, LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,22 +17,6 @@ interface HeaderProps {
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMobileMenuOpen(false);
-      }
-    }
-    if (mobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [mobileMenuOpen]);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -46,9 +30,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     };
   }, [mobileMenuOpen]);
 
-  // Original Header Dimensions
   const headerHeightBase = 90;
-  const headerScale = 1.1; 
+  const headerScale = 1.1;
   const headerHeight = headerHeightBase * headerScale;
 
   const logoScale = 1.2;
@@ -87,6 +70,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'polls', label: 'Polls & Tracker', icon: Vote },
     { id: 'issues', label: 'Report Issue', icon: MessageSquareWarning },
+    { id: 'appointments', label: 'Book Appointment', icon: UserCircle },
   ];
 
   const handleNavClick = (pageId: string) => {
@@ -94,24 +78,14 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     onNavigate(pageId);
   };
 
-  const containerVariants = {
-    closed: { 
-      opacity: 0, 
-      scale: 0.95,
-      y: 10,
-      transition: { staggerChildren: 0.05, staggerDirection: -1 }
-    },
-    open: { 
-      opacity: 1, 
-      scale: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 400, damping: 30, staggerChildren: 0.07, delayChildren: 0.1 }
-    }
+  const menuVariants = {
+    closed: { scale: 0.95, opacity: 0, y: -10, transition: { duration: 0.2 } },
+    open: { scale: 1, opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
   };
 
   const itemVariants = {
-    closed: { opacity: 0, x: 20 },
-    open: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+    closed: { opacity: 0, x: -10 },
+    open: { opacity: 1, x: 0 }
   };
 
   return (
@@ -138,7 +112,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 alt="Logo"
                 className="object-contain"
                 style={{
-                  height: `${headerHeightBase * 0.8 * logoScale}px`,
+                  height: `${headerHeight * 0.8 * logoScale}px`,
                   width: 'auto',
                   transform: `scale(${logoScale})`
                 }}
@@ -172,81 +146,60 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
 
             {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMobileMenuOpen(!mobileMenuOpen);
-                }}
-                className="flex items-center gap-2 px-3 py-2 bg-[#CE1126] text-white border-l-4 border-black/10 shadow-lg active:scale-95 transition-all rounded-none"
-              >
-                <span className="font-black text-[10px] uppercase tracking-widest">MENU</span>
-                {mobileMenuOpen ? <X className="w-4 h-4" strokeWidth={3} /> : <Menu className="w-4 h-4" strokeWidth={3} />}
-              </button>
+              <AnimatePresence>
+                {!mobileMenuOpen && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="w-12 h-12 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-2 border-white"
+                  >
+                    <Menu className="w-6 h-6" strokeWidth={3} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
-          {/* INNOVATIVE MOBILE DROPDOWN */}
+          {/* Mobile Menu Overlay & Content */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
+                {/* 1. Invisible Click Overlay */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[60] bg-slate-900/20 backdrop-blur-[2px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
                 />
-                
+
+                {/* 2. The Frozen Menu Card */}
                 <motion.div
-                  ref={menuRef}
                   initial="closed"
                   animate="open"
                   exit="closed"
-                  variants={containerVariants}
-                  className="fixed right-3 z-[70] w-[320px] origin-top-right"
-                  style={{ top: `${headerHeight + 6}px` }}
+                  variants={menuVariants}
+                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
                 >
-                  <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
                     
-                    {/* AUTH ON TOP */}
-                    <motion.div 
-                      variants={itemVariants}
-                      className="relative p-4 bg-black/10 border-b border-white/10"
-                    >
-                        {user ? (
-                            <div className="relative z-10">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div>
-                                        <p className="text-white text-sm font-bold leading-tight">{profile?.full_name || 'Constituent'}</p>
-                                        <p className="text-white/60 text-[10px] uppercase tracking-wider">Active Member</p>
-                                    </div>
-                                    <button 
-                                        onClick={async () => { await signOut(); handleNavClick('home'); }}
-                                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <button
-                                    onClick={() => handleNavClick('dashboard')}
-                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg active:scale-[0.98] transition-transform"
-                                >
-                                    Open Dashboard
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="relative z-10">
-                                <button
-                                    onClick={() => handleNavClick('login')}
-                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg active:scale-[0.98] transition-transform"
-                                >
-                                    Sign In / Register
-                                </button>
-                            </div>
-                        )}
-                    </motion.div>
+                    {/* Compact Header: Label + Close Button */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
+                            Menu
+                        </span>
+                        <button 
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+                        >
+                            <X className="w-4 h-4" strokeWidth={3} />
+                        </button>
+                    </div>
 
-                    {/* NAV LIST */}
-                    <div className="overflow-y-auto max-h-[55vh] p-2 space-y-1">
+                    {/* Scrollable Nav Items */}
+                    <div className="overflow-y-auto py-2 px-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = currentPage === item.id;
@@ -255,38 +208,53 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded w-full text-left transition-all duration-300 ${
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
                               isActive
-                                ? 'bg-white shadow-xl scale-[1.02]' 
-                                : 'text-white/80 hover:bg-white/5 hover:text-white'
+                                ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
+                                : 'text-white hover:bg-white/10 font-medium'
                             }`}
                           >
-                            <div className="flex items-center gap-3 relative z-10">
-                              <Icon 
-                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${
-                                    isActive ? 'text-[#CE1126]' : 'text-white/70'
-                                }`} 
-                                strokeWidth={isActive ? 3 : 2}
-                              />
-                              <span className={`text-[13px] uppercase tracking-wider ${
-                                  isActive ? 'font-black text-[#CE1126]' : 'font-medium'
-                              }`}>
-                                {item.label}
-                              </span>
+                            <div className="flex items-center gap-3">
+                              <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
+                              <span className="text-xs">{item.label}</span>
                             </div>
-                            
-                            {isActive && (
-                                <motion.div 
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: [1, 1.5, 1] }}
-                                    transition={{ repeat: Infinity, duration: 1.5 }}
-                                    className="w-2 h-2 rounded-full bg-[#CE1126]"
-                                />
-                            )}
+                            {isActive && <ChevronRight className="w-3 h-3" />}
                           </motion.button>
                         );
                       })}
                     </div>
+
+                    {/* Compact Footer: Sign In / Dashboard */}
+                    <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
+                        <motion.div variants={itemVariants}>
+                            {user ? (
+                            <div className="grid grid-cols-[1fr_auto] gap-2">
+                                <button
+                                onClick={() => handleNavClick('dashboard')}
+                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                >
+                                    <LayoutDashboard className="w-3.5 h-3.5" />
+                                    <span className="font-black text-xs">DASHBOARD</span>
+                                </button>
+                                <button
+                                onClick={async () => { await signOut(); handleNavClick('home'); }}
+                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </div>
+                            ) : (
+                            <button
+                                onClick={() => handleNavClick('login')}
+                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                            >
+                                <LogIn className="w-4 h-4" />
+                                <span className="font-black text-xs">SIGN IN</span>
+                            </button>
+                            )}
+                        </motion.div>
+                    </div>
+
                   </div>
                 </motion.div>
               </>
@@ -294,8 +262,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           </AnimatePresence>
         </nav>
       </header>
-      {/* Spacer to prevent overlapping content below fixed header */}
-      <div style={{ height: `${headerHeight}px` }} />
     </div>
-  ); 
-}
+  );
+} 
