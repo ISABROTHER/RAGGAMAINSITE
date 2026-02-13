@@ -2,10 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, ArrowLeft,
-  Fingerprint, CheckCircle2, Database, ScanSearch, ShieldAlert,
-  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone, 
-  Bot, Sparkles, Cpu
+  UserPlus, ArrowLeft, ShieldCheck, Home, Globe, MessageSquare, Phone, Server
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -89,40 +86,50 @@ export function ConstituencyConnect() {
                 {view === "search" && (
                   <motion.div key="search" {...anim} className="p-5">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shadow-lg shadow-green-900/10">
-                          <Sparkles className="w-4 h-4 text-green-400" />
+                      <div className="flex items-center gap-3">
+                        {/* CUSTOM AI LOGO */}
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100 p-1.5">
+                          <img 
+                            src="https://cdn-icons-png.flaticon.com/512/4616/4616790.png" 
+                            alt="AI Powered" 
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <p className="text-sm font-black text-slate-900 uppercase tracking-tight">AI POWERED DATABASE</p>
                       </div>
-                      <button onClick={() => setShowInfo(!showInfo)} className="px-3 py-1.5 rounded-lg border bg-green-50 border-green-200 text-green-700 text-[10px] font-bold uppercase flex items-center gap-2 hover:bg-green-100 transition-colors">
-                        {showInfo ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                        {showInfo ? "Close" : "Why Register?"}
+                      
+                      {/* WHY REGISTER BUTTON (NO ICON) */}
+                      <button onClick={() => setShowInfo(!showInfo)} className="px-3 py-1.5 rounded-lg border bg-green-50 border-green-200 text-green-700 text-[10px] font-bold uppercase hover:bg-green-100 transition-colors">
+                        {showInfo ? "Close Info" : "Why Register?"}
                       </button>
                     </div>
 
-                    {/* PRIVACY INFO BLOCK */}
+                    {/* RESTORED COMPREHENSIVE INFO BLOCK */}
                     {showInfo && (
-                      <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left border border-slate-100 flex items-start gap-3">
-                         <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
-                            <ShieldCheck className="w-4 h-4 text-green-600" />
+                      <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left space-y-4 border border-slate-100">
+                         <div>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
                          </div>
                          <div>
-                            <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                We respect your privacy. Your details are used only for communication and updates.
-                            </p>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
+                         </div>
+                         <div className="pt-2 border-t border-slate-200">
+                            <p className="text-[10px] text-slate-400 italic">"We respect your privacy. Your details are used only for communication and updates."</p>
                          </div>
                       </div>
                     )}
 
                     <div className="grid grid-cols-2 gap-3 h-[52px]">
-                      {/* ANIMATED CHECK DATABASE BUTTON */}
-                      <button onClick={() => setActiveTab('check')} className="relative h-full flex items-center justify-center gap-2 rounded-xl overflow-hidden group">
-                        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,#e2e8f0_0%,#22c55e_50%,#e2e8f0_100%)] animate-[spin_3s_linear_infinite]" />
-                        <div className="absolute inset-[1.5px] bg-white rounded-[10px]" />
-                        <span className="relative z-10 text-xs font-black uppercase text-slate-700 flex items-center gap-2">
-                            Check Database <Sparkles className="w-3 h-3 text-green-500" />
-                        </span>
+                      {/* ANIMATED GIF CHECK DATABASE BUTTON */}
+                      <button onClick={() => setActiveTab('check')} className="relative h-full flex items-center justify-center gap-2 bg-white border border-slate-200 rounded-xl hover:border-green-500 hover:shadow-md transition-all group overflow-hidden">
+                        <img 
+                            src="https://cdn-icons-gif.flaticon.com/17569/17569494.gif" 
+                            alt="Search" 
+                            className="w-8 h-8 object-contain"
+                        />
+                        <span className="text-xs font-black uppercase text-slate-700">Check Database</span>
                       </button>
                       
                       <button onClick={() => setView('register')} className="h-full flex items-center justify-center gap-2 bg-green-600 rounded-xl text-white font-black text-xs uppercase shadow-lg hover:bg-green-700 transition-colors">
