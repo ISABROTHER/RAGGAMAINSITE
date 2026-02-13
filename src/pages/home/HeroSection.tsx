@@ -65,7 +65,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
       {/* Content Container */}
-      <div className="absolute inset-0 flex flex-col justify-end pb-[12%] md:pb-[18%] pl-[5%] z-30">
+      <div className="absolute inset-0 flex flex-col justify-end pb-[9%] md:pb-[18%] pl-[5%] z-30">
         <div className="max-w-7xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
