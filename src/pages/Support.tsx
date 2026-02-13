@@ -83,13 +83,13 @@ export function Support() {
   };
 
   return (
-    // REDUCED pt-20 to pt-16 on mobile to pull everything up
-    <div className="min-h-screen bg-slate-50 pt-16 sm:pt-20 pb-24">
+    // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
+    <div className="min-h-screen bg-slate-50 pt-14 sm:pt-20 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          {/* REDUCED pt-4 to pt-1 on mobile */}
-          <div className="text-center pt-1 sm:pt-16 pb-12 sm:pb-20">
+          {/* Reduced pt-1 to pt-0 on mobile */}
+          <div className="text-center pt-0 sm:pt-16 pb-12 sm:pb-20">
             
             {/* 1. Innovative Animated Title */}
             <motion.div 
