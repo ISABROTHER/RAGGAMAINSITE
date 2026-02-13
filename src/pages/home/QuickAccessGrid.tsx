@@ -1,5 +1,6 @@
 // src/pages/home/QuickAccessGrid.tsx
 import React from "react";
+import { motion } from "framer-motion";
 import { MessageSquareWarning, HardHat, Users, Award, Heart, UserCircle } from "lucide-react";
 
 type QuickLink = {
@@ -61,13 +62,42 @@ interface QuickAccessGridProps {
   onNavigate: (page: string) => void;
 }
 
+// Animation variants for the container (stagger effect)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+// Animation variants for individual items
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
+};
+
 export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
   return (
-    <section className="relative z-20 -mt-8 md:-mt-16 pt-4 pb-10 md:pb-20 bg-white">
+    <section className="relative z-20 -mt-8 md:-mt-16 pt-4 pb-10 md:pb-20 bg-white overflow-hidden">
       <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Header Block */}
-        <div className="text-center mb-8 md:mb-12">
+        {/* Header Block with Animation */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 md:mb-12"
+        >
           <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-0 inline-block">
             Constituency Services
           </h4>
@@ -83,13 +113,20 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
             </h2>
             <span className="mt-2 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Grid: items-start prevents vertical stretching of neighbors */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start">
+        {/* Animated Grid Container */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start"
+        >
           {quickLinks.map((link, idx) => (
-            <button 
+            <motion.button 
               key={idx} 
+              variants={itemVariants}
               onClick={() => onNavigate(link.route)} 
               className={`
                 group relative aspect-[4/5] overflow-hidden rounded-none 
@@ -115,20 +152,18 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
                   rounded-none px-3 py-2.5 shadow-lg
                   transform transition-all duration-300 group-hover:from-red-500 group-hover:to-red-600
                 ">
-                  {/* Title: 'whitespace-nowrap' forces single line. 'truncate' handles overflow gently. */}
                   <h3 className="text-sm sm:text-base md:text-2xl font-bold text-white leading-tight whitespace-nowrap truncate">
                     {link.title}
                   </h3>
-                  {/* Description: 'line-clamp-1' ensures it stays on one line */}
                   <p className="text-[10px] md:text-sm text-white/90 font-medium mt-0.5 whitespace-nowrap truncate leading-snug">
                     {link.desc}
                   </p>
                 </div>
               </div>
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
-}
+} 

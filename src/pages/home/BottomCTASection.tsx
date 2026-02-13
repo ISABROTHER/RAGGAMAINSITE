@@ -20,7 +20,7 @@ export function BottomCTASection({ onNavigate }: BottomCTASectionProps) {
 
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12">
           
-          {/* LEFT COLUMN: Media & Story */}
+          {/* LEFT COLUMN: Media & Story */} 
           <div className="lg:w-[65%]">
             
             {/* Featured Image */}
