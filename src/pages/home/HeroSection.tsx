@@ -13,9 +13,11 @@ const HERO_IMAGES = [
   "https://i.imgur.com/hmaoKHa.jpeg",
 ];
 
-// Updated Tagline
 const TAGLINES = [
-  "Obiara Ka Do | Everyone is Involved",
+  "Building a Better Cape Coast North",
+  "Every Voice Matters, Every Community Counts",
+  "Transparent. Accountable. Results-Driven.",
+  "Your MP, Working Tirelessly for You",
 ];
 
 export function HeroSection() {
@@ -63,12 +65,12 @@ export function HeroSection() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest">
-                Hon. Dr. Kwamena Minta Nyarku (Ragga)
+                Cape Coast North Constituency
               </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
-              Building the Constituency{" "}
+              Building the Constituency <br className="block md:hidden" />
               <span className="text-green-400">We Want Together</span>
             </h1>
 
