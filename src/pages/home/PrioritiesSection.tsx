@@ -153,21 +153,20 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
           
-          {/* DARK GREEN FROSTED VISION BOX WITH BACKGROUND IMAGE */}
+          {/* FULL DARK GREEN FROSTED BLOCK */}
           <div className="mt-8 relative inline-block max-w-4xl rounded-2xl overflow-hidden shadow-2xl">
-            {/* Background Image Layer */}
+            {/* Background Image Base */}
             <img 
               src="https://i.imgur.com/5H0XBuV.jpeg" 
               className="absolute inset-0 w-full h-full object-cover"
-              alt="Background" 
+              alt="" 
             />
-            {/* Dark Green Frosted Overlay */}
-            <div className="absolute inset-0 bg-green-950/80 backdrop-blur-md border border-white/10"></div>
+            {/* Dark Green Frost Layer */}
+            <div className="absolute inset-0 bg-green-950/85 backdrop-blur-lg border border-white/10"></div>
             
             {/* Content Layer */}
-            <div className="relative p-6 md:p-10 z-10">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
-              <p className="text-sm md:text-lg text-white leading-relaxed font-bold drop-shadow-sm">
+            <div className="relative p-7 md:p-10 z-10">
+              <p className="text-sm md:text-lg text-white leading-relaxed font-bold tracking-tight">
                 With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
               </p>
             </div>
