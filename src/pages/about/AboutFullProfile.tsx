@@ -1,31 +1,26 @@
 // src/pages/about/AboutFullProfile.tsx
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
   CheckSquare, Landmark, GraduationCap, Briefcase, Play, Pause, Volume2, VolumeX
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export function AboutFullProfile() {
-  // --- VIDEO PLAYER STATE ---
+  // --- NATIVE VIDEO PLAYER STATE ---
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   
-  // Toggle Play/Pause
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
+      if (isPlaying) videoRef.current.pause();
+      else videoRef.current.play();
       setIsPlaying(!isPlaying);
     }
   };
 
-  // Toggle Mute
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
@@ -74,7 +69,7 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + NATIVE VIDEO PLAYER */}
+        {/* ROW 1: PERSONAL PROFILE + NATIVE TV-STYLE VIDEO */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
             {/* 1. PERSONAL PROFILE (Left - 7 Columns) */}
@@ -109,17 +104,19 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO (Right - 5 Columns) - TV DIMENSION NATIVE PLAYER */}
+            {/* 2. VIDEO PLAYER (Right - 5 Columns) - NATIVE & CLEAN */}
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group isolate"
-                onClick={togglePlay} // Clicking video toggles play
+                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group isolate cursor-pointer"
+                onClick={togglePlay}
             >
-                 {/* Video Element */}
-                 {/* NOTE: Replace the 'src' below with your actual campaign video URL (e.g. /videos/campaign.mp4) */}
+                 {/* IMPORTANT: To use your specific Instagram video, download the MP4 file, 
+                    upload it to your project (e.g., public/videos/ragga.mp4), and update the 'src' below.
+                    Instagram links CANNOT be played in a native player without their UI overlay.
+                 */}
                  <video 
                     ref={videoRef}
                     className="absolute inset-0 w-full h-full object-cover"
@@ -131,36 +128,32 @@ export function AboutFullProfile() {
                     playsInline
                  />
                  
-                 {/* Cinematic Overlay Gradient (Fades out when playing) */}
-                 <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-                    <motion.button 
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center text-white shadow-2xl"
-                    >
+                 {/* Clean Play/Pause Overlay */}
+                 <div className={`absolute inset-0 bg-black/30 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center text-white shadow-xl">
                         {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
-                    </motion.button>
+                    </div>
                  </div>
 
-                 {/* Sound Control (Bottom Right) */}
+                 {/* Sound Toggle */}
                  <div className="absolute bottom-4 right-4 z-20">
                      <button 
                         onClick={toggleMute}
-                        className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm transition-colors"
+                        className="p-2 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-colors"
                      >
                         {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                      </button>
                  </div>
                  
-                 {/* Status Badge */}
+                 {/* Live Badge */}
                  <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg flex items-center gap-2">
                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                     Live Action
+                     Live
                  </div>
             </motion.div>
         </div>
 
-        {/* ROW 2: AFFILIATION (Full Width - FIXED TEXT LAYOUT) */}
+        {/* ROW 2: AFFILIATION (Restored Wide Banner Design) */}
         <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -186,13 +179,13 @@ export function AboutFullProfile() {
                     <span className="text-green-500">CONGRESS</span>
                 </h2>
                 
-                <div className="flex flex-wrap items-center gap-4 mt-auto">
-                    <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center justify-center shadow-lg shadow-green-900/50 text-lg">
+                <div className="flex flex-wrap items-center gap-4 mt-auto w-full max-w-2xl">
+                    <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50 text-lg shrink-0">
                         NDC
                     </span>
                     
-                    {/* FIXED: Responsive container for long text */}
-                    <div className="min-h-[3rem] h-auto py-2 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-white/90 text-sm font-bold uppercase tracking-wide text-center">
+                    {/* FIXED: Text Container that adapts to length without scattering */}
+                    <div className="h-auto min-h-[3rem] py-2 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-sm font-bold uppercase tracking-wide leading-tight">
                         Cape Coast North Constituency
                     </div>
                 </div>
