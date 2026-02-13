@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, ArrowLeft,
   Fingerprint, CheckCircle2, Database, ScanSearch, ShieldAlert,
-  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone
+  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone,
+  Sparkles
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -89,13 +90,13 @@ export function ConstituencyConnect() {
                   <motion.div key="search" {...anim} className="p-5">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
-                          <Fingerprint className="w-4 h-4 text-white" />
+                        <div className="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-white" />
                         </div>
-                        <p className="text-sm font-black text-slate-900 uppercase">Database Access</p>
+                        <p className="text-sm font-black text-slate-900 uppercase">AI Powered Database</p>
                       </div>
                       <button onClick={() => setShowInfo(!showInfo)} className="px-3 py-1.5 rounded-lg border bg-green-50 border-green-200 text-green-700 text-[10px] font-bold uppercase">
-                        {showInfo ? "Close" : "Why Register?"}
+                        {showInfo ? "Close" : "How we help?"}
                       </button>
                     </div>
 
@@ -103,15 +104,15 @@ export function ConstituencyConnect() {
                     {showInfo && (
                       <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left space-y-4 border border-slate-100">
                          <div>
-                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
-                            <p className="text-[11px] text-slate-600 leading-relaxed">We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Our Connection</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">We use this space to stay in touch with you, ensuring that help and local updates reach the right people at the right time.</p>
                          </div>
                          <div>
-                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4>
-                            <p className="text-[11px] text-slate-600 leading-relaxed">You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Your Benefits</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">By joining, you'll be first to know about new opportunities, community projects, and direct support programs in Cape Coast North.</p>
                          </div>
                          <div className="pt-2 border-t border-slate-200">
-                            <p className="text-[10px] text-slate-400 italic">"Your information is used only for constituency work and is not sold or published."</p>
+                            <p className="text-[10px] text-slate-400 italic">"Your privacy matters. We only use your details to serve you better and keep you involved in our community's growth."</p>
                          </div>
                       </div>
                     )}
@@ -121,11 +122,11 @@ export function ConstituencyConnect() {
                       <button onClick={() => setActiveTab('check')} className="relative h-full flex items-center justify-center gap-2 rounded-xl overflow-hidden group">
                         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,#e2e8f0_0%,#22c55e_50%,#e2e8f0_100%)] animate-[spin_3s_linear_infinite]" />
                         <div className="absolute inset-[1.5px] bg-white rounded-[10px]" />
-                        <span className="relative z-10 text-xs font-black uppercase text-slate-700">Check Database</span>
+                        <span className="relative z-10 text-xs font-black uppercase text-slate-700">Check My Status</span>
                       </button>
                       
                       <button onClick={() => setView('register')} className="h-full flex items-center justify-center gap-2 bg-green-600 rounded-xl text-white font-black text-xs uppercase shadow-lg hover:bg-green-700 transition-colors">
-                        <UserPlus className="w-3.5 h-3.5" /> Register Now
+                        <UserPlus className="w-3.5 h-3.5" /> Join Now
                       </button>
                     </div>
                   </motion.div>
@@ -139,7 +140,7 @@ export function ConstituencyConnect() {
                     {/* STEP 1: CHOOSE TYPE */}
                     {regStep === 1 && (
                       <div className="space-y-4">
-                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
+                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Tell us about yourself</h3>
                         <div className="grid grid-cols-1 gap-3">
                           <button onClick={() => { setUserType("Resident"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
                             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
@@ -166,12 +167,12 @@ export function ConstituencyConnect() {
                                 <MessageSquare className="w-5 h-5 text-green-600" />
                             </div>
                             <div className="text-left">
-                              <p className="text-xs font-black text-slate-900 uppercase">Not a constituent</p>
+                              <p className="text-xs font-black text-slate-900 uppercase">Friend of the Constituency</p>
                               <p className="text-[10px] text-slate-500">General Inquiry / Business</p>
                             </div>
                           </button>
                         </div>
-                        <p className="text-[9px] text-slate-400 text-center italic mt-4">“Your information is used only for constituency work and is not sold or published.”</p>
+                        <p className="text-[9px] text-slate-400 text-center italic mt-4">“We value your trust. Your data is kept safe and used only for community engagement.”</p>
                       </div>
                     )}
 
@@ -226,7 +227,7 @@ export function ConstituencyConnect() {
                         </div>
                         
                         <button onClick={() => setRegStep(3)} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase mt-4 hover:bg-slate-800 transition-colors">
-                          Continue to Verification
+                          Proceed to Verification
                         </button>
                       </div>
                     )}
@@ -238,16 +239,16 @@ export function ConstituencyConnect() {
                           <Phone className="w-8 h-8 text-green-600 animate-pulse" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="text-sm font-black text-slate-900 uppercase">Step 3: Verification</h3>
+                          <h3 className="text-sm font-black text-slate-900 uppercase">Step 3: Quick Check</h3>
                           <p className="text-[11px] text-slate-500 leading-relaxed px-4">
-                            We will send a code to your phone. If OTP is unavailable, our staff will call you for verification.
+                            To keep our community authentic, we'll send a quick code to your phone to finish up.
                           </p>
                         </div>
                         <div className="flex gap-2">
                            <input type="text" placeholder="Enter OTP" className={`${inputCls} text-center tracking-[1em] font-bold`} maxLength={4} />
                         </div>
                         <button onClick={() => setView("verified")} className="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xs uppercase shadow-xl hover:bg-green-700 transition-colors">
-                          Confirm & Register
+                          Complete Registration
                         </button>
                       </div>
                     )}
@@ -261,8 +262,8 @@ export function ConstituencyConnect() {
                       <ShieldCheck className="w-10 h-10 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-900 uppercase">Registration Success</h3>
-                      <p className="text-xs text-slate-500 mt-2">Your record has been tagged as <strong>{userType}</strong>. You will receive updates shortly.</p>
+                      <h3 className="text-lg font-black text-slate-900 uppercase">You're All Set!</h3>
+                      <p className="text-xs text-slate-500 mt-2">Welcome! You're now connected as a <strong>{userType}</strong>. We'll be in touch with updates soon.</p>
                     </div>
                     <button onClick={reset} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase hover:bg-slate-800 transition-colors">Return Home</button>
                   </motion.div>
