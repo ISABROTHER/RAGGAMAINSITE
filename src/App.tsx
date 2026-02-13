@@ -1,3 +1,4 @@
+// src/App.tsx
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
@@ -62,7 +63,7 @@ function App() {
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/support" element={<Support />} />
           <Route path="/assemblymen" element={<Assemblymen />} />
-          <Route path="/ongoing-projects" element={<OngoingProjects />} />
+          <Route path="/projects" element={<OngoingProjects />} />
           <Route path="/events" element={<Events />} />
           <Route path="/polls" element={<Polls />} />
           <Route path="/appointments" element={<Appointments />} />
