@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Landmark, GraduationCap, Award, Briefcase, ChevronRight
+  CheckSquare, Landmark, GraduationCap, Briefcase
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -15,7 +15,7 @@ export function AboutFullProfile() {
   const educationData = [
       { institution: "University of Ghana Business School", qualification: "PhD", completed: "07-2019" },
       { institution: "University of Leicester, UK", qualification: "MBA", completed: "09-2003" },
-      { institution: "University of Cape Coast", qualification: "B.Ed", completed: "06-2000" }, // Shortened for space
+      { institution: "University of Cape Coast", qualification: "B.Ed", completed: "06-2000" },
       { institution: "Worker College", qualification: "A Level", completed: "09-1996" },
       { institution: "Komenda Training College", qualification: "Cert A", completed: "06-1995" },
       { institution: "Adisadel College", qualification: "GCE O Level", completed: "09-1992" },
@@ -32,13 +32,15 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
+  // Updated Profile Data with Col-Span Logic for layout control
   const profileDetails = [
-      { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku" },
-      { icon: Smile, label: "Nickname", value: "Ragga" },
-      { icon: Flag, label: "Nationality", value: "Ghanaian" },
-      { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North" },
-      { icon: MapPin, label: "Birthplace", value: "Apewosika, Cape Coast" },
-      { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho" },
+      { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
+      // Nickname and Nationality sharing the row (col-span-1)
+      { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
+      { icon: Flag, label: "Nationality", value: "Ghanaian", colSpan: "col-span-1" },
+      { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North", colSpan: "col-span-2" },
+      { icon: MapPin, label: "Birthplace", value: "Apewosika, Cape Coast", colSpan: "col-span-2" },
+      { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho", colSpan: "col-span-2" },
   ];
 
   return (
@@ -50,7 +52,7 @@ export function AboutFullProfile() {
         {/* BENTO GRID LAYOUT - ROW 1: PROFILE & AFFILIATION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
-            {/* 1. PERSONAL PROFILE (Left - Compact) */}
+            {/* 1. PERSONAL PROFILE (Left - Grid Layout) */}
             <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -62,12 +64,15 @@ export function AboutFullProfile() {
                         <User className="w-4 h-4 text-green-400" />
                         Personal Profile
                     </h2>
-                    {/* Identity & Roots REMOVED */}
                 </div>
                 
-                <div className="p-2 grid grid-cols-1 gap-1 flex-1 bg-slate-50/50">
+                {/* 2-Column Grid Container */}
+                <div className="p-3 grid grid-cols-2 gap-2 flex-1 bg-slate-50/50">
                     {profileDetails.map((item, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors">
+                        <div 
+                            key={index} 
+                            className={`${item.colSpan} flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors`}
+                        >
                             <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
                                 <item.icon className="w-4 h-4 text-green-700" />
                             </div>
