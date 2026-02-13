@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Users, Landmark, Quote, Star, GraduationCap, Award, Briefcase
+  CheckSquare, Landmark, Quote, Star, GraduationCap, Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -32,7 +32,6 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
-  // Personal Profile Data
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku" },
       { icon: Smile, label: "Nickname", value: "Ragga" },
@@ -44,14 +43,50 @@ export function AboutFullProfile() {
 
   return (
     <div className="bg-slate-50 relative overflow-hidden font-sans">
-      {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-50 via-slate-50 to-slate-50 pointer-events-none" />
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
-        
         <div className="space-y-20">
             
-            {/* 1. AFFILIATION / PARTY (Moved to Top) */}
+            {/* 1. PERSONAL PROFILE (Holographic Dossier) */}
+            <section>
+                <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="mb-8 flex items-center gap-4"
+                >
+                  <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
+                  <div>
+                      <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Personal Profile</h2>
+                      <p className="text-slate-500 font-medium">Identity & Roots</p>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden relative"
+                >
+                    <div className="h-2 w-full bg-gradient-to-r from-green-600 via-green-400 to-green-600" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                        {profileDetails.map((item, index) => (
+                            <div key={index} className="p-6 flex items-center gap-4 hover:bg-slate-50/80 transition-colors group">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center group-hover:bg-green-100 group-hover:scale-110 transition-all duration-300">
+                                    <item.icon className="w-6 h-6 text-slate-400 group-hover:text-green-700 transition-colors" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{item.label}</h4>
+                                    <p className="text-base font-bold text-slate-900 leading-tight">{item.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* 2. AFFILIATION / PARTY (Now After Personal Profile) */}
             <motion.section
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -59,17 +94,14 @@ export function AboutFullProfile() {
                 className="w-full"
             >
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[300px] group">
-                    {/* Background Image */}
                     <div 
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
                         style={{ 
                             backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` 
                         }}
                     />
-                    {/* Dark Overlay for Readability */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
                     
-                    {/* Content */}
                     <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-center">
                         <motion.div 
                             initial={{ x: -20, opacity: 0 }}
@@ -92,50 +124,7 @@ export function AboutFullProfile() {
                 </div>
             </motion.section>
 
-            {/* 2. PERSONAL PROFILE (Innovative "Holographic Dossier" Design) */}
-            <section>
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="mb-8 flex items-center gap-4"
-                >
-                  <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
-                  <div>
-                      <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Personal Profile</h2>
-                      <p className="text-slate-500 font-medium">Identity & Roots</p>
-                  </div>
-                </motion.div>
-                
-                {/* Unified Glass Dossier */}
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden relative"
-                >
-                    {/* Decorative Top Bar */}
-                    <div className="h-2 w-full bg-gradient-to-r from-green-600 via-green-400 to-green-600" />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-                        {profileDetails.map((item, index) => (
-                            <div key={index} className="p-6 flex items-center gap-4 hover:bg-slate-50/80 transition-colors group">
-                                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center group-hover:bg-green-100 group-hover:scale-110 transition-all duration-300">
-                                    <item.icon className="w-6 h-6 text-slate-400 group-hover:text-green-700 transition-colors" />
-                                </div>
-                                <div>
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{item.label}</h4>
-                                    <p className="text-base font-bold text-slate-900 leading-tight">{item.value}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    {/* Watermark */}
-                    <User className="absolute -bottom-10 -right-10 w-64 h-64 text-slate-50 -z-0 pointer-events-none" />
-                </motion.div>
-            </section>
-
-            {/* 3. ACADEMIC JOURNEY (Compact Single-Line Layout) */}
+            {/* 3. ACADEMIC JOURNEY (Compact Single-Line) */}
             <section>
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
@@ -150,7 +139,7 @@ export function AboutFullProfile() {
                 </motion.div>
 
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    {educationData.map((edu, index) => (
+                    {educationData.map((edu) => (
                         <div 
                             key={edu.institution}
                             className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
@@ -189,13 +178,13 @@ export function AboutFullProfile() {
                 </motion.div>
 
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    {employmentData.map((job, index) => (
+                    {employmentData.map((job) => (
                         <div 
                             key={job.institution}
                             className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
                         >
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-slate-900 text-sm md:text-base">
+                                <h4 className="font-bold text-slate-900 text-sm md:text-base truncate">
                                     {job.institution}
                                 </h4>
                             </div>
@@ -209,7 +198,7 @@ export function AboutFullProfile() {
                 </div>
             </section>
 
-            {/* 5. SERVICE IN PARLIAMENT (No subtitle) */}
+            {/* 5. SERVICE IN PARLIAMENT */}
             <section>
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
@@ -220,18 +209,15 @@ export function AboutFullProfile() {
                   <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
                   <div>
                       <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Service in Parliament</h2>
-                      {/* Subtitle Removed as requested */}
                   </div>
                 </motion.div>
 
                 <div className="space-y-8">
-                    {/* ELECTION RESULTS VISUALIZER */}
                     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
                         <div className="flex items-center gap-3 mb-8">
                             <CheckSquare className="w-6 h-6 text-green-600" />
                             <h4 className="font-black text-slate-900 text-xl">Electoral Mandate</h4>
                         </div>
-
                         <div className="space-y-8">
                             {electionResults.map((result) => (
                                 <div key={result.year} className="relative">
@@ -239,10 +225,7 @@ export function AboutFullProfile() {
                                         <span className="font-black text-2xl text-slate-900">{result.year}</span>
                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Margin: <span className="text-green-600 text-sm">{result.margin} Votes</span></span>
                                     </div>
-                                    
-                                    {/* Visual Bar */}
                                     <div className="h-14 w-full bg-slate-100 rounded-xl overflow-hidden relative flex">
-                                        {/* Winner (Nyarku) */}
                                         <motion.div 
                                             initial={{ width: 0 }}
                                             whileInView={{ width: `${result.nyarkuPercent}%` }}
@@ -253,10 +236,7 @@ export function AboutFullProfile() {
                                             <div className="absolute inset-0 flex items-center pl-4 text-white font-bold text-sm whitespace-nowrap z-10">
                                                 {result.nyarkuVotes.toLocaleString()} Votes ({result.nyarkuPercent}%)
                                             </div>
-                                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </motion.div>
-
-                                        {/* Opponent */}
                                         <div className="flex-1 bg-slate-200 h-full relative flex items-center justify-end pr-4 text-slate-500 font-bold text-xs">
                                             {result.opponentVotes.toLocaleString()} ({result.opponentPercent}%)
                                         </div>
@@ -266,7 +246,6 @@ export function AboutFullProfile() {
                         </div>
                     </div>
 
-                    {/* COMMITTEES GRID */}
                     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center">
                         <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
                             <Landmark className="w-5 h-5 text-green-600" />
@@ -296,38 +275,29 @@ export function AboutFullProfile() {
             {/* 6. MY VISION */}
             <section className="relative pt-12">
               <div className="absolute inset-0 bg-green-900 rounded-[3rem] transform -skew-y-1 opacity-5 translate-y-20 z-0" />
-              
               <div className="relative z-10 text-center mb-12">
                 <Star className="w-12 h-12 text-yellow-400 mx-auto mb-4 fill-current animate-pulse" />
-                <h2 className="text-5xl font-black tracking-tighter text-slate-900 uppercase mb-4">
-                  My Vision
-                </h2>
+                <h2 className="text-5xl font-black tracking-tighter text-slate-900 uppercase mb-4">My Vision</h2>
                 <div className="h-1.5 w-24 bg-green-600 mx-auto rounded-full" />
               </div>
 
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-16 border border-white shadow-2xl relative overflow-hidden">
                   <Quote className="absolute top-8 left-8 w-32 h-32 text-green-500/10 rotate-180" />
-                  
                   <div className="relative z-10 space-y-10 text-center">
                     <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-relaxed">
                       "For me, leadership is not about titles or recognition. It is about what endures 
                       after one’s service—the systems, opportunities, and hope that remain."
                     </p>
-                    
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-
                     <p className="text-lg md:text-xl font-medium text-slate-600 leading-relaxed">
                       "My vision is to help build a <span className="text-green-700 font-bold">Cape Coast North</span> where fairness, opportunity, and 
                       respect are shared by all, where everyone feels they belong, and every young person 
                       knows their dream matters."
                     </p>
                   </div>
-                  
                   <div className="mt-12 pt-8 flex flex-col items-center">
-                    <div className="text-xl font-black text-slate-900 uppercase tracking-wide">
-                      Hon. Dr. Kwamena Minta Nyarku (Ragga)
-                    </div>
+                    <div className="text-xl font-black text-slate-900 uppercase tracking-wide">Hon. Dr. Kwamena Minta Nyarku (Ragga)</div>
                     <div className="text-xs font-bold text-green-600 bg-green-50 px-4 py-1.5 rounded-full mt-3 uppercase tracking-widest border border-green-100">
                       Member of Parliament, Cape Coast North
                     </div>
