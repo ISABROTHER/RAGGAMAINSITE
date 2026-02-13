@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Landmark, GraduationCap, Award
+  CheckSquare, Landmark, GraduationCap, Award, Briefcase, ChevronRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -15,15 +15,15 @@ export function AboutFullProfile() {
   const educationData = [
       { institution: "University of Ghana Business School", qualification: "PhD", completed: "07-2019" },
       { institution: "University of Leicester, UK", qualification: "MBA", completed: "09-2003" },
-      { institution: "University of Cape Coast", qualification: "Bachelor of Education", completed: "06-2000" },
+      { institution: "University of Cape Coast", qualification: "B.Ed", completed: "06-2000" }, // Shortened for space
       { institution: "Worker College", qualification: "A Level", completed: "09-1996" },
-      { institution: "Komenda Training College", qualification: "Teacher Certificate A", completed: "06-1995" },
+      { institution: "Komenda Training College", qualification: "Cert A", completed: "06-1995" },
       { institution: "Adisadel College", qualification: "GCE O Level", completed: "09-1992" },
   ];
 
    const employmentData = [
        { institution: "University of Cape Coast", position: "Senior Lecturer" },
-       { institution: "GOIL PLC (Ghana Oil Company)", position: "Board Member" }
+       { institution: "GOIL PLC", position: "Board Member" }
    ];
 
   const getYear = (dateStr: string) => {
@@ -37,241 +37,223 @@ export function AboutFullProfile() {
       { icon: Smile, label: "Nickname", value: "Ragga" },
       { icon: Flag, label: "Nationality", value: "Ghanaian" },
       { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North" },
-      { icon: MapPin, label: "Place of Birth", value: "Apewosika, Cape Coast" },
+      { icon: MapPin, label: "Birthplace", value: "Apewosika, Cape Coast" },
       { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho" },
   ];
 
   return (
-    <div className="bg-slate-50 relative overflow-hidden font-sans">
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-50 via-slate-50 to-slate-50 pointer-events-none" />
+    <div className="bg-slate-50 relative overflow-hidden font-sans min-h-screen">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-green-100/40 via-slate-50 to-slate-50 pointer-events-none" />
       
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
-        <div className="space-y-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        
+        {/* BENTO GRID LAYOUT - ROW 1: PROFILE & AFFILIATION */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
-            {/* 1. PERSONAL PROFILE (Holographic Dossier) */}
-            <section>
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="mb-8 flex items-center gap-4"
-                >
-                  <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
-                  <div>
-                      <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Personal Profile</h2>
-                      <p className="text-slate-500 font-medium">Identity & Roots</p>
-                  </div>
-                </motion.div>
+            {/* 1. PERSONAL PROFILE (Left - Compact) */}
+            <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="lg:col-span-5 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col"
+            >
+                <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
+                    <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <User className="w-4 h-4 text-green-400" />
+                        Personal Profile
+                    </h2>
+                    {/* Identity & Roots REMOVED */}
+                </div>
                 
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden relative"
-                >
-                    <div className="h-2 w-full bg-gradient-to-r from-green-600 via-green-400 to-green-600" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-                        {profileDetails.map((item, index) => (
-                            <div key={index} className="p-6 flex items-center gap-4 hover:bg-slate-50/80 transition-colors group">
-                                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center group-hover:bg-green-100 group-hover:scale-110 transition-all duration-300">
-                                    <item.icon className="w-6 h-6 text-slate-400 group-hover:text-green-700 transition-colors" />
-                                </div>
+                <div className="p-2 grid grid-cols-1 gap-1 flex-1 bg-slate-50/50">
+                    {profileDetails.map((item, index) => (
+                        <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors">
+                            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                                <item.icon className="w-4 h-4 text-green-700" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</div>
+                                <div className="text-sm font-bold text-slate-900 truncate">{item.value}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </motion.div>
+
+            {/* 2. POLITICAL AFFILIATION (Right - Compact Card) */}
+            <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="lg:col-span-7 relative rounded-3xl overflow-hidden shadow-xl group min-h-[300px]"
+            >
+                <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+                    style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-black/90" />
+                
+                <div className="absolute inset-0 p-8 flex flex-col justify-center items-start">
+                    <div className="flex items-center gap-2 mb-3 bg-green-600/20 backdrop-blur-md px-3 py-1 rounded-full border border-green-500/30">
+                        <Flag className="w-3 h-3 text-green-400" />
+                        <span className="text-green-100 font-bold text-xs uppercase tracking-widest">Affiliation</span>
+                    </div>
+                    
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[0.9] mb-4">
+                        NATIONAL <br/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">DEMOCRATIC</span> <br/>
+                        <span className="text-green-500">CONGRESS</span>
+                    </h2>
+                    
+                    <div className="flex items-center gap-3 mt-auto">
+                        <span className="h-10 px-6 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50">NDC</span>
+                        <div className="h-10 px-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-xs font-bold uppercase tracking-wide">
+                            Cape Coast North
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+        </div>
+
+        {/* BENTO GRID LAYOUT - ROW 2: PROFESSIONAL DUAL TRACK */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            
+            {/* 3. ACADEMIC QUALIFICATIONS */}
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full"
+            >
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="p-1.5 bg-green-100 rounded-lg">
+                        <GraduationCap className="w-5 h-5 text-green-700" />
+                    </div>
+                    <h3 className="font-black text-slate-900 text-lg">Education</h3>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                    {educationData.map((edu, i) => (
+                        <div key={i} className="px-6 py-3 border-b border-slate-50 last:border-b-0 hover:bg-slate-50 transition-colors flex justify-between items-center group">
+                            <div className="min-w-0 pr-4">
+                                <div className="font-bold text-slate-800 text-sm truncate group-hover:text-green-700 transition-colors">{edu.institution}</div>
+                                <div className="text-xs font-medium text-slate-500">{edu.qualification}</div>
+                            </div>
+                            <div className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded group-hover:bg-green-100 group-hover:text-green-700 transition-colors">
+                                {getYear(edu.completed)}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </motion.div>
+
+            {/* 4. EMPLOYMENT & COMMITTEES (Merged for efficiency) */}
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col gap-6"
+            >
+                {/* Employment */}
+                <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                        <div className="p-1.5 bg-green-100 rounded-lg">
+                            <Briefcase className="w-5 h-5 text-green-700" />
+                        </div>
+                        <h3 className="font-black text-slate-900 text-lg">Experience</h3>
+                    </div>
+                    <div>
+                        {employmentData.map((job, i) => (
+                            <div key={i} className="px-6 py-4 border-b border-slate-50 last:border-b-0 flex justify-between items-center">
                                 <div>
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{item.label}</h4>
-                                    <p className="text-base font-bold text-slate-900 leading-tight">{item.value}</p>
+                                    <div className="font-bold text-slate-800 text-sm">{job.institution}</div>
+                                </div>
+                                <div className="text-xs font-bold text-white bg-slate-800 px-3 py-1 rounded-full">
+                                    {job.position}
                                 </div>
                             </div>
                         ))}
                     </div>
-                </motion.div>
-            </section>
+                </div>
 
-            {/* 2. AFFILIATION / PARTY */}
-            <motion.section
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="w-full"
-            >
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[300px] group">
-                    <div 
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-                        style={{ 
-                            backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` 
-                        }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
-                    
-                    <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-center">
-                        <motion.div 
-                            initial={{ x: -20, opacity: 0 }}
-                            whileInView={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                             <div className="flex items-center gap-3 mb-4">
-                                <Flag className="w-6 h-6 text-green-500" />
-                                <span className="text-white/80 font-bold tracking-widest uppercase text-sm">Political Affiliation</span>
+                {/* Committees (Compact Grid) */}
+                <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-5 flex-1">
+                    <h3 className="font-black text-slate-900 text-sm uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <Landmark className="w-4 h-4 text-green-600" /> Parliamentary Committees
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                        {[
+                            "Defence & Interior",
+                            "Environment, Science & Tech",
+                            "Ways & Means",
+                            "Petitions (Vice-Chairman)"
+                        ].map((c, i) => (
+                            <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                {c}
                             </div>
-                            <h2 className="text-4xl md:text-6xl font-black text-white leading-none mb-2">
-                                NATIONAL <br/>DEMOCRATIC <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-white">CONGRESS</span>
-                            </h2>
-                            <div className="mt-6 flex items-center gap-4">
-                                <span className="px-6 py-2 bg-green-600 text-white font-bold rounded-full shadow-[0_0_20px_rgba(22,163,74,0.4)]">NDC</span>
-                                <span className="text-white/60 font-medium">Cape Coast North Constituency</span>
-                            </div>
-                        </motion.div>
+                        ))}
                     </div>
                 </div>
-            </motion.section>
-
-            {/* 3. ACADEMIC JOURNEY (Compact Single-Line) */}
-            <section>
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="flex items-center gap-3 mb-6"
-                >
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <GraduationCap className="w-6 h-6 text-green-700" />
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Academic Qualifications</h3>
-                </motion.div>
-
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    {educationData.map((edu) => (
-                        <div 
-                            key={edu.institution}
-                            className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
-                        >
-                            <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-baseline gap-x-2">
-                                    <h4 className="font-bold text-slate-900 text-sm md:text-base truncate">
-                                        {edu.institution}
-                                    </h4>
-                                    <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300" />
-                                    <span className="text-xs md:text-sm font-medium text-green-700">{edu.qualification}</span>
-                                </div>
-                            </div>
-                            <div className="flex-shrink-0">
-                                <span className="font-bold text-slate-500 text-sm tabular-nums bg-slate-100 px-2 py-1 rounded">
-                                    {getYear(edu.completed)}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* 4. EMPLOYMENT HISTORY (Compact Layout) */}
-            <section>
-                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="flex items-center gap-3 mb-6"
-                >
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <DesignationIcon className="w-6 h-6 text-green-700" />
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Employment History</h3>
-                </motion.div>
-
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    {employmentData.map((job) => (
-                        <div 
-                            key={job.institution}
-                            className="px-6 py-4 border-b border-slate-100 last:border-b-0 hover:bg-green-50/30 transition-colors flex items-center justify-between gap-4"
-                        >
-                            <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-slate-900 text-sm md:text-base truncate">
-                                    {job.institution}
-                                </h4>
-                            </div>
-                            <div className="flex-shrink-0 text-right">
-                                <span className="text-xs md:text-sm font-bold text-slate-600 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
-                                    {job.position}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* 5. SERVICE IN PARLIAMENT */}
-            <section>
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="mb-10 flex items-center gap-4"
-                >
-                  <div className="w-1.5 h-12 bg-gradient-to-b from-green-600 to-green-400 rounded-full" />
-                  <div>
-                      <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Service in Parliament</h2>
-                  </div>
-                </motion.div>
-
-                <div className="space-y-8">
-                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
-                        <div className="flex items-center gap-3 mb-8">
-                            <CheckSquare className="w-6 h-6 text-green-600" />
-                            <h4 className="font-black text-slate-900 text-xl">Electoral Mandate</h4>
-                        </div>
-                        <div className="space-y-8">
-                            {electionResults.map((result) => (
-                                <div key={result.year} className="relative">
-                                    <div className="flex justify-between items-end mb-2">
-                                        <span className="font-black text-2xl text-slate-900">{result.year}</span>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Margin: <span className="text-green-600 text-sm">{result.margin} Votes</span></span>
-                                    </div>
-                                    <div className="h-14 w-full bg-slate-100 rounded-xl overflow-hidden relative flex">
-                                        <motion.div 
-                                            initial={{ width: 0 }}
-                                            whileInView={{ width: `${result.nyarkuPercent}%` }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 1.5, ease: "easeOut" }}
-                                            className="h-full bg-gradient-to-r from-green-700 to-green-500 relative group"
-                                        >
-                                            <div className="absolute inset-0 flex items-center pl-4 text-white font-bold text-sm whitespace-nowrap z-10">
-                                                {result.nyarkuVotes.toLocaleString()} Votes ({result.nyarkuPercent}%)
-                                            </div>
-                                        </motion.div>
-                                        <div className="flex-1 bg-slate-200 h-full relative flex items-center justify-end pr-4 text-slate-500 font-bold text-xs">
-                                            {result.opponentVotes.toLocaleString()} ({result.opponentPercent}%)
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
-                            <Landmark className="w-5 h-5 text-green-600" />
-                            Parliamentary Committees
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {[
-                              "Committee on Defence & Interior",
-                              "Committee on Environment, Science & Technology",
-                              "Committee on Ways & Means",
-                              "Vice-Chairman, Committee of Petitions"
-                            ].map((committee, i) => (
-                              <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.02 }}
-                                className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-700 font-bold flex items-center gap-3 hover:bg-green-50 hover:border-green-100 hover:text-green-800 transition-colors cursor-default"
-                              >
-                                <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                {committee}
-                              </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
+            </motion.div>
         </div>
+
+        {/* BENTO GRID LAYOUT - ROW 3: SERVICE & MANDATE */}
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-8"
+        >
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <CheckSquare className="w-6 h-6 text-green-600" />
+                    Electoral Mandate
+                </h2>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest hidden sm:block">Voice of the People</div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {electionResults.map((result, idx) => (
+                    <div key={idx} className="relative group">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-3xl font-black text-slate-900">{result.year}</span>
+                            <span className="text-xs font-bold bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100">
+                                +{result.margin} Margin
+                            </span>
+                        </div>
+                        
+                        {/* Compact Visualizer */}
+                        <div className="h-12 bg-slate-100 rounded-xl overflow-hidden flex relative">
+                            {/* Winner */}
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                whileInView={{ width: `${result.nyarkuPercent}%` }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 1, delay: 0.5 + (idx * 0.2) }}
+                                className="bg-green-600 h-full flex items-center pl-3 relative"
+                            >
+                                <span className="text-white font-bold text-xs z-10 whitespace-nowrap">
+                                    {result.nyarkuPercent}% (Won)
+                                </span>
+                                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent" />
+                            </motion.div>
+                            
+                            {/* Opponent */}
+                            <div className="flex-1 flex items-center justify-end pr-3">
+                                <span className="text-slate-400 font-bold text-xs">
+                                    {result.opponentPercent}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </motion.div>
+
       </div>
     </div>
   );
