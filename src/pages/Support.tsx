@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2 } from 'lucide-react';
+import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -229,100 +229,193 @@ const BOOK_PROJECT_IMAGE = 'https://i.imgur.com/4yctvPb.jpg';
 function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
   const isBookProject = project.title.toLowerCase().includes('book') || project.title.toLowerCase().includes('obiara');
   const displayImage = isBookProject ? BOOK_PROJECT_IMAGE : project.image_url;
+  const [showShare, setShowShare] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = `${window.location.origin}/support?project=${project.slug}`;
+  const shareText = `Support "${project.title}" on Ragga Foundation!`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
+  };
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
-      {/* Image */}
-      <div className="relative h-44 sm:h-52 overflow-hidden">
-        {displayImage ? (
-          <img
-            src={displayImage}
-            alt={project.title}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          />
-        ) : (
-          <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-            <BookOpen className="w-10 h-10 text-slate-300" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/90 text-slate-800 rounded-full backdrop-blur-sm">
-          {project.category}
-        </span>
-        <span className="absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-extrabold tabular-nums bg-green-600 text-white rounded-full">
-          {project.percent}%
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="p-4 sm:p-5">
-        <h3 className="text-base font-bold text-slate-900 mb-1 leading-snug group-hover:text-green-700 transition-colors line-clamp-1">
-          {project.title}
-        </h3>
-        <p className="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-2">
-          {project.description}
-        </p>
-
-        {/* Progress */}
-        <div className="mb-4">
-          <div className="flex justify-between text-[11px] mb-1.5">
-            <span className="font-semibold text-slate-600 tabular-nums">
-              {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
-            </span>
-          </div>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${project.percent}%` }}
+    <>
+      <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        {/* Image */}
+        <div className="relative h-44 sm:h-52 overflow-hidden">
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={project.title}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
-          </div>
+          ) : (
+            <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-slate-300" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/90 text-slate-800 rounded-full backdrop-blur-sm">
+            {project.category}
+          </span>
+          <span className="absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-extrabold tabular-nums bg-green-600 text-white rounded-full">
+            {project.percent}%
+          </span>
         </div>
 
-        {/* Buttons */}
-        <div className="flex items-center gap-2">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(22, 163, 74, 0.3)',
-                '0 0 0 8px rgba(22, 163, 74, 0)',
-                '0 0 0 0 rgba(22, 163, 74, 0)',
-              ],
-            }}
-            transition={{
-              boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-            }}
-            onClick={onContribute}
-            className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
-          >
-            <motion.span
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Content */}
+        <div className="p-4 sm:p-5">
+          <h3 className="text-base font-bold text-slate-900 mb-1 leading-snug group-hover:text-green-700 transition-colors line-clamp-1">
+            {project.title}
+          </h3>
+          <p className="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-2">
+            {project.description}
+          </p>
+
+          {/* Progress */}
+          <div className="mb-4">
+            <div className="flex justify-between text-[11px] mb-1.5">
+              <span className="font-semibold text-slate-600 tabular-nums">
+                {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${project.percent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              animate={{
+                boxShadow: [
+                  '0 0 0 0 rgba(22, 163, 74, 0.3)',
+                  '0 0 0 8px rgba(22, 163, 74, 0)',
+                  '0 0 0 0 rgba(22, 163, 74, 0)',
+                ],
+              }}
+              transition={{
+                boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+              }}
+              onClick={onContribute}
+              className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
             >
-              <Heart className="w-3.5 h-3.5 fill-current" />
-            </motion.span>
-            Contribute
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              const url = `${window.location.origin}/support?project=${project.slug}`;
-              const text = `Support "${project.title}" on Ragga Foundation!`;
-              if (navigator.share) {
-                navigator.share({ title: project.title, text, url }).catch(() => {});
-              } else {
-                navigator.clipboard.writeText(url).catch(() => {});
-              }
-            }}
-            className="w-11 h-11 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
-          >
-            <Share2 className="w-4 h-4" />
-          </motion.button>
+              <motion.span
+                animate={{ scale: [1, 1.15, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Heart className="w-3.5 h-3.5 fill-current" />
+              </motion.span>
+              Contribute
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowShare(true)}
+              className="w-11 h-11 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+            </motion.button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Share Bottom Sheet */}
+      {showShare && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowShare(false)}
+        >
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-white rounded-t-3xl p-6 pb-10"
+          >
+            {/* Handle */}
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
+
+            <h3 className="text-sm font-bold text-slate-900 text-center mb-6 uppercase tracking-wider">
+              Share this project
+            </h3>
+
+            {/* Share Options */}
+            <div className="flex justify-center gap-6 mb-8">
+              <button
+                onClick={() => {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">WhatsApp</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center">
+                  <Twitter className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">X</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                  setShowShare(false);
+                }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">f</span>
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">Facebook</span>
+              </button>
+
+              <button
+                onClick={handleCopy}
+                className="flex flex-col items-center gap-2"
+              >
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${copied ? 'bg-green-500' : 'bg-slate-200'} transition-colors`}>
+                  {copied ? <Check className="w-6 h-6 text-white" /> : <Copy className="w-6 h-6 text-slate-600" />}
+                </div>
+                <span className="text-[10px] font-semibold text-slate-500">{copied ? 'Copied!' : 'Copy Link'}</span>
+              </button>
+            </div>
+
+            {/* Cancel */}
+            <button
+              onClick={() => setShowShare(false)}
+              className="w-full py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
   );
 }
