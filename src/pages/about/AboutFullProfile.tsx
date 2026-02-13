@@ -32,14 +32,13 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
-  // Updated Profile Data with Col-Span Logic for layout control
+  // Profile details configured for the new narrower column width
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
-      // Nickname and Nationality sharing the row (col-span-1)
       { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
       { icon: Flag, label: "Nationality", value: "Ghanaian", colSpan: "col-span-1" },
-      { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North", colSpan: "col-span-2" },
-      { icon: MapPin, label: "Birthplace", value: "Apewosika, Cape Coast", colSpan: "col-span-2" },
+      { icon: DesignationIcon, label: "Designation", value: "MP Cape Coast North", colSpan: "col-span-2" }, // Shortened for fit
+      { icon: MapPin, label: "Birthplace", value: "Apewosika, C. Coast", colSpan: "col-span-2" }, // Shortened for fit
       { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho", colSpan: "col-span-2" },
   ];
 
@@ -49,71 +48,97 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* BENTO GRID LAYOUT - ROW 1: PROFILE & AFFILIATION */}
+        {/* BENTO GRID LAYOUT - ROW 1: PROFILE | VIDEO | AFFILIATION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
-            {/* 1. PERSONAL PROFILE (Left - Grid Layout) */}
+            {/* 1. PERSONAL PROFILE (Left - 4 Columns) */}
             <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-5 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col"
+                className="lg:col-span-4 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-full"
             >
-                <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <div className="bg-slate-900 px-5 py-4 flex items-center justify-between">
+                    <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
                         <User className="w-4 h-4 text-green-400" />
                         Personal Profile
                     </h2>
                 </div>
                 
-                {/* 2-Column Grid Container */}
-                <div className="p-3 grid grid-cols-2 gap-2 flex-1 bg-slate-50/50">
+                <div className="p-3 grid grid-cols-2 gap-2 flex-1 bg-slate-50/50 content-start">
                     {profileDetails.map((item, index) => (
                         <div 
                             key={index} 
-                            className={`${item.colSpan} flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors`}
+                            className={`${item.colSpan} flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors`}
                         >
-                            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-                                <item.icon className="w-4 h-4 text-green-700" />
+                            <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                                <item.icon className="w-3.5 h-3.5 text-green-700" />
                             </div>
                             <div className="min-w-0">
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</div>
-                                <div className="text-sm font-bold text-slate-900 truncate">{item.value}</div>
+                                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</div>
+                                <div className="text-xs font-bold text-slate-900 truncate">{item.value}</div>
                             </div>
                         </div>
                     ))}
                 </div>
             </motion.div>
 
-            {/* 2. POLITICAL AFFILIATION (Right - Compact Card) */}
+            {/* 2. VIDEO REEL (Middle - 4 Columns) - INNOVATION: AUTOMATIC PLAYBACK CONTAINER */}
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 }}
+                className="lg:col-span-4 bg-black rounded-3xl shadow-2xl overflow-hidden relative group h-[400px] lg:h-auto border-4 border-slate-900"
+            >
+                 <div className="absolute inset-0 bg-slate-900 flex items-center justify-center z-0">
+                    <span className="text-white/20 font-black animate-pulse">LOADING REEL...</span>
+                 </div>
+                 
+                 {/* Instagram Embed Iframe */}
+                 <iframe 
+                    src="https://www.instagram.com/reel/DFfroZCOCf4/embed/captioned/?autoplay=1" 
+                    className="absolute inset-0 w-full h-full object-cover z-10"
+                    frameBorder="0" 
+                    scrolling="no" 
+                    allowTransparency={true}
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    title="Ragga Instagram Reel"
+                 ></iframe>
+
+                 {/* Decorative Frame Overlay */}
+                 <div className="absolute inset-0 border-[6px] border-slate-900/10 pointer-events-none z-20 rounded-[20px]" />
+            </motion.div>
+
+            {/* 3. POLITICAL AFFILIATION (Right - 4 Columns) */}
             <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="lg:col-span-7 relative rounded-3xl overflow-hidden shadow-xl group min-h-[300px]"
+                transition={{ delay: 0.3 }}
+                className="lg:col-span-4 relative rounded-3xl overflow-hidden shadow-xl group h-full min-h-[300px]"
             >
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                     style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-black/90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/80" />
                 
-                <div className="absolute inset-0 p-8 flex flex-col justify-center items-start">
-                    <div className="flex items-center gap-2 mb-3 bg-green-600/20 backdrop-blur-md px-3 py-1 rounded-full border border-green-500/30">
+                <div className="absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
+                    <div className="flex items-center gap-2 mb-4 bg-green-600/20 backdrop-blur-md px-3 py-1 rounded-full border border-green-500/30">
                         <Flag className="w-3 h-3 text-green-400" />
-                        <span className="text-green-100 font-bold text-xs uppercase tracking-widest">Affiliation</span>
+                        <span className="text-green-100 font-bold text-[10px] uppercase tracking-widest">Affiliation</span>
                     </div>
                     
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[0.9] mb-4">
+                    <h2 className="text-3xl font-black text-white leading-[0.9] mb-4">
                         NATIONAL <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">DEMOCRATIC</span> <br/>
                         <span className="text-green-500">CONGRESS</span>
                     </h2>
                     
-                    <div className="flex items-center gap-3 mt-auto">
-                        <span className="h-10 px-6 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50">NDC</span>
-                        <div className="h-10 px-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-xs font-bold uppercase tracking-wide">
+                    <div className="mt-auto w-full space-y-2">
+                        <span className="block w-full py-2 bg-green-600 text-white font-black rounded-xl shadow-lg shadow-green-900/50">NDC</span>
+                        <div className="w-full py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl text-white/90 text-[10px] font-bold uppercase tracking-wide">
                             Cape Coast North
                         </div>
                     </div>
@@ -124,7 +149,7 @@ export function AboutFullProfile() {
         {/* BENTO GRID LAYOUT - ROW 2: PROFESSIONAL DUAL TRACK */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             
-            {/* 3. ACADEMIC QUALIFICATIONS */}
+            {/* 4. ACADEMIC QUALIFICATIONS */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -153,7 +178,7 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 4. EMPLOYMENT & COMMITTEES (Merged for efficiency) */}
+            {/* 5. EMPLOYMENT & COMMITTEES */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -183,7 +208,7 @@ export function AboutFullProfile() {
                     </div>
                 </div>
 
-                {/* Committees (Compact Grid) */}
+                {/* Committees */}
                 <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-5 flex-1">
                     <h3 className="font-black text-slate-900 text-sm uppercase tracking-wide mb-3 flex items-center gap-2">
                         <Landmark className="w-4 h-4 text-green-600" /> Parliamentary Committees
@@ -262,4 +287,4 @@ export function AboutFullProfile() {
       </div>
     </div>
   );
-} 
+}
