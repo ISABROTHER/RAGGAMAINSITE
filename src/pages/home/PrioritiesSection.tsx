@@ -147,7 +147,7 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             My Vision
           </h4>
           <div className="mt-4 flex flex-col items-start justify-start group">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
               My Priorities
             </h3>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
@@ -175,9 +175,9 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                 </div>
                 <div className="flex-1 py-4 pr-4 text-left">
                   <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2 uppercase">{priority.title}</h4>
-                  {/* Updated Text: Bolder, Red Color, and Capitalized */}
+                  {/* Updated Text: RED, BOLD, CAPITALIZED "ACHIEVEMENTS LISTED" */}
                   <p className="text-[11px] font-black text-red-600 mt-1 uppercase tracking-wide">
-                    <Counter end={achievementCounts[priority.id]} /> INITIATIVES DELIVERED
+                    <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
                   </p>
                   <p className="text-xs text-slate-600 leading-snug mt-1 line-clamp-2">{priority.desc}</p>
                   <span className="mt-2 inline-flex items-center text-xs font-semibold text-emerald-700 group uppercase">
@@ -222,9 +222,9 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                   </div>
 
                   <h4 className="text-2xl font-extrabold text-slate-900 mb-2 uppercase">{priority.title}</h4>
-                  {/* Updated Text: Bolder, Red Color, and Capitalized */}
+                  {/* Updated Text: RED, BOLD, CAPITALIZED "ACHIEVEMENTS LISTED" */}
                   <p className="text-sm font-black text-red-600 mb-3 uppercase tracking-wide">
-                    <Counter end={achievementCounts[priority.id]} /> INITIATIVES DELIVERED
+                    <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
                   </p>
                   <p className="text-slate-600 mb-6 leading-relaxed text-base flex-1">{priority.desc}</p>
                   <button onClick={() => onNavigate("achievements")} className="font-bold inline-flex items-center text-base text-emerald-700 group-hover:underline decoration-2 underline-offset-4 uppercase">
