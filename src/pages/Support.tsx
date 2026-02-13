@@ -123,7 +123,7 @@ export function Support() {
               transition={{ delay: 1, duration: 0.5, type: "spring" }}
               className="max-w-4xl mx-auto bg-red-600 rounded-3xl p-6 sm:p-12 shadow-xl shadow-red-600/20 transform rotate-1 hover:rotate-0 transition-transform duration-300"
             >
-              <p className="text-base sm:text-lg font-medium text-white leading-relaxed text-center">
+              <p className="text-sm sm:text-base font-medium text-white leading-relaxed text-center">
                 The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
               </p>
             </motion.div>
