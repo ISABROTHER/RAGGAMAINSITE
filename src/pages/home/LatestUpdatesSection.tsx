@@ -33,13 +33,7 @@ export const UPDATES: UpdateItem[] = [
       "https://i.imgur.com/2PVKXWQ.jpeg"
     ],
     category: "Accountability",
-    content: (
-      <>
-        <p>
-          Discover the latest progress and development initiatives led by Hon. Dr. Kwamena Minta Nyarku (Ragga) across the Cape Coast North constituency.
-        </p>
-      </>
-    )
+    content: null // Content removed as requested
   }
 ];
 
@@ -169,9 +163,11 @@ export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) 
                           {item.title}
                       </h3>
 
-                      <div className="text-slate-600 leading-relaxed text-base md:text-lg mb-6 md:mb-8">
-                          {item.content}
-                      </div>
+                      {item.content && (
+                        <div className="text-slate-600 leading-relaxed text-base md:text-lg mb-6 md:mb-8">
+                            {item.content}
+                        </div>
+                      )}
 
                       <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                           <button 
