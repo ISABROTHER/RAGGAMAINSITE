@@ -46,12 +46,12 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     };
   }, [mobileMenuOpen]);
 
-  // Original Header Dimensions
+  // RESTORED ORIGINAL LOGO & HEADER DIMENSIONS
   const headerHeightBase = 90;
-  const headerScale = 1.1; 
+  const headerScale = 1.0; // Reset to 100%
   const headerHeight = headerHeightBase * headerScale;
 
-  const logoScale = 1.2;
+  const logoScale = 1.0; // Reset to 100%
   const logoTopOffset = 8;
   const logoBottomOffset = 2;
   const logoVerticalAdjust = -1;
@@ -122,7 +122,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
           <div className="flex justify-between items-center h-full">
-            {/* Logo */}
+            {/* Logo - Original Scale */}
             <button
               onClick={() => handleNavClick('home')}
               className="flex items-center space-x-3 group transition-transform hover:scale-[1.01] focus:outline-none"
@@ -170,7 +170,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle - STACKED DESIGN */}
+            {/* Mobile Menu Toggle - Stacked Design */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
@@ -183,7 +183,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                     : 'bg-white text-[#CE1126] border border-gray-100'
                 }`}
               >
-                {/* Icon on Top */}
                 <div className="mb-[2px]">
                     {mobileMenuOpen ? (
                         <X className="w-6 h-6" strokeWidth={3} />
@@ -191,7 +190,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                         <MenuIcon className="w-6 h-6" strokeWidth={3} />
                     )}
                 </div>
-                {/* Text Below */}
                 <span className="text-[9px] font-black uppercase tracking-tighter leading-none">
                     MENU
                 </span>
@@ -308,7 +306,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           </AnimatePresence>
         </nav>
       </header>
-      {/* Spacer to prevent overlapping content below fixed header */}
+      {/* Spacer to prevent overlapping content */}
       <div style={{ height: `${headerHeight}px` }} />
     </div>
   );
