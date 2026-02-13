@@ -166,4 +166,4 @@ export function QuickAccessGrid({ onNavigate }: QuickAccessGridProps) {
       </div>
     </section>
   );
-}
+} 
