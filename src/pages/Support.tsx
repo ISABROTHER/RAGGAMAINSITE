@@ -91,19 +91,6 @@ export function Support() {
               className="mx-auto w-24 sm:w-32 h-1 bg-gradient-to-r from-red-500 via-yellow-400 to-green-600 rounded-full origin-left mb-4"
             />
 
-            {/* 2. Slogan — fades in after title */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 0.5 }}
-              className="flex items-center justify-center gap-4 mb-4"
-            >
-              <div className="h-px w-8 sm:w-12 bg-slate-300" />
-              <p className="text-sm sm:text-base font-bold uppercase tracking-[0.35em] text-slate-500">
-                Obiara Ka Ho
-              </p>
-              <div className="h-px w-8 sm:w-12 bg-slate-300" />
-            </motion.div>
             
             {/* 3. Description Box */}
             <motion.div 
@@ -394,4 +381,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       </div>
     </div>
   );
-} 
+}
