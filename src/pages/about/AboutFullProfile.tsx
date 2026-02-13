@@ -1,12 +1,39 @@
 // src/pages/about/AboutFullProfile.tsx
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
   User, Smile, Flag, Briefcase as DesignationIcon, MapPin, Megaphone, 
-  CheckSquare, Landmark, GraduationCap, Briefcase
+  CheckSquare, Landmark, GraduationCap, Briefcase, Play, Pause, Volume2, VolumeX
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AboutFullProfile() {
+  // --- VIDEO PLAYER STATE ---
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  
+  // Toggle Play/Pause
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  // Toggle Mute
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   const electionResults = [
     { year: 2020, nyarkuVotes: 22972, nyarkuPercent: 51.48, opponentVotes: 21643, opponentPercent: 48.51, margin: "1,329" },
     { year: 2024, nyarkuVotes: 23521, nyarkuPercent: 57.6, opponentVotes: 17045, opponentPercent: 41.7, margin: "6,476" }
@@ -32,7 +59,6 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
-  // Profile details
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
       { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
@@ -48,7 +74,7 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + VIDEO */}
+        {/* ROW 1: PERSONAL PROFILE + NATIVE VIDEO PLAYER */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
             {/* 1. PERSONAL PROFILE (Left - 7 Columns) */}
@@ -83,28 +109,58 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO (Right - 5 Columns) - FIXED: 16:9 TV DIMENSION */}
+            {/* 2. VIDEO (Right - 5 Columns) - TV DIMENSION NATIVE PLAYER */}
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                // Added aspect-video for 16:9 ratio and removed fixed heights
-                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group"
+                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group isolate"
+                onClick={togglePlay} // Clicking video toggles play
             >
-                 <iframe 
-                    src="https://www.instagram.com/reel/DFfroZCOCf4/embed/captioned/?autoplay=1&muted=0" 
+                 {/* Video Element */}
+                 {/* NOTE: Replace the 'src' below with your actual campaign video URL (e.g. /videos/campaign.mp4) */}
+                 <video 
+                    ref={videoRef}
                     className="absolute inset-0 w-full h-full object-cover"
-                    frameBorder="0" 
-                    scrolling="no" 
-                    allowTransparency={true}
-                    allow="autoplay; encrypted-media; picture-in-picture"
-                    title="Ragga Instagram Reel"
+                    src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-phone-with-a-green-screen-42938-large.mp4" 
+                    poster="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&q=80"
+                    autoPlay 
+                    loop 
+                    muted={isMuted}
+                    playsInline
                  />
+                 
+                 {/* Cinematic Overlay Gradient (Fades out when playing) */}
+                 <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+                    <motion.button 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center text-white shadow-2xl"
+                    >
+                        {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                    </motion.button>
+                 </div>
+
+                 {/* Sound Control (Bottom Right) */}
+                 <div className="absolute bottom-4 right-4 z-20">
+                     <button 
+                        onClick={toggleMute}
+                        className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm transition-colors"
+                     >
+                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                     </button>
+                 </div>
+                 
+                 {/* Status Badge */}
+                 <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg flex items-center gap-2">
+                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                     Live Action
+                 </div>
             </motion.div>
         </div>
 
-        {/* ROW 2: AFFILIATION (Full Width - FIXED TEXT SCATTERING) */}
+        {/* ROW 2: AFFILIATION (Full Width - FIXED TEXT LAYOUT) */}
         <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -131,10 +187,12 @@ export function AboutFullProfile() {
                 </h2>
                 
                 <div className="flex flex-wrap items-center gap-4 mt-auto">
-                    <span className="h-auto py-2 px-8 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50 text-lg">NDC</span>
+                    <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center justify-center shadow-lg shadow-green-900/50 text-lg">
+                        NDC
+                    </span>
                     
-                    {/* FIXED: Removed fixed height, adjusted padding and tracking */}
-                    <div className="h-auto py-3 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-sm font-bold uppercase tracking-normal leading-tight whitespace-nowrap">
+                    {/* FIXED: Responsive container for long text */}
+                    <div className="min-h-[3rem] h-auto py-2 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-white/90 text-sm font-bold uppercase tracking-wide text-center">
                         Cape Coast North Constituency
                     </div>
                 </div>
@@ -282,4 +340,4 @@ export function AboutFullProfile() {
       </div>
     </div>
   );
-} 
+}
