@@ -15,7 +15,7 @@ export function Footer() {
              <div className="absolute -top-4 -left-4 w-20 h-20 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
              
              {/* LEFT SIDE: Icons Only */}
-             <div className="flex items-center gap-2 z-10">
+             <div className="flex items-center gap-2 z-10 mb-4 md:mb-0">
                 <SocialIcon href="#" icon={Facebook} label="Facebook" />
                 <SocialIcon href="#" icon={Twitter} label="Twitter" />
                 <SocialIcon href="#" icon={Instagram} label="Instagram" />
@@ -29,9 +29,10 @@ export function Footer() {
              </div>
 
              {/* RIGHT SIDE: Copyright & Candidate Info */}
-             <div className="mt-3 md:mt-0 text-white/80 text-xs md:text-sm font-medium z-10 text-center md:text-right">
-                <div>&copy; {currentYear} Hon. Dr. Kwamena Minta Nyarku. All Rights Reserved.</div>
-                <div className="opacity-75 text-[10px] md:text-xs">Member of Parliament for Cape Coast North</div>
+             <div className="text-white/80 text-center md:text-right z-10 flex flex-col gap-1">
+                <div className="text-xs md:text-sm font-medium">&copy; {currentYear} Hon. Dr. Kwamena Minta Nyarku.</div>
+                <div className="text-xs md:text-sm font-medium">All Rights Reserved.</div>
+                <div className="opacity-75 text-[10px] md:text-xs pt-1">Member of Parliament for Cape Coast North</div>
              </div>
         </div>
 
