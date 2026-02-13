@@ -253,4 +253,4 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
       </div>
     </section>
   );
-}
+} 
