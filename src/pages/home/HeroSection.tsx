@@ -62,8 +62,8 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto w-full">
+      <div className="absolute inset-0 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl w-full" style={{ marginLeft: '10%', marginRight: 'auto' }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
