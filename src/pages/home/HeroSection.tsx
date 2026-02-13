@@ -13,18 +13,14 @@ const HERO_IMAGES = [
   "https://i.imgur.com/hmaoKHa.jpeg",
 ];
 
-// The text to type out
 const TAGLINE_TEXT = "OBIARA KA HO (EVERYONE IS INVOLVED)";
 
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(
     () => Math.floor(Math.random() * HERO_IMAGES.length)
   );
-  
-  // State for typewriter effect
   const [displayedText, setDisplayedText] = useState("");
 
-  // Image rotation effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
@@ -32,7 +28,6 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
-  // Typewriter effect logic
   useEffect(() => {
     let index = 0;
     const typingInterval = setInterval(() => {
@@ -42,8 +37,7 @@ export function HeroSection() {
       } else {
         clearInterval(typingInterval);
       }
-    }, 100); // Adjust speed here (lower number = faster typing)
-
+    }, 100);
     return () => clearInterval(typingInterval);
   }, []);
 
@@ -69,18 +63,14 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* Badge Removed per previous instruction */}
-
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
               Building the Constituency <br className="block md:hidden" />
               <span className="text-green-400">We Want Together</span>
             </h1>
 
-            {/* Typewriter Animation Container */}
             <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
               <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
                 {displayedText}
-                {/* Blinking Cursor */}
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
