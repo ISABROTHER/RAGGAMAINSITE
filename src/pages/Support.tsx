@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
-import { useState, useEffect } from 'react';
-import { Heart, BookOpen, Target, Users, ArrowRight, Loader2, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Heart, BookOpen, Target, Users, ArrowRight, Loader2, Share2, Copy, Check, MessageCircle, Twitter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -29,6 +29,8 @@ export function Support() {
   const [projects, setProjects] = useState<ProjectWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<ProjectWithProgress | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
 
   const fetchProjects = async () => {
     const { data: projectRows } = await supabase
@@ -62,6 +64,21 @@ export function Support() {
 
   const featured = projects.find(p => p.is_featured);
   const others = projects.filter(p => !p.is_featured);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(projects.map(p => p.category)));
+    return ['All', ...cats];
+  }, [projects]);
+
+  const filteredOthers = useMemo(() => {
+    return others.filter(p => {
+      const matchesSearch = searchQuery === '' || 
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [others, searchQuery, activeCategory]);
 
   return (
     // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
@@ -124,22 +141,86 @@ export function Support() {
             {others.length > 0 && (
               <AnimatedSection>
                 <div className="mt-16 sm:mt-24">
+                  
+                  {/* Search & Filter Bar */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="mb-8"
+                  >
+                    {/* Search Input */}
+                    <div className="relative mb-5">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search projects..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-12 pr-12 py-4 bg-white rounded-2xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 shadow-sm transition-all"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5 text-slate-500" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                      <SlidersHorizontal className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                      {categories.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setActiveCategory(cat)}
+                          className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                            activeCategory === cat
+                              ? 'bg-green-600 text-white shadow-md shadow-green-600/20'
+                              : 'bg-white text-slate-500 border border-slate-200 hover:border-green-300 hover:text-green-700'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Results Count */}
                   <div className="flex items-center gap-4 mb-8 px-1">
-                    <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">More Projects</h2>
+                    <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
+                      {filteredOthers.length} {filteredOthers.length === 1 ? 'Project' : 'Projects'}
+                    </h2>
                     <div className="h-px flex-1 bg-slate-200" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                    {others.map((p, i) => (
-                      <motion.div
-                        key={p.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08, duration: 0.4 }}
+
+                  {filteredOthers.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                      {filteredOthers.map((p, i) => (
+                        <motion.div
+                          key={p.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.08, duration: 0.4 }}
+                        >
+                          <ProjectCard project={p} onContribute={() => setSelectedProject(p)} />
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                      <Search className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                      <p className="text-sm font-medium">No projects match your search.</p>
+                      <button
+                        onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
+                        className="mt-3 text-xs font-bold text-green-600 hover:text-green-700 uppercase tracking-wider"
                       >
-                        <ProjectCard project={p} onContribute={() => setSelectedProject(p)} />
-                      </motion.div>
-                    ))}
-                  </div>
+                        Clear filters
+                      </button>
+                    </div>
+                  )}
                 </div>
               </AnimatedSection>
             )}
