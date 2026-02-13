@@ -6,7 +6,7 @@ export function AboutHero() {
   const heroMobileUrl = "https://i.imgur.com/abKZDVv.png";
 
   return (
-    <section className="w-full bg-slate-50 relative overflow-hidden">
+    <section className="w-full bg-slate-50 relative overflow-hidden -mt-[115px] pt-[115px]">
       {/* Mobile Hero: Natural height to prevent cropping on phones */}
       <div className="block md:hidden w-full relative">
         <img
