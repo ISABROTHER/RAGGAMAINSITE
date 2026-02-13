@@ -71,13 +71,13 @@ export function HeroSection() {
           >
             {/* Badge Removed per previous instruction */}
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-2 max-w-3xl">
               Building the Constituency <br className="block md:hidden" />
               <span className="text-green-400">We Want Together</span>
             </h1>
 
             {/* Typewriter Animation Container */}
-            <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
+            <div className="h-8 md:h-10 mb-4 overflow-hidden flex items-center">
               <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
                 {displayedText}
                 {/* Blinking Cursor */}
