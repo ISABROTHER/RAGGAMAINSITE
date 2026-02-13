@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send } from 'lucide-react';
+import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -314,8 +314,9 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <motion.span
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                className="text-sm"
               >
-                <Heart className="w-3.5 h-3.5 fill-current" />
+                🎁
               </motion.span>
               Contribute
             </motion.button>
