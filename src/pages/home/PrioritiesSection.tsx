@@ -8,8 +8,7 @@ import {
   Sprout,
   ChevronRight,
   ChevronLeft,
-  ArrowRight,
-  Quote
+  ArrowRight
 } from "lucide-react";
 import { achievementCounts } from "../../data/achievements";
 
@@ -139,37 +138,27 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
   };
 
   return (
-    <section className="py-12 md:py-24 bg-white relative overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none" />
-
-      <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="py-12 md:py-24 bg-white">
+      <div className="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-left mb-12 md:mb-20">
-          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="w-8 h-[2px] bg-green-600"></span>
+        <div className="text-left mb-10 md:mb-16">
+          <h4 className="text-green-800 font-extrabold text-xs md:text-sm uppercase tracking-widest mb-3">
             My Vision
           </h4>
-          <div className="mt-4 flex flex-col items-start justify-start group mb-8">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-800 to-slate-900 bg-clip-text text-transparent uppercase leading-tight">
+          <div className="mt-4 flex flex-col items-start justify-start group">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-left bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
               My Priorities
             </h3>
+            <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
-
-          {/* PRIORITY VISION BOX - FROSTED GLASS EFFECT */}
-          <div className="relative group max-w-4xl">
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
-            <div className="relative bg-white/80 backdrop-blur-xl border border-green-100 rounded-xl p-6 md:p-8 shadow-xl">
-              <Quote className="absolute top-4 left-4 w-8 h-8 text-green-200 -z-10 opacity-50 rotate-180" />
-              <p className="text-base md:text-xl text-slate-700 leading-relaxed font-medium">
-                "With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where <span className="text-green-700 font-bold">opportunity is shared</span>, <span className="text-green-700 font-bold">education is accessible</span>, and <span className="text-green-700 font-bold">healthcare is a right</span>, not a privilege."
-              </p>
-              <div className="mt-4 flex items-center gap-2">
-                <div className="h-[2px] w-12 bg-green-500"></div>
-                <span className="text-xs font-black text-green-800 uppercase tracking-wider">Hon. Dr. Kwamena Minta Nyarku</span>
-              </div>
-            </div>
+          
+          {/* FROSTED TEXT BOX FOR VISION STATEMENT */}
+          <div className="mt-8 inline-block max-w-4xl p-6 md:p-8 rounded-2xl bg-slate-50/80 backdrop-blur-md border border-slate-200/60 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+            <p className="text-base md:text-lg text-slate-700 leading-relaxed font-medium">
+              With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
+            </p>
           </div>
         </div>
 
@@ -184,20 +173,18 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                 key={priority.id}
                 type="button"
                 onClick={() => onNavigate("achievements")}
-                className={`w-full flex flex-col gap-0 rounded-2xl border ${priority.accentBorder} bg-white overflow-hidden shadow-sm motion-safe:transition-all motion-safe:duration-200 active:scale-[0.98]`}
+                className={`w-full flex items-stretch gap-4 rounded-2xl border ${priority.accentBorder} bg-white overflow-hidden shadow-sm motion-safe:transition-all motion-safe:duration-200 active:scale-[0.98]`}
               >
-                <div className="relative w-full h-40 overflow-hidden">
+                <div className="relative w-28 min-w-[7rem] h-28 overflow-hidden">
                   <img src={priority.image} alt={priority.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                    <h4 className="text-lg font-bold text-white leading-tight uppercase shadow-black drop-shadow-md">{priority.title}</h4>
-                  </div>
                 </div>
-                <div className="p-5 text-left bg-white">
-                  <p className="text-[10px] font-black text-red-600 mb-2 uppercase tracking-wide bg-red-50 inline-block px-2 py-1 rounded">
-                    <Counter end={achievementCounts[priority.id]} />+ ACHIEVEMENTS
+                <div className="flex-1 py-4 pr-4 text-left">
+                  <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2 uppercase">{priority.title}</h4>
+                  <p className="text-[11px] font-black text-red-600 mt-1 uppercase tracking-wide">
+                    <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
                   </p>
-                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 mb-3">{priority.desc}</p>
-                  <span className="inline-flex items-center text-xs font-bold text-green-700 group uppercase bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+                  <p className="text-xs text-slate-600 leading-snug mt-1 line-clamp-2">{priority.desc}</p>
+                  <span className="mt-2 inline-flex items-center text-xs font-semibold text-emerald-700 group uppercase">
                     View Details
                     <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -213,50 +200,40 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
         <div className="hidden md:block relative group/section">
           
           {canScrollLeft && (
-            <button onClick={() => scroll('left')} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 text-slate-700 hover:text-green-600 hover:scale-110 transition-all duration-300">
-              <ChevronLeft className="w-6 h-6" strokeWidth={2.5} />
+            <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-6 z-20 p-4 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-red-600 text-red-600 hover:border-green-600 hover:text-green-600 hover:bg-green-50 hover:scale-110 transition-all duration-300 animate-pulse hover:animate-none">
+              <ChevronLeft className="w-7 h-7" strokeWidth={3} />
             </button>
           )}
 
           {canScrollRight && (
-            <button onClick={() => scroll('right')} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 text-slate-700 hover:text-green-600 hover:scale-110 transition-all duration-300">
-              <ChevronRight className="w-6 h-6" strokeWidth={2.5} />
+            <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-6 z-20 p-4 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-red-600 text-red-600 hover:border-green-600 hover:text-green-600 hover:bg-green-50 hover:scale-110 transition-all duration-300 animate-pulse hover:animate-none">
+              <ChevronRight className="w-7 h-7" strokeWidth={3} />
             </button>
           )}
 
-          <div ref={scrollRef} onScroll={checkScroll} className="flex gap-6 overflow-x-auto pb-12 pt-4 snap-x scrollbar-hide scroll-smooth relative z-10" style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}>
+          <div ref={scrollRef} onScroll={checkScroll} className="flex gap-8 overflow-x-auto pb-12 pt-4 snap-x scrollbar-hide scroll-smooth relative z-10" style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}>
             {priorities.map((priority) => {
               const Icon = priority.icon;
               return (
-                <div key={priority.id} className="snap-center flex-shrink-0 w-[380px] group bg-white rounded-[2rem] p-0 border border-slate-200 hover:border-green-200 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] motion-safe:transition-all motion-safe:duration-300 flex flex-col overflow-hidden">
-                  <div className="h-56 w-full relative overflow-hidden">
-                    <img src={priority.image} alt={priority.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-6 right-6">
-                        <div className="inline-flex items-center gap-2 mb-2">
-                            <span className="p-1.5 bg-green-500 rounded-lg">
-                                <Icon className="w-3 h-3 text-white" />
-                            </span>
-                            <span className="text-[10px] font-bold text-green-300 uppercase tracking-wider">{priority.subtitle}</span>
-                        </div>
-                        <h4 className="text-2xl font-black text-white uppercase leading-none drop-shadow-lg">{priority.title}</h4>
+                <div key={priority.id} className="snap-center flex-shrink-0 w-[350px] lg:w-[400px] xl:w-[450px] group bg-slate-50 rounded-3xl p-6 xl:p-8 border border-slate-100 hover:shadow-2xl hover:shadow-slate-900/5 motion-safe:transition-all motion-safe:duration-300 hover:-translate-y-2 flex flex-col">
+                  <div className="mb-6 rounded-2xl overflow-hidden h-48 xl:h-56 w-full relative shadow-inner">
+                    <img src={priority.image} alt={priority.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-transparent" />
+                    <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 shadow-sm">
+                      <Icon className={`w-4 h-4 ${priority.accentText}`} />
+                      <span className="text-xs font-bold text-slate-800 uppercase">{priority.subtitle}</span>
                     </div>
                   </div>
 
-                  <div className="p-6 flex flex-col flex-1 bg-white relative">
-                    <div className="absolute -top-6 right-6 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                        <Counter end={achievementCounts[priority.id]} />+ ACHIEVEMENTS
-                    </div>
-                    
-                    <p className="text-slate-600 mb-6 leading-relaxed text-sm flex-1 pt-2">{priority.desc}</p>
-                    
-                    <div className="pt-4 border-t border-slate-100 mt-auto">
-                        <button onClick={() => onNavigate("achievements")} className="w-full py-3 rounded-xl bg-slate-50 text-slate-900 font-bold text-xs uppercase hover:bg-green-600 hover:text-white transition-colors flex items-center justify-center gap-2 group/btn">
-                            View Achievements 
-                            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </button>
-                    </div>
-                  </div>
+                  <h4 className="text-2xl font-extrabold text-slate-900 mb-2 uppercase">{priority.title}</h4>
+                  <p className="text-sm font-black text-red-600 mb-3 uppercase tracking-wide">
+                    <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
+                  </p>
+                  <p className="text-slate-600 mb-6 leading-relaxed text-base flex-1">{priority.desc}</p>
+                  <button onClick={() => onNavigate("achievements")} className="font-bold inline-flex items-center text-base text-emerald-700 group-hover:underline decoration-2 underline-offset-4 uppercase">
+                    View Details 
+                    <ArrowRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
+                  </button>
                 </div>
               );
             })}
