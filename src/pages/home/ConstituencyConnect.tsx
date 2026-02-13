@@ -1,3 +1,4 @@
+// src/pages/home/ConstituencyConnect.tsx
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,48 +11,69 @@ import {
   ArrowLeft,
   Fingerprint,
   CheckCircle2,
+  Database,
+  ScanSearch,
+  ShieldAlert,
   Info,
-  Wifi,
-  Activity
+  Server,
+  Wifi
 } from "lucide-react";
 
+// --- Mock DB ---
 const MOCK_DB = [
   { id: "CCN-OPP-2024", firstName: "Kwame", surname: "Mensah", phone: "0241234567", skill: "Technical", community: "Abura" },
 ];
 
 type ViewState = "search" | "searching" | "register" | "verified";
 
-const inputCls =
-  "w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl focus:border-green-400 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-white placeholder:text-white/50 backdrop-blur-md";
+const anim = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.2 }
+};
 
-// INNOVATIVE LIVE SEARCH ANIMATION
-function LiveSearchVisual() {
+const inputCls =
+  "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
+
+// --- INNOVATIVE LIVE SEARCH ANIMATION ---
+function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onComplete, 2500); // Slightly longer to show off animation
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
   return (
-    <div className="py-10 px-6 flex flex-col items-center justify-center space-y-6">
-      <div className="relative flex items-center justify-center">
-        {/* Animated Radar Rings */}
-        {[1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            initial={{ scale: 0.8, opacity: 0.5 }}
-            animate={{ scale: 2, opacity: 0 }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
-            className="absolute w-12 h-12 border border-green-400 rounded-full"
-          />
-        ))}
-        <div className="relative z-10 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/40">
-          <Activity className="w-8 h-8 text-white animate-pulse" />
+    <div className="py-8 px-6 text-center relative overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
+      {/* Scanning Line */}
+      <motion.div 
+        className="absolute top-0 left-0 right-0 h-1 bg-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.8)] z-10"
+        animate={{ top: ["0%", "100%", "0%"] }}
+        transition={{ duration: 2, ease: "linear", repeat: Infinity }}
+      />
+      
+      {/* Background Grid pulse */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:20px_20px] opacity-50"></div>
+
+      <div className="relative z-20 flex flex-col items-center gap-4">
+        <div className="relative w-16 h-16 flex items-center justify-center">
+            <div className="absolute inset-0 border-2 border-slate-200 rounded-full"></div>
+            <div className="absolute inset-0 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            <Server className="w-6 h-6 text-green-600 animate-pulse" />
         </div>
-      </div>
-      <div className="text-center">
-        <motion.p 
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-xs font-black text-green-400 uppercase tracking-[0.2em]"
-        >
-          Scanning Live Records
-        </motion.p>
-        <p className="text-[10px] text-white/40 mt-1 font-mono">ESTABLISHING ENCRYPTED LINK...</p>
+        
+        <div className="space-y-1">
+            <motion.p 
+                className="text-xs font-black text-slate-900 uppercase tracking-widest"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+            >
+                Connecting to Hub...
+            </motion.p>
+            <p className="text-[10px] text-green-600 font-mono">
+                Verifying Constituent ID
+            </p>
+        </div>
       </div>
     </div>
   );
@@ -62,6 +84,7 @@ export function ConstituencyConnect() {
   const [found, setFound] = useState<typeof MOCK_DB[0] | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [view, setView] = useState<ViewState>("search");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [activeTab, setActiveTab] = useState<"check" | "register" | null>(null);
 
@@ -70,183 +93,245 @@ export function ConstituencyConnect() {
     setFound(null);
     setNotFound(false);
     setView("search");
+    setSearchQuery("");
     setActiveTab(null);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    setSearchQuery(query.trim());
     setView("searching");
-    setTimeout(() => {
-        const q = query.toLowerCase();
-        const r = MOCK_DB.find(u => u.surname.toLowerCase().includes(q) || u.phone.includes(q));
-        if (r) setFound(r); else setNotFound(true);
-        setView("search");
-    }, 2500);
+  };
+
+  const handleSearchComplete = () => {
+    const q = searchQuery.toLowerCase();
+    const r = MOCK_DB.find(u => u.surname.toLowerCase().includes(q) || u.phone.includes(q));
+    if (r) setFound(r); else setNotFound(true);
+    setView("search");
   };
 
   return (
-    <section className="relative py-20 bg-slate-950 overflow-hidden">
-      {/* BACKGROUND WITH GREEN FROSTED OVERLAY */}
+    <section className="relative py-12 md:py-20 bg-slate-900 overflow-hidden">
+      {/* 1. IMAGE BACKGROUND WITH GREEN FROSTED OVERLAY */}
       <div className="absolute inset-0">
         <img
           src="https://i.imgur.com/5H0XBuV.jpeg"
           alt="Constituency Background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-green-900/40 backdrop-blur-[2px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950" />
+        {/* Green Overlay + Frost Effect */}
+        <div className="absolute inset-0 bg-green-900/85 backdrop-blur-sm mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/20" /> {/* Slight darkener for text contrast */}
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-4 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="mb-12">
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic">
-            My <span className="text-green-400">Constituents</span>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <div className="mb-10">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight uppercase">
+            My <span className="text-green-300">Constituents</span>
           </h2>
-          <div className="h-1 w-20 bg-green-500 mx-auto mt-4 rounded-full" />
-        </motion.div>
+          <p className="mt-4 text-green-50 text-sm md:text-base leading-relaxed max-w-lg mx-auto font-medium opacity-90">
+            Are you a student, business person or resident in Cape Coast North? Join my database so we can support you when opportunities arise.
+          </p>
+        </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-[460px]">
-            {/* FROSTED GLASS CARD */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+          <div className="w-full max-w-[440px]">
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
               <AnimatePresence mode="wait">
-                {view === "searching" ? (
-                  <motion.div key="searching" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <LiveSearchVisual />
+                
+                {/* VIEW: SEARCHING (ANIMATION) */}
+                {view === "searching" && (
+                  <motion.div key="searching" {...anim}>
+                    <SearchLoadingBar onComplete={handleSearchComplete} />
                   </motion.div>
-                ) : (
-                  <motion.div key="main" className="p-6">
-                    {/* DYNAMIC HEADER */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/30">
-                          {showInfo ? <Info className="w-5 h-5 text-white" /> : <Wifi className="w-5 h-5 text-white" />}
+                )}
+
+                {/* VIEW: MAIN DASHBOARD */}
+                {view === "search" && (
+                  <motion.div key="search" {...anim} className="p-5">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
+                          {showInfo ? <Info className="w-4 h-4 text-white" /> : <Fingerprint className="w-4 h-4 text-white" />}
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-black text-white uppercase tracking-tight">
-                            {showInfo ? "Why Register your Details" : "Live Portal Access"}
+                          {/* REPLACED 'CONSTITUENT ACCESS' WITH 'WHY REGISTER?' */}
+                          <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                            {showInfo ? "Information" : "Why Register?"}
                           </p>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                            <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">Database Live</span>
+                          <div className="flex items-center gap-1">
+                             <Wifi className="w-2.5 h-2.5 text-green-500 animate-pulse" />
+                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Live</span>
                           </div>
                         </div>
                       </div>
                       
+                      {/* TOGGLE BUTTON */}
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
-                        className={`p-2.5 rounded-xl border transition-all ${
-                          showInfo ? "bg-white text-green-900 border-white" : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                        className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all ${
+                          showInfo ? "bg-slate-900 border-slate-900 text-white" : "bg-green-50 border-green-200 text-green-700"
                         }`}
                       >
-                        {showInfo ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                        {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{showInfo ? "Close" : "Read Info"}</span>
                       </button>
                     </div>
 
-                    {showInfo ? (
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 text-left">
-                        <div className="bg-white/5 rounded-2xl p-5 border border-white/10 space-y-4">
-                          <div>
-                            <h4 className="text-[11px] font-black text-green-400 uppercase mb-1">Purpose & Security</h4>
-                            <p className="text-xs text-white/80 leading-relaxed">We confirm you are a constituent to respond to issues quickly. Your data is encrypted, stored securely, and used strictly for constituency support.</p>
+                    <AnimatePresence mode="wait">
+                      {/* INFO CONTENT - The text you liked */}
+                      {showInfo ? (
+                        <motion.div key="info" {...anim} className="overflow-hidden mb-2">
+                          <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100 text-left">
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
+                              <p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4>
+                              <p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Privacy</h4>
+                              <p>Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p>
+                            </div>
+                            <div className="border-t border-slate-200 pt-3">
+                                <p className="font-bold mb-1">Common Questions:</p>
+                                <ul className="list-disc pl-3 space-y-1 opacity-90">
+                                <li><strong>Duplicates:</strong> We match records automatically.</li>
+                                <li><strong>Wrong details:</strong> Update your info anytime.</li>
+                                <li><strong>No smartphone:</strong> Register at our office.</li>
+                                </ul>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="text-[11px] font-black text-green-400 uppercase mb-1">Direct Benefits</h4>
-                            <p className="text-xs text-white/80 leading-relaxed">Verified members receive priority alerts for skills training, business support, and legislative updates directly from my office.</p>
-                          </div>
-                          <div className="pt-2 border-t border-white/10">
-                            <p className="text-[10px] text-white/40 italic">Not on a smartphone? Visit the Resource Hub in person for manual entry.</p>
-                          </div>
+                        </motion.div>
+                      ) : (
+                        <div className="space-y-4">
+                          
+                          {/* TWO BUTTONS ON ONE LINE (Structure maintained) */}
+                          {!activeTab && (
+                              <div className="grid grid-cols-2 gap-3">
+                                <button 
+                                    onClick={() => setActiveTab('check')}
+                                    className="py-3.5 flex items-center justify-center gap-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-200 transition-colors"
+                                >
+                                    <Search className="w-3.5 h-3.5 text-slate-500" />
+                                    <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
+                                </button>
+                                
+                                <button 
+                                    onClick={() => { setActiveTab('register'); setView('register'); }}
+                                    className="py-3.5 flex items-center justify-center gap-2 bg-green-600 border border-green-600 rounded-xl text-white hover:bg-green-700 transition-colors"
+                                >
+                                    <UserPlus className="w-3.5 h-3.5" />
+                                    <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
+                                </button>
+                              </div>
+                          )}
+
+                          {/* SEARCH INPUT */}
+                          {activeTab === 'check' && (
+                              <div className="relative">
+                                  <button onClick={() => setActiveTab(null)} className="absolute -top-7 right-0 text-[9px] text-slate-400 uppercase font-black flex items-center gap-1">
+                                    Cancel <X className="w-2.5 h-2.5" />
+                                  </button>
+                                  <form onSubmit={handleSearch}>
+                                    <div className="relative">
+                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                      <input
+                                        type="text"
+                                        placeholder="Name or phone number..."
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                        className={`${inputCls} !pl-9`}
+                                        autoFocus
+                                      />
+                                    </div>
+                                    <button
+                                      type="submit"
+                                      disabled={!query.trim()}
+                                      className="mt-3 w-full bg-slate-900 text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                    >
+                                      Verify Status
+                                    </button>
+                                  </form>
+                              </div>
+                          )}
+
+                          {/* RESULTS */}
+                          <AnimatePresence mode="wait">
+                            {found && (
+                              <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg text-left">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center">
+                                    <UserCheck className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p>
+                                    <p className="text-green-700 text-[10px] font-bold">MATCH FOUND</p>
+                                  </div>
+                                </div>
+                                <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">
+                                  Access Profile
+                                </button>
+                              </motion.div>
+                            )}
+                            {notFound && (
+                              <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg text-left">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center">
+                                    <UserPlus className="w-4 h-4 text-white" />
+                                  </div>
+                                  <p className="font-bold text-amber-900 text-xs">No record for "{searchQuery}"</p>
+                                </div>
+                                <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">
+                                  Create Record
+                                </button>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                        <button onClick={() => setShowInfo(false)} className="w-full py-3 bg-green-500 text-white text-[10px] font-black uppercase rounded-xl">Back to Database</button>
-                      </motion.div>
-                    ) : (
-                      <div className="space-y-4">
-                        {!activeTab && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setActiveTab('check')} className="group py-4 flex flex-col items-center gap-2 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all">
-                              <Search className="w-5 h-5 text-green-400" />
-                              <span className="text-[10px] font-black text-white uppercase tracking-wider">Check Database</span>
-                            </button>
-                            <button onClick={() => { setActiveTab('register'); setView('register'); }} className="group py-4 flex flex-col items-center gap-2 bg-green-500 border border-green-400 rounded-2xl hover:bg-green-600 transition-all shadow-lg shadow-green-500/20">
-                              <UserPlus className="w-5 h-5 text-white" />
-                              <span className="text-[10px] font-black text-white uppercase tracking-wider">Register Now</span>
-                            </button>
-                          </div>
-                        )}
-
-                        {activeTab === 'check' && (
-                          <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleSearch} className="space-y-3">
-                            <div className="relative">
-                              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                              <input
-                                type="text"
-                                placeholder="Enter Name or Phone..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                className={inputCls + " pl-11"}
-                                autoFocus
-                              />
-                            </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => setActiveTab(null)} type="button" className="flex-1 py-3.5 bg-white/5 text-white text-[10px] font-black uppercase rounded-xl">Cancel</button>
-                                <button type="submit" disabled={!query.trim()} className="flex-[2] py-3.5 bg-green-500 text-white text-[10px] font-black uppercase rounded-xl shadow-lg">Run Search</button>
-                            </div>
-                          </motion.form>
-                        )}
-
-                        {/* Search Results */}
-                        <AnimatePresence>
-                          {found && (
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-2xl text-left flex items-center gap-4">
-                              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-green-500/20">
-                                <UserCheck className="w-6 h-6 text-white" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-white font-black text-sm uppercase tracking-tight">{found.firstName} {found.surname}</p>
-                                <p className="text-green-400 text-[9px] font-bold uppercase tracking-widest">Verified Constituent</p>
-                              </div>
-                              <CheckCircle2 className="w-6 h-6 text-green-400" />
-                            </motion.div>
-                          )}
-                          {notFound && (
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mt-4 p-5 bg-white/5 border border-white/10 rounded-2xl text-left">
-                                <p className="text-white/60 text-xs mb-3 font-medium text-center">No live record found for "{query}"</p>
-                                <button onClick={() => setView('register')} className="w-full py-3 bg-white text-green-900 font-black text-[10px] uppercase rounded-xl">Add My Record Now</button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 )}
 
-                {/* Registration & Verified Views follow similar frosted glass styling... */}
+                {/* VIEW: REGISTER FORM (Unchanged) */}
                 {view === "register" && (
-                    <motion.div key="reg" className="p-6 text-left">
-                        <button onClick={reset} className="flex items-center gap-2 text-white/40 text-[10px] font-black uppercase mb-6"><ArrowLeft className="w-4 h-4"/> Back</button>
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                                <input type="text" placeholder="First Name" className={inputCls}/>
-                                <input type="text" placeholder="Surname" className={inputCls}/>
-                            </div>
-                            <input type="tel" placeholder="Phone (WhatsApp)" className={inputCls}/>
-                            <input type="text" placeholder="Community" className={inputCls}/>
-                            <button onClick={() => setView('verified')} className="w-full py-4 bg-green-500 text-white font-black text-xs uppercase rounded-xl mt-4 shadow-xl">Complete Registration</button>
-                        </div>
-                    </motion.div>
+                  <motion.div key="register" {...anim} className="p-5 text-left">
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-5">
+                      <ArrowLeft className="w-3.5 h-3.5" /> Back
+                    </button>
+                    <div className="space-y-2.5">
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <input type="text" placeholder="First Name" className={inputCls} />
+                        <input type="text" placeholder="Surname" className={inputCls} />
+                      </div>
+                      <input type="tel" placeholder="Phone Number" className={inputCls} />
+                      <input type="text" placeholder="Residential Community" className={inputCls} />
+                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-2">
+                        Submit Details
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
 
+                {/* VIEW: VERIFIED (Unchanged) */}
                 {view === "verified" && (
-                    <motion.div key="ver" className="p-10 text-center">
-                        <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-green-500/40">
-                            <ShieldCheck className="w-10 h-10 text-white"/>
-                        </div>
-                        <h3 className="text-white font-black text-xl uppercase tracking-tighter mb-2">Access Granted</h3>
-                        <p className="text-white/60 text-xs mb-8">Your profile is now live in the Cape Coast North database.</p>
-                        <button onClick={reset} className="px-8 py-3 bg-white/10 text-white text-[10px] font-black uppercase rounded-full border border-white/20">Exit Portal</button>
-                    </motion.div>
+                  <motion.div key="verified" {...anim}>
+                    <div className="bg-green-600 p-6 text-center text-white">
+                      <ShieldCheck className="w-8 h-8 mx-auto mb-3" />
+                      <p className="text-lg font-black uppercase tracking-wider">Access Verified</p>
+                    </div>
+                    <div className="p-5">
+                      <button onClick={reset} className="w-full flex items-center justify-center gap-1.5 text-slate-400 text-[10px] font-black uppercase py-2">
+                        <X className="w-3.5 h-3.5" /> Close
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
