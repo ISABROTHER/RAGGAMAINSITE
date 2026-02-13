@@ -181,55 +181,58 @@ export function ConstituencyConnect() {
 
                 {view === "search" && (
                   <motion.div key="search" {...anim} className="p-5">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4 min-h-[40px]">
                       <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20">
                           <Fingerprint className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">Database Access</p>
+                          {/* TEXT REPLACEMENT LOGIC */}
+                          <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">
+                            {showInfo ? "WHY REGISTER YOUR DETAILS" : "Database Access"}
+                          </p>
                         </div>
                       </div>
                       
-                      {/* WHY REGISTER BUTTON INSIDE CARD */}
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
                         className={`p-2 rounded-lg transition-all border flex items-center gap-1.5 ${
                           showInfo 
-                            ? "bg-green-600 border-green-600 text-white" 
+                            ? "bg-red-600 border-red-600 text-white" 
                             : "bg-green-50 border-green-100 text-green-700 hover:bg-green-100"
                         }`}
-                        title="Why register?"
                       >
-                        <Info className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Info</span>
+                        {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
+                        <span className="text-[10px] font-bold uppercase tracking-wider">
+                          {showInfo ? "Close" : "Info"}
+                        </span>
                       </button>
                     </div>
 
-                    <AnimatePresence>
+                    <AnimatePresence mode="wait">
                       {showInfo ? (
                         <motion.div 
                           key="info-content"
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden mb-6"
+                          className="overflow-hidden"
                         >
                           <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100">
                             <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Why we ask for your details</h4>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1 italic">Why we ask for your details</h4>
                               <p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
                             </div>
                             <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">What you get from registering</h4>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1 italic">What you get from registering</h4>
                               <p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
                             </div>
                             <div>
-                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">How we protect your information</h4>
+                              <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1 italic">How we protect your information</h4>
                               <p>Your information is used only by my office for constituency work. We do not sell it, publish it, or share it for marketing.</p>
                             </div>
                             <div className="border-t border-slate-200 pt-3">
-                              <p className="font-bold">Common problems:</p>
+                              <p className="font-bold italic">Common problems:</p>
                               <ul className="list-disc pl-3 mt-1 space-y-1">
                                 <li><strong>Duplicates:</strong> We match records to prevent repeated entries.</li>
                                 <li><strong>Wrong details:</strong> Update your info anytime.</li>
