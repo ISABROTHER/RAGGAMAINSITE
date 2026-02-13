@@ -181,7 +181,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   animate="open"
                   exit="closed"
                   variants={menuVariants}
-                  // Reduced width to 230px for a very compact look
                   className="fixed top-3 right-3 z-[70] w-[230px] origin-top-right"
                 >
                   <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/85 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[18px] overflow-hidden max-h-[85vh]">
@@ -199,7 +198,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                         </button>
                     </div>
 
-                    {/* Nav Items with DIVIDERS */}
+                    {/* Nav Items with FAINT LINES */}
                     <div className="overflow-y-auto">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
@@ -209,8 +208,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            // Added border-b border-white/10 for lines between items
-                            // Reduced padding to py-2 for compactness
                             className={`flex items-center justify-between px-4 py-2 w-full text-left transition-all border-b border-white/10 last:border-0 ${
                               isActive
                                 ? 'bg-white/10 text-white font-extrabold'
