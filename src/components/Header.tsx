@@ -115,10 +115,13 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div initial="closed" animate="open" exit="closed" variants={menuVariants} className="md:hidden absolute top-[12px] right-[12px] w-[250px] origin-top-right">
-                {/* UPDATED: Added backdrop-blur-xl and reduced opacity (bg-[#CE1126]/85) 
-                  to create the "Frozen/Frosted" Glass effect.
+                {/* INNOVATIVE GLASS EFFECT:
+                  - bg-gradient-to-b from-[#CE1126]/80 to-[#CE1126]/60: Fades transparency downwards
+                  - backdrop-blur-2xl: Intense frosted look
+                  - border-white/30: Thinner, lighter glass edge
+                  - ring-1 ring-white/20: Subtle inner highlight
                 */}
-                <div className="relative bg-[#CE1126]/85 backdrop-blur-xl pt-16 pb-4 px-4 shadow-2xl h-full w-full overflow-hidden border-2 border-white/20 rounded-[24px] max-h-[85vh] overflow-y-auto">
+                <div className="relative bg-gradient-to-b from-[#CE1126]/80 to-[#CE1126]/60 backdrop-blur-2xl pt-16 pb-4 px-4 shadow-2xl h-full w-full overflow-hidden border border-white/30 ring-1 ring-white/20 rounded-[24px] max-h-[85vh] overflow-y-auto">
                   <motion.div variants={itemVariants} className="mb-3 relative z-10 space-y-2">
                     {user ? (
                       <>
@@ -152,9 +155,9 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                       const Icon = item.icon;
                       const isActive = currentPage === item.id;
                       return (
-                        <motion.button key={item.id} variants={itemVariants} onClick={() => handleNavClick(item.id)} className={`flex items-center justify-between px-4 py-2.5 rounded-lg w-full text-left transition-all ${isActive ? 'bg-white text-[#CE1126] font-extrabold translate-x-1 shadow-sm' : 'bg-white/90 text-slate-800 font-semibold'}`}>
+                        <motion.button key={item.id} variants={itemVariants} onClick={() => handleNavClick(item.id)} className={`flex items-center justify-between px-4 py-2.5 rounded-lg w-full text-left transition-all ${isActive ? 'bg-white text-[#CE1126] font-extrabold translate-x-1 shadow-sm' : 'bg-white/80 hover:bg-white/90 text-slate-900 font-semibold'}`}>
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-slate-400'}`} />
+                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-slate-800'}`} />
                             <span className="text-xs">{item.label}</span>
                           </div>
                           {isActive && <ChevronRight className="w-3 h-3" />}
