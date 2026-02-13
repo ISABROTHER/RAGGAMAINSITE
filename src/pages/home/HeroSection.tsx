@@ -62,8 +62,8 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl w-full pl-[10%]">
+      <div className="absolute inset-0 flex flex-col justify-end pb-[2%] pl-[2%]">
+        <div className="max-w-7xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,13 +71,13 @@ export function HeroSection() {
           >
             {/* Badge Removed per previous instruction */}
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-2 max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-1 max-w-3xl">
               Building the Constituency <br className="block md:hidden" />
               <span className="text-green-400">We Want Together</span>
             </h1>
 
             {/* Typewriter Animation Container */}
-            <div className="h-8 md:h-10 mb-4 overflow-hidden flex items-center">
+            <div className="h-8 md:h-10 mb-2 overflow-hidden flex items-center">
               <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
                 {displayedText}
                 {/* Blinking Cursor */}
