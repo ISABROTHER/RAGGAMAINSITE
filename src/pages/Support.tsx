@@ -84,12 +84,12 @@ export function Support() {
 
   return (
     // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
-    <div className="min-h-screen bg-slate-50 pt-14 sm:pt-20 pb-24">
+    <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
           {/* Reduced pt-1 to pt-0 on mobile */}
-          <div className="text-center pt-0 sm:pt-16 pb-12 sm:pb-20">
+          <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
             {/* 1. Innovative Animated Title */}
             <motion.div 
