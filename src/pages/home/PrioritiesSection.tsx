@@ -152,8 +152,9 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             </h3>
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
-          <p className="mt-6 text-base md:text-lg text-slate-600 max-w-3xl mr-auto leading-relaxed">
-            We are building a community where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
+          {/* Updated Vision Text: Acknowledging Government and Municipal Assembly Support */}
+          <p className="mt-6 text-base md:text-lg text-slate-600 max-w-4xl mr-auto leading-relaxed">
+            With the invaluable support of the government and the municipal assembly, we are building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
           </p>
         </div>
 
@@ -175,7 +176,6 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                 </div>
                 <div className="flex-1 py-4 pr-4 text-left">
                   <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2 uppercase">{priority.title}</h4>
-                  {/* Updated Text: RED, BOLD, CAPITALIZED "ACHIEVEMENTS LISTED" */}
                   <p className="text-[11px] font-black text-red-600 mt-1 uppercase tracking-wide">
                     <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
                   </p>
@@ -222,7 +222,6 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                   </div>
 
                   <h4 className="text-2xl font-extrabold text-slate-900 mb-2 uppercase">{priority.title}</h4>
-                  {/* Updated Text: RED, BOLD, CAPITALIZED "ACHIEVEMENTS LISTED" */}
                   <p className="text-sm font-black text-red-600 mb-3 uppercase tracking-wide">
                     <Counter end={achievementCounts[priority.id]} /> ACHIEVEMENTS LISTED
                   </p>
