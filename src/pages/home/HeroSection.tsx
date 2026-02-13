@@ -1,121 +1,76 @@
-// src/pages/home/HeroSection.tsx
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+// This update assumes the bar was inside your main Header/Navbar component
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
-const HERO_IMAGES = [
-  "https://i.imgur.com/XC8k4zQ.jpeg",
-  "https://i.imgur.com/NSWtjdU.jpeg",
-  "https://i.imgur.com/EqnSMPU.jpeg",
-  "https://i.imgur.com/1P4hgqC.jpeg",
-  "https://i.imgur.com/lUPM6jK.jpeg",
-  "https://i.imgur.com/hmaoKHa.jpeg",
-];
-
-const TAGLINE_TEXT = "OBIARA KA HO (EVERYONE IS INVOLVED)";
-
-export function HeroSection() {
-  const [currentIndex, setCurrentIndex] = useState(
-    () => Math.floor(Math.random() * HERO_IMAGES.length)
-  );
-  const [displayedText, setDisplayedText] = useState("");
+export function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    let index = 0;
-    const typingInterval = setInterval(() => {
-      if (index <= TAGLINE_TEXT.length) {
-        setDisplayedText(TAGLINE_TEXT.slice(0, index));
-        index++;
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 100);
-    return () => clearInterval(typingInterval);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <section className="relative w-full h-[75vh] md:h-[92vh] overflow-hidden bg-slate-900">
-      {/* Dynamic Background Slideshow */}
-      {HERO_IMAGES.map((url, idx) => (
-        <img
-          key={idx}
-          src={url}
-          alt="Hon. Dr. Kwamena Minta Nyarku"
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out object-center md:object-[center_-200px]"
-          style={{ opacity: idx === currentIndex ? 1 : 0 }}
-        />
-      ))}
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        isScrolled ? "bg-white shadow-md py-3" : "bg-transparent py-5"
+      }`}
+    >
+      {/* THE SUPPORT BAR SPAN HAS BEEN REMOVED FROM THIS SECTION */}
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+              <span className="text-white font-black text-xl">R</span>
+            </div>
+            <div className="flex flex-col">
+              <span className={`font-black text-lg leading-none tracking-tighter ${isScrolled ? 'text-slate-900' : 'text-white'}`}>
+                RAGGA
+              </span>
+              <span className={`text-[10px] font-bold uppercase tracking-widest ${isScrolled ? 'text-green-600' : 'text-green-400'}`}>
+                Cape Coast North
+              </span>
+            </div>
+          </Link>
 
-      {/* Cinematic Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+          {/* Desktop Nav Items */}
+          <div className="hidden md:flex items-center gap-8">
+            {['Vision', 'Achievements', 'Projects', 'Connect'].map((item) => (
+              <Link
+                key={item}
+                to={`/${item.toLowerCase()}`}
+                className={`text-xs font-black uppercase tracking-widest hover:text-green-500 transition-colors ${
+                  isScrolled ? 'text-slate-700' : 'text-white/90'
+                }`}
+              >
+                {item}
+              </Link>
+            ))}
+            <Link 
+              to="/register"
+              className="px-5 py-2.5 bg-green-600 text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+            >
+              Portal
+            </Link>
+          </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          {/* Mobile Toggle */}
+          <button 
+            className="md:hidden p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {/* Main Headline with Mobile-Specific Break */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
-              Building the Constituency <br className="block md:hidden" />
-              <span className="text-green-400">We Want Together</span>
-            </h1>
-
-            {/* Typewriter Subtext - Capitalized as requested */}
-            <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
-              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
-                {displayedText}
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                  className="inline-block ml-1 w-0.5 h-5 bg-green-400 align-middle"
-                />
-              </p>
-            </div>
-
-            {/* Call to Action Buttons */}
-            <div className="flex flex-wrap gap-3 items-start">
-              <Link
-                to="/issues"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5 whitespace-nowrap uppercase"
-              >
-                Report an Issue <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to="/ongoing-projects"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap uppercase"
-              >
-                Track Projects
-              </Link>
-            </div>
-          </motion.div>
+            {isMobileMenuOpen ? (
+              <X className={isScrolled ? 'text-slate-900' : 'text-white'} />
+            ) : (
+              <Menu className={isScrolled ? 'text-slate-900' : 'text-white'} />
+            )}
+          </button>
         </div>
       </div>
-
-      {/* Slide Navigation Indicators */}
-      <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
-        {HERO_IMAGES.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`w-2 rounded-full transition-all duration-300 ${
-              idx === currentIndex
-                ? "h-8 bg-white"
-                : "h-2 bg-white/30 hover:bg-white/50"
-            }`}
-          />
-        ))}
-      </div>
-    </section>
+    </nav>
   );
 }
