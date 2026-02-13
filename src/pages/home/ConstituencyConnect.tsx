@@ -145,7 +145,7 @@ export function ConstituencyConnect() {
                 {view === "search" && (
                   <motion.div key="search" {...anim} className="p-5">
                     
-                    {/* Header: Modified as requested */}
+                    {/* Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
@@ -155,11 +155,10 @@ export function ConstituencyConnect() {
                           <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
                             {showInfo ? "Information" : "Database Access"}
                           </p>
-                          {/* SYSTEM LIVE REMOVED */}
                         </div>
                       </div>
                       
-                      {/* TOGGLE BUTTON: Now says "Why Register?" */}
+                      {/* TOGGLE BUTTON */}
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
                         className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all ${
@@ -203,18 +202,33 @@ export function ConstituencyConnect() {
                           
                           {/* TWO BUTTONS ON ONE LINE */}
                           {!activeTab && (
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-2 gap-3 h-[52px]">
+                                
+                                {/* 1. CHECK DATABASE BUTTON - ANIMATED LIVE EDGE */}
                                 <button 
                                     onClick={() => setActiveTab('check')}
-                                    className="py-3.5 flex items-center justify-center gap-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-200 transition-colors"
+                                    className="relative h-full flex items-center justify-center gap-2 rounded-xl overflow-hidden group transition-all active:scale-[0.98]"
                                 >
-                                    <Search className="w-3.5 h-3.5 text-slate-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
+                                    {/* Rotating Gradient Background (The "Around the Edges" Animation) */}
+                                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,#e2e8f0_0%,#22c55e_50%,#e2e8f0_100%)] animate-[spin_3s_linear_infinite]" />
+                                    
+                                    {/* White Background Mask */}
+                                    <div className="absolute inset-[1.5px] bg-white rounded-[10px]" />
+
+                                    {/* Content Layer */}
+                                    <div className="relative z-10 flex items-center gap-2">
+                                        <div className="relative flex h-2 w-2">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-wider text-slate-700">Check Database</span>
+                                    </div>
                                 </button>
                                 
+                                {/* 2. REGISTER BUTTON - Standard */}
                                 <button 
                                     onClick={() => { setActiveTab('register'); setView('register'); }}
-                                    className="py-3.5 flex items-center justify-center gap-2 bg-green-600 border border-green-600 rounded-xl text-white hover:bg-green-700 transition-colors"
+                                    className="h-full flex items-center justify-center gap-2 bg-green-600 border border-green-600 rounded-xl text-white hover:bg-green-700 transition-colors shadow-lg"
                                 >
                                     <UserPlus className="w-3.5 h-3.5" />
                                     <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
@@ -289,7 +303,7 @@ export function ConstituencyConnect() {
                   </motion.div>
                 )}
 
-                {/* VIEW: REGISTER */}
+                {/* VIEW: REGISTER FORM */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-5 text-left">
                     <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-5">
