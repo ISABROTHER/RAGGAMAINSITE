@@ -343,13 +343,28 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
 
         <div className="flex items-center gap-3">
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{
+              boxShadow: [
+                '0 0 0 0 rgba(22, 163, 74, 0.4)',
+                '0 0 0 12px rgba(22, 163, 74, 0)',
+                '0 0 0 0 rgba(22, 163, 74, 0)',
+              ],
+            }}
+            transition={{
+              boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            }}
             onClick={onContribute}
-            className="flutter-btn flex-1 py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-colors"
+            className="flutter-btn flex-1 py-4 bg-green-600 text-white rounded-2xl font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-green-600/25 hover:bg-green-500 transition-colors relative overflow-hidden"
           >
-            <Heart className="w-4 h-4" />
-            Contribute
+            <motion.span
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Heart className="w-4 h-4 fill-current" />
+            </motion.span>
+            Contribute Now
           </motion.button>
           <ShareButtons slug={project.slug} title={project.title} variant="light" />
         </div>
