@@ -174,17 +174,139 @@ export function ConstituencyConnect() {
                   </motion.div>
                 )}
 
-                {/* 4. REGISTRATION VIEW */}
+                {/* 4. REGISTRATION FLOW - RESTORED FULL 3 STEPS */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-6 text-left">
                     <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-6"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
-                    <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
-                    <div className="grid grid-cols-1 gap-3">
-                      <button onClick={() => { setUserType("Resident"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all active:scale-[0.98]">
-                        <Home className="w-5 h-5 text-green-600" />
-                        <p className="text-xs font-black text-slate-900 uppercase">I live in Cape Coast North</p>
-                      </button>
+                    
+                    {/* STEP 1: CHOOSE TYPE */}
+                    {regStep === 1 && (
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
+                        <div className="grid grid-cols-1 gap-3">
+                          <button onClick={() => { setUserType("Resident"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <Home className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">I live in Cape Coast North</p>
+                              <p className="text-[10px] text-slate-500">Local Resident</p>
+                            </div>
+                          </button>
+
+                          <button onClick={() => { setUserType("Diaspora"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <Globe className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">Constituent Living Outside</p>
+                              <p className="text-[10px] text-slate-500">Diaspora / Working Away</p>
+                            </div>
+                          </button>
+
+                          <button onClick={() => { setUserType("Non-constituent"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <MessageSquare className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">Not a constituent</p>
+                              <p className="text-[10px] text-slate-500">General Inquiry / Business</p>
+                            </div>
+                          </button>
+                        </div>
+                        <p className="text-[9px] text-slate-400 text-center italic mt-4">“We respect your privacy. Your details are used only for communication and updates.”</p>
+                      </div>
+                    )}
+
+                    {/* STEP 2: MINIMUM DETAILS (RESTORED) */}
+                    {regStep === 2 && (
+                      <div className="space-y-4">
+                        <div className="bg-green-50 p-2 rounded text-center mb-4">
+                          <p className="text-[10px] font-black text-green-800 uppercase">You chose: {userType}</p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <input type="text" placeholder="Full Name" className={inputCls} />
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <input type="tel" placeholder="Phone Number" className={inputCls} />
+                            <input type="date" className={`${inputCls} text-slate-500 uppercase text-[10px] font-bold`} />
+                          </div>
+                          
+                          {userType === "Resident" && (
+                            <select className={inputCls}>
+                              <option value="">Select Community</option>
+                              {COMMUNITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                          )}
+
+                          {userType === "Diaspora" && (
+                            <>
+                              <select className={inputCls}>
+                                <option value="">Home Community in CCN</option>
+                                {COMMUNITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                              <input type="text" placeholder="Current City/Country" className={inputCls} />
+                            </>
+                          )}
+
+                          {userType === "Non-constituent" && (
+                            <select className={inputCls}>
+                              <option value="">Reason for contact</option>
+                              <option>Service Request</option>
+                              <option>Business Proposal</option>
+                              <option>General Message</option>
+                            </select>
+                          )}
+
+                          <select className={inputCls}>
+                            <option value="">Occupation (Optional)</option>
+                            <option>Student</option>
+                            <option>Worker</option>
+                            <option>Business</option>
+                          </select>
+                        </div>
+                        
+                        <button onClick={() => setRegStep(3)} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase mt-4 hover:bg-slate-800 transition-colors">
+                          Continue to Verification
+                        </button>
+                      </div>
+                    )}
+
+                    {/* STEP 3: VERIFY & SUBMIT (RESTORED) */}
+                    {regStep === 3 && (
+                      <div className="text-center space-y-6 py-4">
+                        <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                          <Phone className="w-8 h-8 text-green-600 animate-pulse" />
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-black text-slate-900 uppercase">Step 3: Verification</h3>
+                          <p className="text-[11px] text-slate-500 leading-relaxed px-4">
+                            We will send a code to your phone. If OTP is unavailable, our staff will call you for verification.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                           <input type="text" placeholder="Enter OTP" className={`${inputCls} text-center tracking-[1em] font-bold`} maxLength={4} />
+                        </div>
+                        <button onClick={() => setView("verified")} className="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xs uppercase shadow-xl hover:bg-green-700 transition-colors">
+                          Confirm & Register
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* 5. VERIFIED SUCCESS (RESTORED) */}
+                {view === "verified" && (
+                  <motion.div key="verified" {...anim} className="p-8 text-center space-y-4">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-green-600/20">
+                      <ShieldCheck className="w-10 h-10 text-white" />
                     </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900 uppercase">Registration Success</h3>
+                      <p className="text-xs text-slate-500 mt-2">Your record has been tagged as <strong>{userType}</strong>. You will receive updates shortly.</p>
+                    </div>
+                    <button onClick={reset} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase hover:bg-slate-800 transition-colors">Return Home</button>
                   </motion.div>
                 )}
 
