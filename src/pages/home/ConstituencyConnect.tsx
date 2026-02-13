@@ -162,13 +162,13 @@ export function ConstituencyConnect() {
 
           <div className="lg:flex-1 lg:pt-4 mb-6 lg:mb-0">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              Talent & Opportunity{" "}
+              Constituency{" "}
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                Hub
+                DataBase
               </span>
             </h2>
-            <p className="mt-3 text-slate-400 text-sm md:text-base leading-relaxed max-w-sm">
-              Register your professional skills to be considered for community projects, training, and employment opportunities in Cape Coast North.
+            <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed max-w-lg">
+              My Constituents, are you a student in cape coast north, business person or resident or a constituent let me know so we can get and build a constituency together and also let know you and issues to support when there is an opportunity.
             </p>
 
             <div className="hidden lg:flex flex-col gap-3 mt-8">
@@ -205,7 +205,7 @@ export function ConstituencyConnect() {
                           <Fingerprint className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900 leading-tight">Search Hub</p>
+                          <p className="text-sm font-bold text-slate-900 leading-tight">Check or Register My Info</p>
                           <p className="text-[10px] text-slate-400 leading-tight">Find your registration</p>
                         </div>
                       </div>
@@ -329,4 +329,4 @@ export function ConstituencyConnect() {
       </div>
     </section>
   );
-} 
+}
