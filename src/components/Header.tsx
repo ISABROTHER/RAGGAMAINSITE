@@ -309,4 +309,4 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       <div style={{ height: `${headerHeight}px` }} />
     </div>
   );
-}
+} 
