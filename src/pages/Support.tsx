@@ -68,38 +68,26 @@ export function Support() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          <div className="relative pt-10 pb-16 sm:pt-20 sm:pb-24 text-center">
-            {/* Background Glows */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-b from-green-100/40 via-white/0 to-white/0 -z-10 rounded-full blur-[100px] pointer-events-none" />
-
-            {/* Main Title - RAGGA FOUNDATION */}
-            <div className="mb-10 sm:mb-14 relative">
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-slate-900 tracking-tighter uppercase leading-[0.85]">
-                Ragga<br className="sm:hidden" /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-slate-800 to-slate-500">Foundation</span>
-              </h1>
-              {/* Decorative underline */}
-              <div className="hidden sm:block absolute -bottom-6 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-green-500 rounded-full opacity-80" />
-            </div>
+          <div className="text-center pt-10 pb-16 sm:pb-20">
+            {/* Standard Heading */}
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight uppercase mb-8">
+              Ragga Foundation
+            </h1>
             
-            {/* Description Box - The Focus */}
-            <div className="max-w-3xl mx-auto relative group">
-              {/* Subtle animated border gradient */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-200 via-slate-200 to-green-200 rounded-[2.2rem] opacity-60 blur-sm group-hover:opacity-100 transition duration-500" />
-              
-              <div className="relative bg-white/80 backdrop-blur-xl border border-white/50 rounded-[2rem] p-8 sm:p-12 shadow-2xl shadow-slate-200/50">
-                <p className="text-lg sm:text-2xl text-slate-700 leading-relaxed font-medium">
-                  The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
-                </p>
-              </div>
+            {/* Standard Priorities-style Explanation Box */}
+            <div className="max-w-3xl mx-auto bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-sm mb-10">
+              <p className="text-base sm:text-xl text-slate-700 leading-relaxed font-medium">
+                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
+              </p>
             </div>
 
-            {/* Slogan - Obiara Ka Ho */}
-            <div className="mt-12 sm:mt-16 flex items-center justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
-              <div className="h-px w-10 sm:w-20 bg-gradient-to-r from-transparent to-green-400" />
-              <p className="text-base sm:text-lg font-black uppercase tracking-[0.35em] text-green-700">
+            {/* Slogan */}
+            <div className="flex items-center justify-center gap-4">
+              <div className="h-px w-12 bg-slate-200" />
+              <p className="text-sm sm:text-base font-bold uppercase tracking-[0.25em] text-green-700">
                 Obiara Ka Ho
               </p>
-              <div className="h-px w-10 sm:w-20 bg-gradient-to-l from-transparent to-green-400" />
+              <div className="h-px w-12 bg-slate-200" />
             </div>
           </div>
         </AnimatedSection>
@@ -120,10 +108,10 @@ export function Support() {
 
             {others.length > 0 && (
               <AnimatedSection>
-                <div className="mt-16 sm:mt-28">
-                  <div className="flex items-center gap-4 mb-8 px-2">
+                <div className="mt-16 sm:mt-24">
+                  <div className="flex items-center gap-4 mb-8 px-1">
                     <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">More Projects</h2>
-                    <div className="h-px flex-1 bg-slate-200/60" />
+                    <div className="h-px flex-1 bg-slate-200" />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {others.map((p, i) => (
@@ -142,7 +130,7 @@ export function Support() {
             )}
 
             {projects.length === 0 && (
-              <div className="text-center py-32 text-slate-400 bg-white rounded-[2rem] border border-slate-100 shadow-sm mx-4">
+              <div className="text-center py-32 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm mx-4">
                 <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                 <p className="text-sm font-medium">No active projects at the moment.</p>
               </div>
@@ -163,7 +151,7 @@ export function Support() {
 
 function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group transform transition-all hover:scale-[1.01] duration-500">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl shadow-slate-900/20 group">
       <div className="absolute inset-0">
         {project.image_url && (
           <img 
@@ -181,7 +169,7 @@ function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress;
             {project.category}
           </span>
 
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-5">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-5">
             {project.title}
           </h2>
 
@@ -193,7 +181,7 @@ function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress;
             <div className="flex items-end justify-between mb-4">
               <div>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-4xl sm:text-5xl font-black text-white tabular-nums tracking-tight">
+                  <p className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums tracking-tight">
                     {project.raised_units.toLocaleString()}
                   </p>
                   <p className="text-sm text-white/40 font-bold uppercase tracking-wider mb-1.5">
@@ -201,7 +189,7 @@ function FeaturedCard({ project, onContribute }: { project: ProjectWithProgress;
                   </p>
                 </div>
               </div>
-              <p className="text-3xl font-black text-green-400 tabular-nums">{project.percent}%</p>
+              <p className="text-3xl font-extrabold text-green-400 tabular-nums">{project.percent}%</p>
             </div>
             <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5">
               <motion.div
