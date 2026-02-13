@@ -1,98 +1,124 @@
-import { useState, useEffect } from "react";
+// src/pages/home/HeroSection.tsx
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, Building2, Heart } from "lucide-react";
+
+const HERO_IMAGES = [
+  "https://i.imgur.com/XC8k4zQ.jpeg",
+  "https://i.imgur.com/NSWtjdU.jpeg",
+  "https://i.imgur.com/EqnSMPU.jpeg",
+  "https://i.imgur.com/1P4hgqC.jpeg",
+  "https://i.imgur.com/lUPM6jK.jpeg",
+  "https://i.imgur.com/hmaoKHa.jpeg",
+];
+
+// The text to type out
+const TAGLINE_TEXT = "OBIARA KA HO (EVERYONE IS INVOLVED)";
 
 export function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(
+    () => Math.floor(Math.random() * HERO_IMAGES.length)
+  );
+  
+  // State for typewriter effect
+  const [displayedText, setDisplayedText] = useState("");
 
+  // Image rotation effect
   useEffect(() => {
-    setIsVisible(true);
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Typewriter effect logic
+  useEffect(() => {
+    let index = 0;
+    const typingInterval = setInterval(() => {
+      if (index <= TAGLINE_TEXT.length) {
+        setDisplayedText(TAGLINE_TEXT.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 100); // Adjust speed here (lower number = faster typing)
+
+    return () => clearInterval(typingInterval);
   }, []);
 
   return (
-    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
+    <section className="relative w-full h-[75vh] md:h-[92vh] overflow-hidden bg-slate-900">
+      {HERO_IMAGES.map((url, idx) => (
         <img
-          src="https://i.imgur.com/5H0XBuV.jpeg"
-          alt="Cape Coast North"
-          className="w-full h-full object-cover opacity-40"
+          key={idx}
+          src={url}
+          alt="Hon. Dr. Kwamena Minta Nyarku"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out object-center md:object-[center_-200px]"
+          style={{ opacity: idx === currentIndex ? 1 : 0 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-green-900/90 to-slate-900/95" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.1),transparent_50%)]" />
-      </div>
+      ))}
 
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-16 md:pb-20 text-center">
-        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-600/20 backdrop-blur-sm border border-green-500/30 rounded-full mb-6 md:mb-8">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-green-200 text-xs md:text-sm font-bold uppercase tracking-wider">
-              Member of Parliament - Cape Coast North
-            </span>
-          </div>
+      <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            {/* Badge Removed per previous instruction */}
 
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 md:mb-8 leading-tight tracking-tight">
-            WORKING FOR
-            <br />
-            <span className="bg-gradient-to-r from-green-300 via-emerald-200 to-green-300 bg-clip-text text-transparent">
-              CAPE COAST NORTH
-            </span>
-          </h1>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
+              Building the Constituency <br className="block md:hidden" />
+              <span className="text-green-400">We Want Together</span>
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-lg md:text-xl lg:text-2xl text-green-50/90 font-medium mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
-            Building a stronger constituency through education, healthcare, infrastructure, and opportunities for all.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 md:mb-20">
-            <Link
-              to="/register"
-              className="group w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold text-sm md:text-base uppercase tracking-wider rounded-xl shadow-2xl shadow-green-600/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/about"
-              className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold text-sm md:text-base uppercase tracking-wider rounded-xl border-2 border-white/30 transition-all duration-300 hover:scale-105"
-            >
-              Learn More
-            </Link>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-4xl mx-auto">
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-              <Users className="w-6 h-6 md:w-8 md:h-8 text-green-400 mx-auto mb-3" />
-              <div className="text-2xl md:text-4xl font-black text-white mb-1">50K+</div>
-              <div className="text-xs md:text-sm text-green-200/80 font-bold uppercase tracking-wide">Constituents</div>
+            {/* Typewriter Animation Container */}
+            <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
+              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
+                {displayedText}
+                {/* Blinking Cursor */}
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                  className="inline-block ml-1 w-0.5 h-5 bg-green-400 align-middle"
+                />
+              </p>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-              <Building2 className="w-6 h-6 md:w-8 md:h-8 text-green-400 mx-auto mb-3" />
-              <div className="text-2xl md:text-4xl font-black text-white mb-1">100+</div>
-              <div className="text-xs md:text-sm text-green-200/80 font-bold uppercase tracking-wide">Projects</div>
+            <div className="flex flex-wrap gap-3 items-start">
+              <Link
+                to="/issues"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5 whitespace-nowrap"
+              >
+                Report an Issue <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/ongoing-projects"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap"
+              >
+                Track Projects
+              </Link>
             </div>
-
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-              <Heart className="w-6 h-6 md:w-8 md:h-8 text-green-400 mx-auto mb-3" />
-              <div className="text-2xl md:text-4xl font-black text-white mb-1">15</div>
-              <div className="text-xs md:text-sm text-green-200/80 font-bold uppercase tracking-wide">Communities</div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce hidden md:block">
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-          <div className="w-1.5 h-2 bg-white rounded-full" />
-        </div>
+      <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
+        {HERO_IMAGES.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`w-2 rounded-full transition-all duration-300 ${
+              idx === currentIndex
+                ? "h-8 bg-white"
+                : "h-2 bg-white/30 hover:bg-white/50"
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
