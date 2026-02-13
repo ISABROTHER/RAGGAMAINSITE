@@ -84,7 +84,8 @@ export function HeroSection() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className="block"
+                className="block ml-[7%] text-yellow-400 font-serif italic"
+                style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
                 Constituency
               </motion.span>
