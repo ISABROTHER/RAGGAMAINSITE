@@ -14,11 +14,9 @@ import {
   Database,
   ScanSearch,
   ShieldAlert,
-  Info,
-  Cloud
+  Info
 } from "lucide-react";
 
-// --- Mock DB and Logic remained same ---
 const MOCK_DB = [
   { id: "CCN-OPP-2024", firstName: "Kwame", surname: "Mensah", phone: "0241234567", skill: "Technical", community: "Abura" },
 ];
@@ -26,29 +24,86 @@ const MOCK_DB = [
 type ViewState = "search" | "searching" | "register" | "verified";
 
 const anim = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.2 }
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.25 },
 };
 
 const inputCls =
   "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
 
-// --- Loading Component remained same ---
+const SEARCH_STEPS = [
+  { label: "Connecting to Talent Hub", icon: Database, duration: 600 },
+  { label: "Scanning skills records", icon: ScanSearch, duration: 500 },
+  { label: "Verifying constituent match", icon: ShieldAlert, duration: 400 },
+];
+
 function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
+  const [step, setStep] = useState(0);
+  const [progress, setProgress] = useState(0);
+
   useEffect(() => {
-    const timer = setTimeout(onComplete, 1500);
-    return () => clearTimeout(timer);
+    let totalElapsed = 0;
+    const totalDuration = SEARCH_STEPS.reduce((s, st) => s + st.duration, 0);
+    const interval = setInterval(() => {
+      totalElapsed += 30;
+      const pct = Math.min((totalElapsed / totalDuration) * 100, 100);
+      setProgress(pct);
+
+      let accumulated = 0;
+      for (let i = 0; i < SEARCH_STEPS.length; i++) {
+        accumulated += SEARCH_STEPS[i].duration;
+        if (totalElapsed < accumulated) {
+          setStep(i);
+          break;
+        }
+      }
+
+      if (totalElapsed >= totalDuration) {
+        clearInterval(interval);
+        setTimeout(onComplete, 200);
+      }
+    }, 30);
+    return () => clearInterval(interval);
   }, [onComplete]);
 
+  const Icon = SEARCH_STEPS[step].icon;
+
   return (
-    <div className="py-8 px-6 text-center">
-      <div className="flex justify-center mb-4">
-        <div className="w-12 h-12 border-4 border-green-100 border-t-green-600 rounded-full animate-spin" />
+    <motion.div {...anim} className="py-6 px-5">
+      <div className="flex items-center gap-3 mb-5">
+        <motion.div
+          key={step}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20"
+        >
+          <Icon className="w-4 h-4 text-white" />
+        </motion.div>
+        <div className="flex-1">
+          <motion.p
+            key={step}
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-sm font-semibold text-slate-800"
+          >
+            {SEARCH_STEPS[step].label}
+          </motion.p>
+          <p className="text-[11px] text-slate-400 font-mono">Step {step + 1} of 3</p>
+        </div>
+        <span className="text-xs font-bold text-green-600 tabular-nums">
+          {Math.round(progress)}%
+        </span>
       </div>
-      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Searching Database...</p>
-    </div>
+
+      <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+        <motion.div
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </motion.div>
   );
 }
 
@@ -74,13 +129,24 @@ export function ConstituencyConnect() {
     e.preventDefault();
     if (!query.trim()) return;
     setSearchQuery(query.trim());
+    setFound(null);
+    setNotFound(false);
     setView("searching");
   };
 
   const handleSearchComplete = () => {
     const q = searchQuery.toLowerCase();
-    const r = MOCK_DB.find(u => u.surname.toLowerCase().includes(q) || u.phone.includes(q));
-    if (r) setFound(r); else setNotFound(true);
+    const r = MOCK_DB.find(
+      (u) =>
+        u.surname.toLowerCase().includes(q) ||
+        u.firstName.toLowerCase().includes(q) ||
+        u.phone.includes(q)
+    );
+    if (r) {
+      setFound(r);
+    } else {
+      setNotFound(true);
+    }
     setView("search");
   };
 
@@ -117,30 +183,22 @@ export function ConstituencyConnect() {
 
                 {view === "search" && (
                   <motion.div key="search" {...anim} className="p-5">
-                    {/* Header with LIVE Pulse */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
-                          <Fingerprint className="w-4 h-4 text-white" />
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-green-500/20">
+                          {showInfo ? <Info className="w-4 h-4 text-white" /> : <Fingerprint className="w-4 h-4 text-white" />}
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
-                            {showInfo ? "Why Register Details" : "Constituent Access"}
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                            </span>
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Live Database</span>
-                          </div>
-                        </div>
+                        <p className="text-sm font-bold text-slate-900 uppercase tracking-tight">
+                          {showInfo ? "Why Register your Details" : (activeTab === 'check' ? "Check Status" : "Constituent Access")}
+                        </p>
                       </div>
                       
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
-                        className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
-                          showInfo ? "bg-slate-900 border-slate-900 text-white" : "bg-slate-50 border-slate-200 text-slate-600"
+                        className={`px-3 py-1.5 rounded-lg transition-all border flex items-center gap-1.5 ${
+                          showInfo 
+                            ? "bg-slate-900 border-slate-900 text-white" 
+                            : "bg-green-50 border-green-100 text-green-700 hover:bg-green-100"
                         }`}
                       >
                         {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
@@ -150,7 +208,13 @@ export function ConstituencyConnect() {
 
                     <AnimatePresence mode="wait">
                       {showInfo ? (
-                        <motion.div key="info" {...anim} className="overflow-hidden mb-2">
+                        <motion.div 
+                          key="info-content"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden mb-2"
+                        >
                           <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100 text-left">
                             <div>
                               <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose & Privacy</h4>
@@ -160,16 +224,19 @@ export function ConstituencyConnect() {
                               <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Registration Benefits</h4>
                               <p>Receive updates, opportunity alerts, and formal follow-ups on your submitted concerns.</p>
                             </div>
+                            <div className="border-t border-slate-200 pt-3">
+                              <p className="font-bold">Common Items:</p>
+                              <p className="opacity-80">No smartphone? Register at our office. Details wrong? Update anytime.</p>
+                            </div>
                           </div>
                         </motion.div>
                       ) : (
-                        <div className="space-y-4">
+                        <motion.div key="form-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                           {!activeTab && (
                               <div className="grid grid-cols-2 gap-3">
-                                {/* CLEAN, NO-BOUNCE BUTTONS */}
                                 <button 
                                     onClick={() => setActiveTab('check')}
-                                    className="py-3.5 flex items-center justify-center gap-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-200 transition-colors"
+                                    className="py-3 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-slate-700 transition-all active:scale-[0.98]"
                                 >
                                     <Search className="w-3.5 h-3.5 text-slate-500" />
                                     <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
@@ -177,7 +244,7 @@ export function ConstituencyConnect() {
                                 
                                 <button 
                                     onClick={() => { setActiveTab('register'); setView('register'); }}
-                                    className="py-3.5 flex items-center justify-center gap-2 bg-green-600 border border-green-600 rounded-xl text-white hover:bg-green-700 transition-colors"
+                                    className="py-3 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 border border-green-600 rounded-xl text-white transition-all active:scale-[0.98] shadow-lg shadow-green-600/20"
                                 >
                                     <UserPlus className="w-3.5 h-3.5" />
                                     <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
@@ -187,12 +254,12 @@ export function ConstituencyConnect() {
 
                           {activeTab === 'check' && (
                               <div className="relative">
-                                  <button onClick={() => setActiveTab(null)} className="absolute -top-7 right-0 text-[9px] text-slate-400 uppercase font-black flex items-center gap-1">
+                                  <button onClick={() => setActiveTab(null)} className="absolute -top-7 right-0 text-[9px] text-slate-400 hover:text-slate-600 uppercase font-black flex items-center gap-1">
                                     Cancel <X className="w-2.5 h-2.5" />
                                   </button>
                                   <form onSubmit={handleSearch}>
                                     <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                       <input
                                         type="text"
                                         placeholder="Name or phone number..."
@@ -205,7 +272,7 @@ export function ConstituencyConnect() {
                                     <button
                                       type="submit"
                                       disabled={!query.trim()}
-                                      className="mt-3 w-full bg-slate-900 text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                      className="mt-3 w-full bg-slate-900 text-white font-black py-3 rounded-xl transition-all text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
                                     >
                                       Verify Status
                                     </button>
@@ -213,15 +280,14 @@ export function ConstituencyConnect() {
                               </div>
                           )}
 
-                          {/* Results Display */}
                           <AnimatePresence mode="wait">
                             {found && (
                               <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg text-left">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center">
+                                  <div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center shrink-0">
                                     <UserCheck className="w-4 h-4 text-white" />
                                   </div>
-                                  <div className="flex-1">
+                                  <div className="flex-1 min-w-0">
                                     <p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p>
                                     <p className="text-green-700 text-[10px] font-bold">MATCH FOUND</p>
                                   </div>
@@ -234,7 +300,7 @@ export function ConstituencyConnect() {
                             {notFound && (
                               <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg text-left">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center">
+                                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center shrink-0">
                                     <UserPlus className="w-4 h-4 text-white" />
                                   </div>
                                   <p className="font-bold text-amber-900 text-xs">No record for "{searchQuery}"</p>
@@ -245,41 +311,47 @@ export function ConstituencyConnect() {
                               </motion.div>
                             )}
                           </AnimatePresence>
-                        </div>
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </motion.div>
                 )}
 
-                {/* View: Register remained same logic */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-5 text-left">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-5">
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-[10px] uppercase font-black mb-5 transition-colors">
                       <ArrowLeft className="w-3.5 h-3.5" /> Back
                     </button>
+                    <div className="text-center mb-5">
+                      <h3 className="text-xs font-black text-slate-900 uppercase">New Constituent Registration</h3>
+                    </div>
                     <div className="space-y-2.5">
                       <div className="grid grid-cols-2 gap-2.5">
                         <input type="text" placeholder="First Name" className={inputCls} />
                         <input type="text" placeholder="Surname" className={inputCls} />
                       </div>
-                      <input type="tel" placeholder="Phone Number" className={inputCls} />
+                      <input type="tel" placeholder="Phone (WhatsApp)" className={inputCls} />
                       <input type="text" placeholder="Residential Community" className={inputCls} />
-                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-2">
+                      <input type="text" placeholder="Profession or Skill" className={inputCls} />
+                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-2 shadow-lg">
                         Submit Details
                       </button>
                     </div>
                   </motion.div>
                 )}
 
-                {/* View: Verified remained same logic */}
                 {view === "verified" && (
                   <motion.div key="verified" {...anim}>
-                    <div className="bg-green-600 p-6 text-center text-white">
+                    <div className="bg-gradient-to-br from-green-600 to-emerald-700 p-6 text-center text-white">
                       <ShieldCheck className="w-8 h-8 mx-auto mb-3" />
                       <p className="text-lg font-black uppercase tracking-wider">Access Verified</p>
                     </div>
                     <div className="p-5">
-                      <button onClick={reset} className="w-full flex items-center justify-center gap-1.5 text-slate-400 text-[10px] font-black uppercase py-2">
+                      <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2 text-[10px] font-black uppercase">
+                        <MapPin className="w-4 h-4 text-green-600 shrink-0" />
+                        <span>Cape Coast North Hub</span>
+                      </div>
+                      <button onClick={reset} className="mt-3 w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-600 text-[10px] font-black uppercase py-2">
                         <X className="w-3.5 h-3.5" /> Close
                       </button>
                     </div>
