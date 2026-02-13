@@ -282,4 +282,4 @@ export function AboutFullProfile() {
       </div>
     </div>
   );
-}
+} 
