@@ -43,18 +43,18 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full h-[75vh] md:h-[92vh] overflow-hidden bg-slate-900">
-      {/* Background Images with Crossfade */}
+      {/* Dynamic Background Slideshow */}
       {HERO_IMAGES.map((url, idx) => (
         <img
           key={idx}
           src={url}
-          alt="Cape Coast North Hero"
+          alt="Hon. Dr. Kwamena Minta Nyarku"
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out object-center md:object-[center_-200px]"
           style={{ opacity: idx === currentIndex ? 1 : 0 }}
         />
       ))}
 
-      {/* Overlays for Visibility */}
+      {/* Cinematic Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
@@ -65,15 +65,15 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* Headline with Mobile Line Break */}
+            {/* Main Headline with Mobile-Specific Break */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
               Building the Constituency <br className="block md:hidden" />
               <span className="text-green-400">We Want Together</span>
             </h1>
 
-            {/* Typewriter Subtext */}
+            {/* Typewriter Subtext - Capitalized as requested */}
             <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
-              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate uppercase">
+              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
                 {displayedText}
                 <motion.span
                   animate={{ opacity: [1, 0] }}
@@ -83,7 +83,7 @@ export function HeroSection() {
               </p>
             </div>
 
-            {/* CTAs */}
+            {/* Call to Action Buttons */}
             <div className="flex flex-wrap gap-3 items-start">
               <Link
                 to="/issues"
@@ -102,7 +102,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Slide Indicators */}
+      {/* Slide Navigation Indicators */}
       <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
         {HERO_IMAGES.map((_, idx) => (
           <button
