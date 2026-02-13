@@ -207,7 +207,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 >
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
                     
-                    {/* AUTH ON TOP - CLEAN FUNCTIONAL */}
+                    {/* AUTH ON TOP */}
                     <motion.div 
                       variants={itemVariants}
                       className="relative p-4 bg-black/10 border-b border-white/10"
@@ -245,7 +245,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                         )}
                     </motion.div>
 
-                    {/* NAV LIST - INNOVATIVE SELECTION COLOURS */}
+                    {/* NAV LIST */}
                     <div className="overflow-y-auto max-h-[55vh] p-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
@@ -275,13 +275,12 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                               </span>
                             </div>
                             
-                            {/* LIVE ANIMATION INDICATOR */}
                             {isActive && (
                                 <motion.div 
                                     initial={{ scale: 0 }}
                                     animate={{ scale: [1, 1.5, 1] }}
                                     transition={{ repeat: Infinity, duration: 1.5 }}
-                                    className="w-2 h-2 rounded-full bg-[#CE1126] shadow-[0_0_8px_rgba(206,17,38,0.6)]"
+                                    className="w-2 h-2 rounded-full bg-[#CE1126]"
                                 />
                             )}
                           </motion.button>
@@ -295,6 +294,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           </AnimatePresence>
         </nav>
       </header>
+      {/* Spacer to prevent overlapping content below fixed header */}
+      <div style={{ height: `${headerHeight}px` }} />
     </div>
   );
 }
