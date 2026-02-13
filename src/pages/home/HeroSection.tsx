@@ -44,7 +44,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full h-[75vh] md:h-[92vh] overflow-hidden bg-slate-900">
+    <section className="relative w-full h-[60vh] md:h-[92vh] overflow-hidden bg-slate-900">
       {HERO_IMAGES.map((url, idx) => (
         <img
           key={idx}
