@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -279,31 +279,49 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           </div>
         </div>
 
-        {/* Contribute Button */}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          animate={{
-            boxShadow: [
-              '0 0 0 0 rgba(22, 163, 74, 0.3)',
-              '0 0 0 8px rgba(22, 163, 74, 0)',
-              '0 0 0 0 rgba(22, 163, 74, 0)',
-            ],
-          }}
-          transition={{
-            boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-          }}
-          onClick={onContribute}
-          className="w-full py-3.5 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
-        >
-          <motion.span
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Buttons */}
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            animate={{
+              boxShadow: [
+                '0 0 0 0 rgba(22, 163, 74, 0.3)',
+                '0 0 0 8px rgba(22, 163, 74, 0)',
+                '0 0 0 0 rgba(22, 163, 74, 0)',
+              ],
+            }}
+            transition={{
+              boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            onClick={onContribute}
+            className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
           >
-            <Heart className="w-4 h-4 fill-current" />
-          </motion.span>
-          Contribute Now
-        </motion.button>
+            <motion.span
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Heart className="w-3.5 h-3.5 fill-current" />
+            </motion.span>
+            Contribute
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              const url = `${window.location.origin}/support?project=${project.slug}`;
+              const text = `Support "${project.title}" on Ragga Foundation!`;
+              if (navigator.share) {
+                navigator.share({ title: project.title, text, url }).catch(() => {});
+              } else {
+                navigator.clipboard.writeText(url).catch(() => {});
+              }
+            }}
+            className="w-11 h-11 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
+          >
+            <Share2 className="w-4 h-4" />
+          </motion.button>
+        </div>
       </div>
     </div>
   );
