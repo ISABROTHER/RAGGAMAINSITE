@@ -32,12 +32,14 @@ export function AboutFullProfile() {
       return parts.length > 1 ? parts[1] : dateStr; 
   }
 
+  // Updated Profile Data with Col-Span Logic for layout control
   const profileDetails = [
       { icon: User, label: "Full Name", value: "Hon. Dr. Kwamena Minta Nyarku", colSpan: "col-span-2" },
+      // Nickname and Nationality sharing the row (col-span-1)
       { icon: Smile, label: "Nickname", value: "Ragga", colSpan: "col-span-1" },
       { icon: Flag, label: "Nationality", value: "Ghanaian", colSpan: "col-span-1" },
-      { icon: DesignationIcon, label: "Designation", value: "MP Cape Coast North", colSpan: "col-span-2" },
-      { icon: MapPin, label: "Birthplace", value: "Apewosika, C. Coast", colSpan: "col-span-2" },
+      { icon: DesignationIcon, label: "Designation", value: "MP for Cape Coast North", colSpan: "col-span-2" },
+      { icon: MapPin, label: "Birthplace", value: "Apewosika, Cape Coast", colSpan: "col-span-2" },
       { icon: Megaphone, label: "Slogan", value: "Obiara Ka Ho", colSpan: "col-span-2" },
   ];
 
@@ -47,31 +49,32 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + AFFILIATION (Balanced Grid) */}
+        {/* BENTO GRID LAYOUT - ROW 1: PROFILE & AFFILIATION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
-            {/* 1. PERSONAL PROFILE (Left - 5 Columns) */}
+            {/* 1. PERSONAL PROFILE (Left - Grid Layout) */}
             <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-5 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-full"
+                className="lg:col-span-5 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col"
             >
                 <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+                    <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
                         <User className="w-4 h-4 text-green-400" />
                         Personal Profile
                     </h2>
                 </div>
                 
-                <div className="p-4 grid grid-cols-2 gap-3 flex-1 bg-slate-50/50 content-start">
+                {/* 2-Column Grid Container */}
+                <div className="p-3 grid grid-cols-2 gap-2 flex-1 bg-slate-50/50">
                     {profileDetails.map((item, index) => (
                         <div 
                             key={index} 
                             className={`${item.colSpan} flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-green-200 transition-colors`}
                         >
-                            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-                                <item.icon className="w-5 h-5 text-green-700" />
+                            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                                <item.icon className="w-4 h-4 text-green-700" />
                             </div>
                             <div className="min-w-0">
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</div>
@@ -82,50 +85,46 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. AFFILIATION (Right - 7 Columns) - Text Overlap Fixed */}
+            {/* 2. POLITICAL AFFILIATION (Right - Compact Card) */}
             <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-7 relative rounded-3xl overflow-hidden shadow-2xl group min-h-[350px] lg:h-auto"
+                className="lg:col-span-7 relative rounded-3xl overflow-hidden shadow-xl group min-h-[300px]"
             >
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                     style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQrt2ai-mHcOLVubiDpeAdczMymeOsMdg8DA&s')` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-black/90" />
                 
-                <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-center items-start">
-                    <div className="flex items-center gap-2 mb-4 bg-green-600/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-green-500/30">
-                        <Flag className="w-4 h-4 text-green-400" />
+                <div className="absolute inset-0 p-8 flex flex-col justify-center items-start">
+                    <div className="flex items-center gap-2 mb-3 bg-green-600/20 backdrop-blur-md px-3 py-1 rounded-full border border-green-500/30">
+                        <Flag className="w-3 h-3 text-green-400" />
                         <span className="text-green-100 font-bold text-xs uppercase tracking-widest">Affiliation</span>
                     </div>
                     
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[0.9] mb-6">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[0.9] mb-4">
                         NATIONAL <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">DEMOCRATIC</span> <br/>
                         <span className="text-green-500">CONGRESS</span>
                     </h2>
                     
-                    {/* FIXED: Using flex-wrap and responsive width to prevent overlap */}
-                    <div className="flex flex-wrap items-center gap-4 mt-auto w-full">
-                        <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center justify-center shadow-lg shadow-green-900/50 text-lg shrink-0">
-                            NDC
-                        </span>
-                        
-                        <div className="h-auto min-h-[3rem] py-2 px-4 md:px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-white/90 text-xs md:text-sm font-bold uppercase tracking-wide leading-tight text-center max-w-full">
-                            Cape Coast North Constituency
+                    <div className="flex items-center gap-3 mt-auto">
+                        <span className="h-10 px-6 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50">NDC</span>
+                        <div className="h-10 px-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-xs font-bold uppercase tracking-wide">
+                            Cape Coast North
                         </div>
                     </div>
                 </div>
             </motion.div>
         </div>
 
-        {/* ROW 2: PROFESSIONAL DUAL TRACK */}
+        {/* BENTO GRID LAYOUT - ROW 2: PROFESSIONAL DUAL TRACK */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             
-            {/* ACADEMIC QUALIFICATIONS */}
+            {/* 3. ACADEMIC QUALIFICATIONS */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -154,7 +153,7 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* EMPLOYMENT & COMMITTEES */}
+            {/* 4. EMPLOYMENT & COMMITTEES (Merged for efficiency) */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -184,7 +183,7 @@ export function AboutFullProfile() {
                     </div>
                 </div>
 
-                {/* Committees */}
+                {/* Committees (Compact Grid) */}
                 <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-5 flex-1">
                     <h3 className="font-black text-slate-900 text-sm uppercase tracking-wide mb-3 flex items-center gap-2">
                         <Landmark className="w-4 h-4 text-green-600" /> Parliamentary Committees
@@ -206,7 +205,7 @@ export function AboutFullProfile() {
             </motion.div>
         </div>
 
-        {/* ROW 3: SERVICE & MANDATE */}
+        {/* BENTO GRID LAYOUT - ROW 3: SERVICE & MANDATE */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
