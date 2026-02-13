@@ -1,10 +1,10 @@
 // src/components/Header.tsx
 import { useState, useEffect, useRef } from 'react';
 import {
-  MoreVertical, X, Home, User, Users, HardHat, Award,
+  Menu as MenuIcon, X, Home, User, Users, HardHat, Award,
   Calendar, MessageSquareWarning,
   LayoutDashboard, LogIn, ChevronRight, Vote,
-  UserCircle, Heart, LogOut, Sparkles
+  UserCircle, Heart, LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -170,36 +170,36 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle - CHANGED TO THREE DOTS */}
+            {/* Mobile Menu Toggle - STACKED DESIGN */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md ${
+                className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-300 shadow-sm ${
                   mobileMenuOpen 
-                    ? 'bg-white text-[#CE1126] border border-[#CE1126]' 
-                    : 'bg-[#CE1126] text-white border border-transparent hover:bg-[#b00e1f]'
+                    ? 'bg-[#CE1126] text-white shadow-inner' 
+                    : 'bg-white text-[#CE1126] border border-gray-100'
                 }`}
               >
-                {/* Rotating Animation between Dots and X */}
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {mobileMenuOpen ? (
-                    <X className="w-6 h-6" strokeWidth={2.5} />
-                  ) : (
-                    <MoreVertical className="w-6 h-6" strokeWidth={2.5} />
-                  )}
-                </motion.div>
+                {/* Icon on Top */}
+                <div className="mb-[2px]">
+                    {mobileMenuOpen ? (
+                        <X className="w-6 h-6" strokeWidth={3} />
+                    ) : (
+                        <MenuIcon className="w-6 h-6" strokeWidth={3} />
+                    )}
+                </div>
+                {/* Text Below */}
+                <span className="text-[9px] font-black uppercase tracking-tighter leading-none">
+                    MENU
+                </span>
               </button>
             </div>
           </div>
 
-          {/* INNOVATIVE MOBILE DROPDOWN - Positioned Under the Dots */}
+          {/* INNOVATIVE MOBILE DROPDOWN */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
@@ -216,9 +216,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   animate="open"
                   exit="closed"
                   variants={containerVariants}
-                  // Adjusted 'top' and 'right' to align perfectly under the 3-dot icon
                   className="fixed right-4 z-[70] w-[320px] origin-top-right"
-                  style={{ top: `${headerHeight - 10}px` }} 
+                  style={{ top: `${headerHeight + 5}px` }} 
                 >
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden ring-1 ring-white/10">
                     
