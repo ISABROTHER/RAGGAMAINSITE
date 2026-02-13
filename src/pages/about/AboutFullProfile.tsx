@@ -48,7 +48,7 @@ export function AboutFullProfile() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         
-        {/* ROW 1: PERSONAL PROFILE + BANNER-STYLE VIDEO */}
+        {/* ROW 1: PERSONAL PROFILE + VIDEO */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
             {/* 1. PERSONAL PROFILE (Left - 7 Columns) */}
@@ -83,33 +83,28 @@ export function AboutFullProfile() {
                 </div>
             </motion.div>
 
-            {/* 2. VIDEO (Right - 5 Columns) - INNOVATION: ZOOM CROP FOR CLEAN VIDEO */}
+            {/* 2. VIDEO (Right - 5 Columns) - FIXED: 16:9 TV DIMENSION */}
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative h-[400px] lg:h-auto group"
+                // Added aspect-video for 16:9 ratio and removed fixed heights
+                className="lg:col-span-5 bg-black rounded-3xl shadow-2xl overflow-hidden relative aspect-video w-full group"
             >
-                 {/* CSS HACK: Scale iframe to 145% to push Instagram UI (username, likes) out of view */}
-                 <div className="absolute inset-0 w-full h-full overflow-hidden">
-                     <iframe 
-                        src="https://www.instagram.com/reel/DFfroZCOCf4/embed/?autoplay=1&muted=1&controls=0&loop=1" 
-                        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                        style={{ transform: 'scale(1.45)' }}
-                        frameBorder="0" 
-                        scrolling="no" 
-                        allowTransparency={true}
-                        allow="autoplay; encrypted-media;"
-                        title="Ragga Instagram Reel"
-                     />
-                 </div>
-                 {/* Invisible overlay to prevent clicking the hidden/broken UI elements */}
-                 <div className="absolute inset-0 z-10 bg-transparent" />
+                 <iframe 
+                    src="https://www.instagram.com/reel/DFfroZCOCf4/embed/captioned/?autoplay=1&muted=0" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    frameBorder="0" 
+                    scrolling="no" 
+                    allowTransparency={true}
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    title="Ragga Instagram Reel"
+                 />
             </motion.div>
         </div>
 
-        {/* ROW 2: AFFILIATION (Full Width - RESTORED ORIGINAL DESIGN) */}
+        {/* ROW 2: AFFILIATION (Full Width - FIXED TEXT SCATTERING) */}
         <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -135,9 +130,11 @@ export function AboutFullProfile() {
                     <span className="text-green-500">CONGRESS</span>
                 </h2>
                 
-                <div className="flex items-center gap-4 mt-auto">
-                    <span className="h-12 px-8 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50 text-lg">NDC</span>
-                    <div className="h-12 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-sm font-bold uppercase tracking-wide">
+                <div className="flex flex-wrap items-center gap-4 mt-auto">
+                    <span className="h-auto py-2 px-8 bg-green-600 text-white font-black rounded-xl flex items-center shadow-lg shadow-green-900/50 text-lg">NDC</span>
+                    
+                    {/* FIXED: Removed fixed height, adjusted padding and tracking */}
+                    <div className="h-auto py-3 px-6 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center text-white/90 text-sm font-bold uppercase tracking-normal leading-tight whitespace-nowrap">
                         Cape Coast North Constituency
                     </div>
                 </div>
