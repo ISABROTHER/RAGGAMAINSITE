@@ -2,303 +2,166 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search,
-  UserCheck,
-  UserPlus,
-  X,
-  ShieldCheck,
-  MapPin,
-  ArrowLeft,
-  Fingerprint,
-  CheckCircle2,
-  Database,
-  ScanSearch,
-  ShieldAlert,
-  Info,
-  Server,
-  Briefcase,
-  GraduationCap,
-  Home
+  Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, 
+  ArrowLeft, Fingerprint, Info, Server, Phone, CheckCircle2,
+  Globe, UserMinus, ShieldQuestion
 } from "lucide-react";
 
-const COMMUNITIES = [
-  "Abura", "Adisadel", "Akotokyir", "Ankaful", "Antem", "Brabedze", 
-  "Duakor", "Efutu", "Kakumdo", "Kwaprow", "Nkanfoa", "Nyinasin", 
-  "Ola", "Pedu", "University of Cape Coast (UCC)"
-].sort();
+// Community List for Residents/Diaspora
+const COMMUNITIES = ["Abura", "Adisadel", "Akotokyir", "Ankaful", "Antem", "Brabedze", "Duakor", "Efutu", "Kakumdo", "Kwaprow", "Nkanfoa", "Nyinasin", "Ola", "Pedu", "UCC"].sort();
 
-const MOCK_DB = [
-  { id: "CCN-OPP-2024", firstName: "Kwame", surname: "Mensah", phone: "0241234567", skill: "Technical", community: "Abura" },
-];
-
-type ViewState = "search" | "searching" | "register" | "verified";
-
-const anim = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.2 }
-};
-
-const inputCls =
-  "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
-
-const selectCls = 
-  "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none transition-all text-sm text-slate-800 appearance-none cursor-pointer";
-
-function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 2500); 
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <div className="py-8 px-6 text-center relative overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
-      <motion.div 
-        className="absolute top-0 left-0 right-0 h-1 bg-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.8)] z-10"
-        animate={{ top: ["0%", "100%", "0%"] }}
-        transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-      />
-      <div className="relative z-20 flex flex-col items-center gap-4">
-        <div className="relative w-16 h-16 flex items-center justify-center">
-            <div className="absolute inset-0 border-2 border-slate-200 rounded-full"></div>
-            <div className="absolute inset-0 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-            <Server className="w-6 h-6 text-green-600 animate-pulse" />
-        </div>
-        <div className="space-y-1">
-            <motion.p className="text-xs font-black text-slate-900 uppercase tracking-widest" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                Connecting to Hub...
-            </motion.p>
-            <p className="text-[10px] text-green-600 font-mono">Verifying Constituent ID</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+type Category = "Resident" | "Diaspora" | "Non-Constituent";
 
 export function ConstituencyConnect() {
-  const [query, setQuery] = useState("");
-  const [found, setFound] = useState<typeof MOCK_DB[0] | null>(null);
-  const [notFound, setNotFound] = useState(false);
-  const [view, setView] = useState<ViewState>("search");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [view, setView] = useState<"access" | "form" | "otp" | "verified">("access");
+  const [category, setCategory] = useState<Category | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [showInfo, setShowInfo] = useState(false);
-  const [activeTab, setActiveTab] = useState<"check" | "register" | null>(null);
-
-  // Registration states
-  const [livesInNorth, setLivesInNorth] = useState<boolean | null>(null);
-  const [isStudent, setIsStudent] = useState<boolean | null>(null);
-  const [isEmployed, setIsEmployed] = useState<boolean | null>(null);
 
   const reset = () => {
-    setQuery("");
-    setFound(null);
-    setNotFound(false);
-    setView("search");
-    setSearchQuery("");
-    setActiveTab(null);
-    setLivesInNorth(null);
-    setIsStudent(null);
-    setIsEmployed(null);
+    setView("access");
+    setCategory(null);
+    setPhoneNumber("");
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setSearchQuery(query.trim());
-    setView("searching");
-  };
-
-  const handleSearchComplete = () => {
-    const q = searchQuery.toLowerCase();
-    const r = MOCK_DB.find(u => u.surname.toLowerCase().includes(q) || u.phone.includes(q));
-    if (r) setFound(r); else setNotFound(true);
-    setView("search");
+  const handleCategorySelect = (cat: Category) => {
+    setCategory(cat);
+    setView("form");
   };
 
   return (
     <section className="relative py-12 md:py-20 bg-slate-900 overflow-hidden">
+      {/* Background with Green Frosted Overlay */}
       <div className="absolute inset-0">
-        <img src="https://i.imgur.com/5H0XBuV.jpeg" alt="Constituency Background" className="w-full h-full object-cover" />
+        <img src="https://i.imgur.com/5H0XBuV.jpeg" className="w-full h-full object-cover" alt="Background" />
         <div className="absolute inset-0 bg-green-900/85 backdrop-blur-sm mix-blend-multiply" />
-        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
         <div className="mb-10">
-          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight uppercase">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">
             My <span className="text-green-300">Constituents</span>
           </h2>
-          <p className="mt-4 text-green-50 text-sm md:text-base leading-relaxed max-w-lg mx-auto font-medium opacity-90">
-            Are you a student, business person or resident in Cape Coast North? Join my database so we can support you when opportunities arise.
+          <p className="mt-4 text-green-50 text-sm opacity-90 max-w-lg mx-auto">
+            Join the database to receive updates and access support opportunities.
           </p>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-[440px]">
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
-              <AnimatePresence mode="wait">
-                
-                {view === "searching" && (
-                  <motion.div key="searching" {...anim}>
-                    <SearchLoadingBar onComplete={handleSearchComplete} />
+          <div className="w-full max-w-[460px] bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
+            
+            {/* --- STEP 1: CHOOSE CATEGORY --- */}
+            {view === "access" && (
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-sm font-black text-slate-900 uppercase">Database Access</p>
+                  <button onClick={() => setShowInfo(!showInfo)} className="text-green-700 bg-green-50 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase flex items-center gap-1">
+                    <Info className="w-3.5 h-3.5" /> Why Register?
+                  </button>
+                </div>
+
+                {showInfo && (
+                  <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} className="mb-6 text-left bg-slate-50 p-4 rounded-xl border border-slate-100 text-[11px] text-slate-600">
+                    Your information is used only for constituency work and is not sold or published.
                   </motion.div>
                 )}
 
-                {view === "search" && (
-                  <motion.div key="search" {...anim} className="p-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
-                          {showInfo ? <Info className="w-4 h-4 text-white" /> : <Fingerprint className="w-4 h-4 text-white" />}
-                        </div>
-                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">
-                          {showInfo ? "Information" : "Database Access"}
-                        </p>
-                      </div>
-                      <button onClick={() => setShowInfo(!showInfo)} className={`px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition-all ${showInfo ? "bg-slate-900 border-slate-900 text-white" : "bg-green-50 border-green-200 text-green-700"}`}>
-                        {showInfo ? <X className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
-                        <span className="text-[10px] font-bold uppercase tracking-wider">{showInfo ? "Close" : "Why Register?"}</span>
-                      </button>
+                <div className="space-y-3">
+                  <button onClick={() => handleCategorySelect("Resident")} className="w-full group relative flex items-center gap-4 p-4 bg-slate-50 hover:bg-green-50 border border-slate-200 hover:border-green-300 rounded-xl transition-all text-left">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm"><MapPin className="w-5 h-5 text-green-600" /></div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900 uppercase">I live in Cape Coast North</p>
+                      <p className="text-[10px] text-slate-500">Resident Constituent</p>
                     </div>
+                  </button>
 
-                    <AnimatePresence mode="wait">
-                      {showInfo ? (
-                        <motion.div key="info" {...anim} className="overflow-hidden mb-2">
-                          <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100 text-left">
-                            <div><h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4><p>We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p></div>
-                            <div><h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4><p>You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p></div>
-                          </div>
-                        </motion.div>
-                      ) : (
-                        <div className="space-y-4">
-                          {!activeTab && (
-                              <div className="grid grid-cols-2 gap-3 h-[52px]">
-                                <button onClick={() => setActiveTab('check')} className="relative h-full flex items-center justify-center gap-2 rounded-xl overflow-hidden group transition-all active:scale-[0.98]">
-                                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,#e2e8f0_0%,#22c55e_50%,#e2e8f0_100%)] animate-[spin_3s_linear_infinite]" />
-                                    <div className="absolute inset-[1.5px] bg-white rounded-[10px]" />
-                                    <div className="relative z-10 flex items-center gap-2">
-                                        <div className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></div>
-                                        <span className="text-xs font-black uppercase tracking-wider text-slate-700">Check Database</span>
-                                    </div>
-                                </button>
-                                <button onClick={() => { setActiveTab('register'); setView('register'); }} className="h-full flex items-center justify-center gap-2 bg-green-600 border border-green-600 rounded-xl text-white hover:bg-green-700 transition-colors shadow-lg">
-                                    <UserPlus className="w-3.5 h-3.5" />
-                                    <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
-                                </button>
-                              </div>
-                          )}
+                  <button onClick={() => handleCategorySelect("Diaspora")} className="w-full group relative flex items-center gap-4 p-4 bg-slate-50 hover:bg-green-50 border border-slate-200 hover:border-green-300 rounded-xl transition-all text-left">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm"><Globe className="w-5 h-5 text-blue-600" /></div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900 uppercase">Constituent living outside</p>
+                      <p className="text-[10px] text-slate-500">Diaspora / Outside CC North</p>
+                    </div>
+                  </button>
 
-                          {activeTab === 'check' && (
-                              <div className="relative">
-                                  <button onClick={() => setActiveTab(null)} className="absolute -top-7 right-0 text-[9px] text-slate-400 uppercase font-black flex items-center gap-1">Cancel <X className="w-2.5 h-2.5" /></button>
-                                  <form onSubmit={handleSearch}>
-                                    <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" /><input type="text" placeholder="Name or phone number..." value={query} onChange={(e) => setQuery(e.target.value)} className={`${inputCls} !pl-9`} autoFocus /></div>
-                                    <button type="submit" disabled={!query.trim()} className="mt-3 w-full bg-slate-900 text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">Verify Status</button>
-                                  </form>
-                              </div>
-                          )}
+                  <button onClick={() => handleCategorySelect("Non-Constituent")} className="w-full group relative flex items-center gap-4 p-4 bg-slate-50 hover:bg-green-50 border border-slate-200 hover:border-green-300 rounded-xl transition-all text-left">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm"><UserMinus className="w-5 h-5 text-slate-500" /></div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900 uppercase">Not a constituent</p>
+                      <p className="text-[10px] text-slate-500">Visitor / Business / Service</p>
+                    </div>
+                  </button>
+                </div>
+                <p className="mt-6 text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center italic">One phone number per record</p>
+              </div>
+            )}
 
-                          <AnimatePresence mode="wait">
-                            {found && (
-                              <motion.div key="f" {...anim} className="mt-4 bg-green-50 border border-green-200/60 p-4 rounded-lg text-left">
-                                <div className="flex items-center gap-3"><div className="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center"><UserCheck className="w-4 h-4 text-white" /></div><div className="flex-1"><p className="font-bold text-green-900 text-sm uppercase">{found.firstName} {found.surname}</p><p className="text-green-700 text-[10px] font-bold">MATCH FOUND</p></div></div>
-                                <button onClick={() => setView("verified")} className="mt-3 w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">Access Profile</button>
-                              </motion.div>
-                            )}
-                            {notFound && (
-                              <motion.div key="nf" {...anim} className="mt-4 bg-amber-50 border border-amber-200/60 p-4 rounded-lg text-left">
-                                <div className="flex items-center gap-3"><div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center"><UserPlus className="w-4 h-4 text-white" /></div><p className="font-bold text-amber-900 text-xs">No record for "{searchQuery}"</p></div>
-                                <button onClick={() => setView("register")} className="mt-3 w-full bg-amber-600 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase">Create Record</button>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
+            {/* --- STEP 2: MINIMUM DETAILS FORM --- */}
+            {view === "form" && (
+              <div className="p-6 text-left">
+                <button onClick={reset} className="flex items-center gap-1 text-[10px] font-black text-slate-400 uppercase mb-4"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
+                <div className="mb-6 pb-4 border-b border-slate-100">
+                  <p className="text-[10px] font-black text-green-600 uppercase">Step 2: Enter Details</p>
+                  <h3 className="text-sm font-black text-slate-900 uppercase">You chose {category}</h3>
+                </div>
 
-                {view === "register" && (
-                  <motion.div key="register" {...anim} className="p-5 text-left">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-5"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
-                    
-                    {/* STEP 1: RESIDENCY CHECK */}
-                    {livesInNorth === null ? (
-                      <div className="py-4 space-y-4">
-                        <div className="text-center">
-                          <Home className="w-10 h-10 text-green-600 mx-auto mb-3" />
-                          <h3 className="text-xs font-black text-slate-900 uppercase">Residency Verification</h3>
-                          <p className="text-[10px] text-slate-500 mt-1">This registration is exclusively for residents of Cape Coast North.</p>
-                        </div>
-                        <div className="grid grid-cols-1 gap-3">
-                          <button onClick={() => setLivesInNorth(true)} className="w-full bg-green-600 text-white font-black py-3 rounded-xl text-[10px] uppercase transition-all hover:bg-green-700">
-                            I live in Cape Coast North
-                          </button>
-                          <button onClick={() => setLivesInNorth(false)} className="w-full bg-slate-100 text-slate-600 font-black py-3 rounded-xl text-[10px] uppercase transition-all hover:bg-slate-200">
-                            I live elsewhere
-                          </button>
-                        </div>
-                      </div>
-                    ) : livesInNorth === false ? (
-                      /* BLOCKER FOR NON-RESIDENTS */
-                      <div className="py-8 text-center space-y-4">
-                        <X className="w-12 h-12 text-red-500 mx-auto" />
-                        <h3 className="text-xs font-black text-slate-900 uppercase">Access Restricted</h3>
-                        <p className="text-[10px] text-slate-500 leading-relaxed">This portal is reserved for constituents of Cape Coast North. Please contact your local representative for assistance in your area.</p>
-                        <button onClick={reset} className="text-[10px] font-black text-green-700 uppercase underline">Return to Search</button>
-                      </div>
-                    ) : (
-                      /* STEP 2: REGISTRATION FORM */
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
-                          <input type="text" placeholder="First Name" className={inputCls} />
-                          <input type="text" placeholder="Surname" className={inputCls} />
-                        </div>
-                        <input type="tel" placeholder="Phone Number" className={inputCls} />
-                        
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
-                          <select className={`${selectCls} pl-9`}>
-                            <option value="">Select Residential Community</option>
-                            {COMMUNITIES.map(town => <option key={town} value={town}>{town}</option>)}
-                          </select>
-                        </div>
+                <div className="space-y-4">
+                  <input type="text" placeholder="Full Name" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20" />
+                  <input type="tel" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20" />
 
-                        <div className="pt-1">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Are you a student?</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <button onClick={() => setIsStudent(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                              <div className="flex items-center justify-center gap-2"><GraduationCap className="w-3.5 h-3.5" /> Yes</div>
-                            </button>
-                            <button onClick={() => setIsStudent(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isStudent === false ? 'bg-slate-900 border-slate-900 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>No</button>
-                          </div>
-                        </div>
+                  {/* Conditional Community Field */}
+                  {category !== "Non-Constituent" && (
+                    <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none">
+                      <option value="">Select Home Community</option>
+                      {COMMUNITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  )}
 
-                        <div className="pt-1">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Employment Status</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <button onClick={() => setIsEmployed(true)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === true ? 'bg-green-600 border-green-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
-                              <div className="flex items-center justify-center gap-2"><Briefcase className="w-3.5 h-3.5" /> Employed</div>
-                            </button>
-                            <button onClick={() => setIsEmployed(false)} className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase transition-all border ${isEmployed === false ? 'bg-red-600 border-red-600 text-white shadow-md' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}>Unemployed</button>
-                          </div>
-                        </div>
+                  {category === "Diaspora" && (
+                    <input type="text" placeholder="Current City/Country" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                  )}
 
-                        <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-black py-3 rounded-xl text-[10px] uppercase mt-4 shadow-lg active:scale-[0.98] transition-all">Submit Details</button>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
+                  {category === "Non-Constituent" && (
+                    <input type="text" placeholder="Reason for Contact (Service/Business)" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                  )}
 
-                {view === "verified" && (
-                  <motion.div key="verified" {...anim}>
-                    <div className="bg-green-600 p-6 text-center text-white"><ShieldCheck className="w-8 h-8 mx-auto mb-3" /><p className="text-lg font-black uppercase tracking-wider">Access Verified</p></div>
-                    <div className="p-5"><button onClick={reset} className="w-full flex items-center justify-center gap-1.5 text-slate-400 text-[10px] font-black uppercase py-2"><X className="w-3.5 h-3.5" /> Close</button></div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  <div className="pt-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Occupation (Optional)</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["Student", "Worker", "Business"].map(occ => (
+                        <button key={occ} className="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-green-600 hover:text-white transition-all">{occ}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button onClick={() => setView("otp")} className="w-full bg-slate-900 text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest mt-4">Verify & Submit</button>
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 3: OTP VERIFICATION --- */}
+            {view === "otp" && (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"><Phone className="w-8 h-8" /></div>
+                <h3 className="text-sm font-black text-slate-900 uppercase">Confirm Phone</h3>
+                <p className="text-[11px] text-slate-500 mt-2 mb-6 leading-relaxed">We've sent a code to {phoneNumber}. Enter it below to verify your record.</p>
+                
+                <input type="text" maxLength={4} className="w-32 text-center text-2xl font-black tracking-[1em] border-b-2 border-slate-900 focus:outline-none mb-8" />
+                
+                <button onClick={() => setView("verified")} className="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest mb-4">Complete Registration</button>
+                <button onClick={() => setView("form")} className="text-[10px] font-bold text-slate-400 uppercase underline">Wait, I made a mistake</button>
+              </div>
+            )}
+
+            {/* --- SUCCESS VIEW --- */}
+            {view === "verified" && (
+              <div className="p-10 text-center">
+                <div className="w-20 h-20 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-green-600/20"><CheckCircle2 className="w-12 h-12" /></div>
+                <h3 className="text-xl font-black text-slate-900 uppercase">Success!</h3>
+                <p className="text-xs text-slate-500 mt-3 leading-relaxed">You are now registered as a {category}. We will reach out if verification is required.</p>
+                <button onClick={reset} className="mt-8 text-xs font-black text-green-700 uppercase tracking-widest border-2 border-green-700 px-6 py-2 rounded-lg">Return Home</button>
+              </div>
+            )}
+
           </div>
         </div>
       </div>
