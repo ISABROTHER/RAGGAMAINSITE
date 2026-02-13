@@ -63,6 +63,25 @@ export function Support() {
   const featured = projects.find(p => p.is_featured);
   const others = projects.filter(p => !p.is_featured);
 
+  // Animation variants for the title letters
+  const titleContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.2 }
+    }
+  };
+
+  const titleLetter = {
+    hidden: { y: 50, opacity: 0, rotateX: -90 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      rotateX: 0,
+      transition: { type: "spring", stiffness: 100, damping: 10 }
+    }
+  };
+
   return (
     // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
     <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
@@ -72,20 +91,24 @@ export function Support() {
           {/* Reduced pt-1 to pt-0 on mobile */}
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
-            {/* 1. Minimal Animated Title */}
+            {/* 1. Innovative Animated Title */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              variants={titleContainer}
+              initial="hidden"
+              animate="visible"
               className="mb-1"
             >
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase">
-                Ragga Foundation
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
+                {Array.from("Ragga Foundation").map((letter, i) => (
+                  <motion.span key={i} variants={titleLetter} className="inline-block origin-bottom">
+                    {letter === " " ? "\u00A0" : letter}
+                  </motion.span>
+                ))}
               </h1>
             </motion.div>
 
             {/* 2. Slogan */}
-            <div className="flex items-center justify-center gap-4 mb-10">
+            <div className="flex items-center justify-center gap-4 mb-4">
               <div className="h-px w-8 sm:w-12 bg-slate-200" />
               <p className="text-base sm:text-lg font-bold uppercase tracking-[0.35em] text-green-700">
                 Obiara Ka Ho
