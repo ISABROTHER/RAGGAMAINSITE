@@ -92,15 +92,42 @@ export function Support() {
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
             {/* 1. Innovative Animated Title */}
+            <style>{`
+              @keyframes hueShift {
+                0% { filter: hue-rotate(0deg); }
+                25% { filter: hue-rotate(45deg); }
+                50% { filter: hue-rotate(90deg); }
+                75% { filter: hue-rotate(45deg); }
+                100% { filter: hue-rotate(0deg); }
+              }
+              @keyframes gradientMove {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+              }
+              .ragga-title {
+                background: linear-gradient(270deg, #dc2626, #16a34a, #eab308, #dc2626, #16a34a);
+                background-size: 300% 300%;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: gradientMove 6s ease infinite, hueShift 8s ease-in-out infinite;
+              }
+            `}</style>
             <motion.div 
               variants={titleContainer}
               initial="hidden"
               animate="visible"
               className="mb-1"
             >
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
+              <h1 className="ragga-title text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase perspective-1000">
                 {Array.from("Ragga Foundation").map((letter, i) => (
-                  <motion.span key={i} variants={titleLetter} className="inline-block origin-bottom">
+                  <motion.span
+                    key={i}
+                    variants={titleLetter}
+                    className="inline-block origin-bottom"
+                    whileHover={{ scale: 1.2, rotate: [-5, 5, 0], transition: { duration: 0.3 } }}
+                  >
                     {letter === " " ? "\u00A0" : letter}
                   </motion.span>
                 ))}
