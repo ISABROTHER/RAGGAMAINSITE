@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 import { useState, useEffect } from 'react';
 import {
   Menu, X, Home, User, Users, HardHat, Award,
@@ -152,9 +153,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     onClick={() => setMobileMenuOpen(true)}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-2 border-white"
+                    className="flex items-center gap-2 pl-4 pr-3 py-2 rounded-full bg-[#CE1126] text-white shadow-xl border-2 border-white hover:bg-red-700 transition-colors"
                   >
-                    <Menu className="w-6 h-6" strokeWidth={3} />
+                    <span className="font-black text-xs tracking-widest leading-none mt-[1px]">MENU</span>
+                    <Menu className="w-5 h-5" strokeWidth={3} />
                   </motion.button>
                 )}
               </AnimatePresence>
