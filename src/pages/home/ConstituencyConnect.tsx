@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, ArrowLeft,
   Fingerprint, CheckCircle2, Database, ScanSearch, ShieldAlert,
-  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone, Calendar
+  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -69,7 +69,7 @@ export function ConstituencyConnect() {
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        {/* HEADER SECTION - UPDATED TEXT */}
+        {/* HEADER SECTION */}
         <div className="mb-10">
           <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">
             My <span className="text-green-300">Constituents</span>
@@ -99,9 +99,20 @@ export function ConstituencyConnect() {
                       </button>
                     </div>
 
+                    {/* COMPREHENSIVE INFO BLOCK RESTORED HERE */}
                     {showInfo && (
-                      <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left text-[11px] text-slate-600 border border-slate-100">
-                        Your information is used only for constituency work and is not sold or published.
+                      <div className="bg-slate-50 rounded-xl p-4 mb-4 text-left space-y-4 border border-slate-100">
+                         <div>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">We collect basic information to confirm you are a constituent, contact you when needed, and respond to your issues fairly and quickly.</p>
+                         </div>
+                         <div>
+                            <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Benefits</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">You can receive updates, be informed when support or opportunities are available, and have your concerns recorded for follow up.</p>
+                         </div>
+                         <div className="pt-2 border-t border-slate-200">
+                            <p className="text-[10px] text-slate-400 italic">"Your information is used only for constituency work and is not sold or published."</p>
+                         </div>
                       </div>
                     )}
 
@@ -174,7 +185,7 @@ export function ConstituencyConnect() {
                         <div className="space-y-3">
                           <input type="text" placeholder="Full Name" className={inputCls} />
                           
-                          {/* PHONE AND DATE OF BIRTH GRID */}
+                          {/* PHONE AND DOB GRID */}
                           <div className="grid grid-cols-2 gap-3">
                             <input type="tel" placeholder="Phone Number" className={inputCls} />
                             <input type="date" className={`${inputCls} text-slate-500 uppercase text-[10px] font-bold`} />
