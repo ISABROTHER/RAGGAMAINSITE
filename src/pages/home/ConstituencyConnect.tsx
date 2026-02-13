@@ -114,6 +114,7 @@ export function ConstituencyConnect() {
   const [view, setView] = useState<ViewState>("search");
   const [searchQuery, setSearchQuery] = useState("");
   const [showInfo, setShowInfo] = useState(false);
+  const [activeTab, setActiveTab] = useState<"check" | "register" | null>(null);
 
   const reset = () => {
     setQuery("");
@@ -121,6 +122,7 @@ export function ConstituencyConnect() {
     setNotFound(false);
     setView("search");
     setSearchQuery("");
+    setActiveTab(null);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -170,7 +172,7 @@ export function ConstituencyConnect() {
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-[420px]">
+          <div className="w-full max-w-[500px]">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
               <AnimatePresence mode="wait">
                 {view === "searching" && (
@@ -191,14 +193,12 @@ export function ConstituencyConnect() {
                           )}
                         </div>
                         <div>
-                          {/* DYNAMIC TITLE: Changes based on showInfo state */}
                           <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">
-                            {showInfo ? "Why register your details" : "Database Access"}
+                            {showInfo ? "Why register your details" : "Constituent Access"}
                           </p>
                         </div>
                       </div>
                       
-                      {/* INFO BUTTON WITH EXPLICIT TEXT */}
                       <button 
                         onClick={() => setShowInfo(!showInfo)}
                         className={`px-3 py-2 rounded-lg transition-all border flex items-center gap-1.5 ${
@@ -223,6 +223,7 @@ export function ConstituencyConnect() {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden mb-2"
                         >
+                          {/* INFO CONTENT */}
                           <div className="bg-slate-50 rounded-xl p-4 space-y-4 text-slate-800 text-[11px] leading-relaxed border border-slate-100">
                             <div>
                               <h4 className="font-bold text-green-700 uppercase text-[10px] mb-1">Purpose</h4>
@@ -248,7 +249,7 @@ export function ConstituencyConnect() {
                                 onClick={() => setShowInfo(false)}
                                 className="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-lg text-[10px] uppercase mt-2 transition-colors"
                             >
-                                Back to Search
+                                Back to Access
                             </button>
                           </div>
                         </motion.div>
@@ -260,26 +261,64 @@ export function ConstituencyConnect() {
                           exit={{ opacity: 0 }}
                           className="space-y-4"
                         >
-                          <form onSubmit={handleSearch}>
-                            <div className="relative">
-                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                              <input
-                                type="text"
-                                placeholder="Enter name or phone number..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                className={`${inputCls} !pl-9`}
-                              />
-                            </div>
-                            <button
-                              type="submit"
-                              disabled={!query.trim()}
-                              className="mt-3 w-full bg-slate-900 text-white font-bold py-2.5 rounded-lg transition-all text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
-                            >
-                              <Search className="w-3.5 h-3.5" />
-                              Check Status
-                            </button>
-                          </form>
+                          {/* --- THE TWO SIDE-BY-SIDE BUTTONS (The "Split Search Bar") --- */}
+                          {!activeTab && (
+                              <div className="grid grid-cols-2 gap-3 h-14">
+                                <button 
+                                    onClick={() => setActiveTab('check')}
+                                    className="h-full flex flex-col items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-slate-700 transition-all active:scale-[0.98] group"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Search className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
+                                        <span className="text-xs font-black uppercase tracking-wider">Check Database</span>
+                                    </div>
+                                    <span className="text-[9px] font-medium text-slate-400 mt-0.5">Verify your status</span>
+                                </button>
+                                
+                                <button 
+                                    onClick={() => { setActiveTab('register'); setView('register'); }}
+                                    className="h-full flex flex-col items-center justify-center bg-green-600 hover:bg-green-700 border border-green-600 rounded-xl text-white transition-all active:scale-[0.98] shadow-lg shadow-green-600/20"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <UserPlus className="w-4 h-4" />
+                                        <span className="text-xs font-black uppercase tracking-wider">Register Now</span>
+                                    </div>
+                                    <span className="text-[9px] font-medium text-green-100 mt-0.5">New Constituent</span>
+                                </button>
+                              </div>
+                          )}
+
+                          {/* SEARCH INPUT - Visible only when "Check" is clicked */}
+                          {activeTab === 'check' && (
+                              <div className="relative">
+                                  <button 
+                                    onClick={() => setActiveTab(null)}
+                                    className="absolute -top-8 right-0 text-[10px] text-slate-400 hover:text-slate-600 uppercase font-bold flex items-center gap-1"
+                                  >
+                                    Cancel <X className="w-3 h-3" />
+                                  </button>
+                                  <form onSubmit={handleSearch}>
+                                    <div className="relative">
+                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                      <input
+                                        type="text"
+                                        placeholder="Enter name or phone number..."
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                        className={`${inputCls} !pl-9`}
+                                        autoFocus
+                                      />
+                                    </div>
+                                    <button
+                                      type="submit"
+                                      disabled={!query.trim()}
+                                      className="mt-3 w-full bg-slate-900 text-white font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
+                                    >
+                                      Check Status
+                                    </button>
+                                  </form>
+                              </div>
+                          )}
 
                           <AnimatePresence mode="wait">
                             {found && (
@@ -335,7 +374,7 @@ export function ConstituencyConnect() {
                       <input type="tel" placeholder="Phone (WhatsApp)" className={inputCls} />
                       <input type="text" placeholder="Residential Community" className={inputCls} />
                       <input type="text" placeholder="Profession or Skill" className={inputCls} />
-                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-bold py-2.5 rounded-lg text-xs uppercase mt-1">
+                      <button onClick={() => setView("verified")} className="w-full bg-green-700 text-white font-bold py-3 rounded-xl text-xs uppercase mt-2 shadow-lg">
                         Submit Information
                       </button>
                     </div>
