@@ -63,32 +63,69 @@ export function Support() {
   const featured = projects.find(p => p.is_featured);
   const others = projects.filter(p => !p.is_featured);
 
+  // Animation variants for the title letters
+  const titleContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.2 }
+    }
+  };
+
+  const titleLetter = {
+    hidden: { y: 50, opacity: 0, rotateX: -90 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      rotateX: 0,
+      transition: { type: "spring", stiffness: 100, damping: 10 }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 pt-20 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
           <div className="text-center pt-10 pb-16 sm:pb-20">
-            {/* Standard Heading */}
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight uppercase mb-8">
-              Ragga Foundation
-            </h1>
             
-            {/* Standard Priorities-style Explanation Box */}
-            <div className="max-w-3xl mx-auto bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-sm mb-10">
-              <p className="text-base sm:text-xl text-slate-700 leading-relaxed font-medium">
-                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
-              </p>
-            </div>
+            {/* 1. Innovative Animated Title */}
+            <motion.div 
+              variants={titleContainer}
+              initial="hidden"
+              animate="visible"
+              className="mb-4"
+            >
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
+                {Array.from("Ragga Foundation").map((letter, i) => (
+                  <motion.span key={i} variants={titleLetter} className="inline-block origin-bottom">
+                    {letter === " " ? "\u00A0" : letter}
+                  </motion.span>
+                ))}
+              </h1>
+            </motion.div>
 
-            {/* Slogan */}
-            <div className="flex items-center justify-center gap-4">
+            {/* 2. Slogan (Now under title) */}
+            <div className="flex items-center justify-center gap-4 mb-10">
               <div className="h-px w-12 bg-slate-200" />
-              <p className="text-sm sm:text-base font-bold uppercase tracking-[0.25em] text-green-700">
+              <p className="text-base sm:text-lg font-bold uppercase tracking-[0.35em] text-green-700">
                 Obiara Ka Ho
               </p>
               <div className="h-px w-12 bg-slate-200" />
             </div>
+            
+            {/* 3. Description Box (Now at the bottom, Red Background, White Big Text) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 1, duration: 0.5, type: "spring" }}
+              className="max-w-4xl mx-auto bg-red-600 rounded-3xl p-8 sm:p-12 shadow-xl shadow-red-600/20 transform rotate-1 hover:rotate-0 transition-transform duration-300"
+            >
+              <p className="text-xl sm:text-3xl font-bold text-white leading-normal sm:leading-relaxed text-center">
+                The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
+              </p>
+            </motion.div>
+
           </div>
         </AnimatedSection>
 
