@@ -30,8 +30,17 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Robust Scroll To Top on Route Change
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Force immediate scroll to top without animation
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    
+    // Secondary check to ensure it sticks after layout updates
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   const getCurrentPage = () => {
