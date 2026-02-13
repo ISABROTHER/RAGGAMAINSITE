@@ -354,7 +354,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
           onClick={() => setShowShare(false)}
         >
           <motion.div
@@ -362,28 +362,24 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
             animate={{ y: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-white rounded-t-3xl p-6 pb-10"
+            className="w-full max-w-sm bg-white rounded-t-2xl px-5 pt-4 pb-6"
           >
-            {/* Handle */}
-            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
+            <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-4" />
 
-            <h3 className="text-sm font-bold text-slate-900 text-center mb-6 uppercase tracking-wider">
-              Share this project
-            </h3>
+            <p className="text-xs font-bold text-slate-900 text-center mb-4 uppercase tracking-wider">Share</p>
 
-            {/* Share Options */}
-            <div className="flex justify-center gap-6 mb-8">
+            <div className="flex justify-center gap-5 mb-5">
               <button
                 onClick={() => {
                   window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
                   setShowShare(false);
                 }}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-1.5"
               >
-                <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
-                  <MessageCircle className="w-6 h-6 text-white" />
+                <div className="w-11 h-11 rounded-full bg-green-500 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-[10px] font-semibold text-slate-500">WhatsApp</span>
+                <span className="text-[9px] font-semibold text-slate-500">WhatsApp</span>
               </button>
 
               <button
@@ -391,12 +387,12 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                   window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
                   setShowShare(false);
                 }}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-1.5"
               >
-                <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center">
-                  <Twitter className="w-6 h-6 text-white" />
+                <div className="w-11 h-11 rounded-full bg-slate-900 flex items-center justify-center">
+                  <Twitter className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-[10px] font-semibold text-slate-500">X</span>
+                <span className="text-[9px] font-semibold text-slate-500">X</span>
               </button>
 
               <button
@@ -404,29 +400,28 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                   window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
                   setShowShare(false);
                 }}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-1.5"
               >
-                <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">f</span>
+                <div className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">f</span>
                 </div>
-                <span className="text-[10px] font-semibold text-slate-500">Facebook</span>
+                <span className="text-[9px] font-semibold text-slate-500">Facebook</span>
               </button>
 
               <button
                 onClick={handleCopy}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-1.5"
               >
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${copied ? 'bg-green-500' : 'bg-slate-200'} transition-colors`}>
-                  {copied ? <Check className="w-6 h-6 text-white" /> : <Copy className="w-6 h-6 text-slate-600" />}
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center ${copied ? 'bg-green-500' : 'bg-slate-200'} transition-colors`}>
+                  {copied ? <Check className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5 text-slate-600" />}
                 </div>
-                <span className="text-[10px] font-semibold text-slate-500">{copied ? 'Copied!' : 'Copy Link'}</span>
+                <span className="text-[9px] font-semibold text-slate-500">{copied ? 'Copied!' : 'Copy'}</span>
               </button>
             </div>
 
-            {/* Cancel */}
             <button
               onClick={() => setShowShare(false)}
-              className="w-full py-3.5 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-slate-200 transition-colors"
+              className="w-full py-2.5 bg-slate-100 text-slate-500 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 transition-colors"
             >
               Cancel
             </button>
