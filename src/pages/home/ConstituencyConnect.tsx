@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  UserPlus, ArrowLeft, ShieldCheck, Home, Globe, MessageSquare, Phone, Server, Search
+  UserPlus, ArrowLeft, ShieldCheck, Home, Globe, MessageSquare, Phone, Server, Search, AlertCircle, CheckCircle2
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -60,17 +60,39 @@ function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
 export function ConstituencyConnect() {
   const [view, setView] = useState<ViewState>("search");
   const [showInfo, setShowInfo] = useState(false);
+  
+  // Registration Flow State
   const [regStep, setRegStep] = useState(1);
   const [userType, setUserType] = useState<ConstituentType | null>(null);
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResult, setSearchResult] = useState<"found" | "not_found" | null>(null);
 
   const reset = () => {
     setView("search");
     setRegStep(1);
     setUserType(null);
+    setSearchQuery("");
+    setSearchResult(null);
   };
 
   const handleStartSearch = () => {
     setView("searching");
+  };
+
+  const handleRecordSearch = () => {
+    if (!searchQuery.trim()) return;
+    
+    // Simulate Search Logic
+    // For demo: "test" returns found, anything else returns not found
+    setTimeout(() => {
+      if (searchQuery.toLowerCase() === "test") {
+        setSearchResult("found");
+      } else {
+        setSearchResult("not_found");
+      }
+    }, 500);
   };
 
   return (
@@ -159,22 +181,73 @@ export function ConstituencyConnect() {
                   </motion.div>
                 )}
 
-                {/* 3. DATABASE SEARCH RESULTS */}
+                {/* 3. DATABASE SEARCH RESULTS (FUNCTIONAL) */}
                 {view === "results" && (
                   <motion.div key="results" {...anim} className="p-8 text-center space-y-4">
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-                      <Search className="w-8 h-8 text-slate-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <p className="text-sm font-bold text-slate-900 uppercase">Search the Records</p>
-                      <input type="text" placeholder="Enter Voter ID or Phone Number" className={inputCls} />
-                      <button className="w-full bg-green-600 text-white font-black py-3 rounded-xl text-xs uppercase shadow-lg">Find Record</button>
-                    </div>
-                    <button onClick={reset} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancel Search</button>
+                    {searchResult === null && (
+                      <>
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                          <Search className="w-8 h-8 text-slate-400" />
+                        </div>
+                        <div className="space-y-3">
+                          <p className="text-sm font-bold text-slate-900 uppercase">Search the Records</p>
+                          <input 
+                            type="text" 
+                            placeholder="Enter Voter ID or Phone Number" 
+                            className={inputCls} 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                          <button 
+                            onClick={handleRecordSearch}
+                            className="w-full bg-green-600 text-white font-black py-3 rounded-xl text-xs uppercase shadow-lg hover:bg-green-700 transition-colors"
+                          >
+                            Find Record
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* RESULT: NOT FOUND */}
+                    {searchResult === "not_found" && (
+                      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-4">
+                         <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto">
+                            <AlertCircle className="w-8 h-8 text-red-500" />
+                         </div>
+                         <div>
+                            <h3 className="text-lg font-black text-slate-900 uppercase">Record Not Found</h3>
+                            <p className="text-xs text-slate-500 mt-2">We could not find your details in the active database. Please register now to be included.</p>
+                         </div>
+                         <button onClick={() => { setSearchResult(null); setView('register'); }} className="w-full bg-green-600 text-white font-black py-3 rounded-xl text-xs uppercase shadow-lg hover:bg-green-700 transition-colors">
+                            Register Now
+                         </button>
+                         <button onClick={() => setSearchResult(null)} className="text-[10px] font-bold text-slate-400 uppercase hover:text-slate-600">Try Again</button>
+                      </motion.div>
+                    )}
+
+                    {/* RESULT: FOUND (Demo) */}
+                    {searchResult === "found" && (
+                      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-4">
+                         <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle2 className="w-8 h-8 text-green-600" />
+                         </div>
+                         <div>
+                            <h3 className="text-lg font-black text-slate-900 uppercase">Verified Member</h3>
+                            <p className="text-xs text-slate-500 mt-2">Your record is active and up to date.</p>
+                         </div>
+                         <button onClick={reset} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase hover:bg-slate-800 transition-colors">
+                            Return Home
+                         </button>
+                      </motion.div>
+                    )}
+
+                    {searchResult === null && (
+                      <button onClick={reset} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancel Search</button>
+                    )}
                   </motion.div>
                 )}
 
-                {/* 4. REGISTRATION FLOW - RESTORED FULL 3 STEPS */}
+                {/* 4. REGISTRATION FLOW - 3 STEPS */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-6 text-left">
                     <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-6"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
@@ -218,7 +291,7 @@ export function ConstituencyConnect() {
                       </div>
                     )}
 
-                    {/* STEP 2: MINIMUM DETAILS (RESTORED) */}
+                    {/* STEP 2: MINIMUM DETAILS */}
                     {regStep === 2 && (
                       <div className="space-y-4">
                         <div className="bg-green-50 p-2 rounded text-center mb-4">
@@ -273,7 +346,7 @@ export function ConstituencyConnect() {
                       </div>
                     )}
 
-                    {/* STEP 3: VERIFY & SUBMIT (RESTORED) */}
+                    {/* STEP 3: VERIFY & SUBMIT */}
                     {regStep === 3 && (
                       <div className="text-center space-y-6 py-4">
                         <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
@@ -296,7 +369,7 @@ export function ConstituencyConnect() {
                   </motion.div>
                 )}
 
-                {/* 5. VERIFIED SUCCESS (RESTORED) */}
+                {/* 5. VERIFIED SUCCESS */}
                 {view === "verified" && (
                   <motion.div key="verified" {...anim} className="p-8 text-center space-y-4">
                     <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-green-600/20">
