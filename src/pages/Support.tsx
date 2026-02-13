@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter } from 'lucide-react';
+import { Heart, BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -309,7 +309,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                 boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
               }}
               onClick={onContribute}
-              className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-green-500 transition-colors"
+              className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-green-500 transition-colors"
             >
               <motion.span
                 animate={{ scale: [1, 1.15, 1] }}
@@ -320,10 +320,27 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               Contribute
             </motion.button>
             <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                const url = `${window.location.origin}/support?project=${project.slug}`;
+                const text = `Hi! I'd love for you to support "${project.title}" on Ragga Foundation. Every contribution counts! 🙏`;
+                if (navigator.share) {
+                  navigator.share({ title: `Invite: ${project.title}`, text, url }).catch(() => {});
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                }
+              }}
+              className="flex-1 py-3 bg-slate-900 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-colors"
+            >
+              <Send className="w-3.5 h-3.5" />
+              Invite
+            </motion.button>
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowShare(true)}
-              className="w-11 h-11 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
+              className="w-10 h-10 flex-shrink-0 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors"
             >
               <Share2 className="w-4 h-4" />
             </motion.button>
@@ -418,4 +435,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       )}
     </>
   );
-}  
+}
