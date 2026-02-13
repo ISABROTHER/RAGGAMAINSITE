@@ -87,14 +87,15 @@ export function Support() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          <div className="text-center pt-10 pb-16 sm:pb-20">
+          {/* Reduced pt-10 to pt-4 on mobile to close gap with header */}
+          <div className="text-center pt-4 sm:pt-16 pb-12 sm:pb-20">
             
             {/* 1. Innovative Animated Title */}
             <motion.div 
               variants={titleContainer}
               initial="hidden"
               animate="visible"
-              className="mb-4"
+              className="mb-1" /* Reduced margin to bring slogan closer */
             >
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
                 {Array.from("Ragga Foundation").map((letter, i) => (
@@ -105,23 +106,23 @@ export function Support() {
               </h1>
             </motion.div>
 
-            {/* 2. Slogan (Now under title) */}
+            {/* 2. Slogan (Now closer to title) */}
             <div className="flex items-center justify-center gap-4 mb-10">
-              <div className="h-px w-12 bg-slate-200" />
+              <div className="h-px w-8 sm:w-12 bg-slate-200" />
               <p className="text-base sm:text-lg font-bold uppercase tracking-[0.35em] text-green-700">
                 Obiara Ka Ho
               </p>
-              <div className="h-px w-12 bg-slate-200" />
+              <div className="h-px w-8 sm:w-12 bg-slate-200" />
             </div>
             
-            {/* 3. Description Box (Now at the bottom, Red Background, White Big Text) */}
+            {/* 3. Description Box (Red Background, White Big Text) */}
             <motion.div 
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 1, duration: 0.5, type: "spring" }}
-              className="max-w-4xl mx-auto bg-red-600 rounded-3xl p-8 sm:p-12 shadow-xl shadow-red-600/20 transform rotate-1 hover:rotate-0 transition-transform duration-300"
+              className="max-w-4xl mx-auto bg-red-600 rounded-3xl p-6 sm:p-12 shadow-xl shadow-red-600/20 transform rotate-1 hover:rotate-0 transition-transform duration-300"
             >
-              <p className="text-xl sm:text-3xl font-bold text-white leading-normal sm:leading-relaxed text-center">
+              <p className="text-xl sm:text-3xl font-bold text-white leading-snug sm:leading-relaxed text-center">
                 The Ragga Foundation is the social responsibility arm of my office as Member of Parliament for Cape Coast North. Through the Foundation, we work with individuals, businesses, and partners to support our communities, carry out practical projects, and improve lives across the constituency.
               </p>
             </motion.div>
