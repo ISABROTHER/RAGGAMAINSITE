@@ -1,4 +1,3 @@
-// src/components/Header.tsx
 import { useState, useEffect } from 'react';
 import {
   Menu, X, Home, User, Users, HardHat, Award,
@@ -6,6 +5,7 @@ import {
   LayoutDashboard, LogIn, ChevronRight, Vote,
   UserCircle, Heart, LogOut
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
@@ -77,22 +77,18 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     onNavigate(pageId);
   };
 
+  const menuVariants = {
+    closed: { scale: 0.95, opacity: 0, y: -10, transition: { duration: 0.2 } },
+    open: { scale: 1, opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+  };
+
+  const itemVariants = {
+    closed: { opacity: 0, x: -10 },
+    open: { opacity: 1, x: 0 }
+  };
+
   return (
     <div className="relative w-full">
-      {/* Internal styles for animations to avoid external dependencies */}
-      <style>{`
-        @keyframes menuSlideIn {
-          from { opacity: 0; transform: translateY(-10px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-menu-slide { animation: menuSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
-      `}</style>
-
       <header
         className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xl"
         style={{ height: `${headerHeight}px` }}
@@ -149,107 +145,122 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
 
             {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
-              {!mobileMenuOpen && (
-                <button
-                  onClick={() => setMobileMenuOpen(true)}
-                  className="w-12 h-12 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-2 border-white transition-transform active:scale-90"
-                >
-                  <Menu className="w-6 h-6" strokeWidth={3} />
-                </button>
-              )}
+              <AnimatePresence>
+                {!mobileMenuOpen && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="w-12 h-12 rounded-full flex items-center justify-center bg-[#CE1126] text-white shadow-xl border-2 border-white"
+                  >
+                    <Menu className="w-6 h-6" strokeWidth={3} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
           {/* Mobile Menu Overlay & Content */}
-          {mobileMenuOpen && (
-            <>
-              {/* 1. Invisible Click Overlay */}
-              <div
-                onClick={() => setMobileMenuOpen(false)}
-                className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px] animate-fade-in"
-              />
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <>
+                {/* 1. Invisible Click Overlay */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="fixed inset-0 z-[60] bg-black/10 backdrop-blur-[2px]"
+                />
 
-              {/* 2. The Frozen Menu Card */}
-              <div
-                className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right animate-menu-slide"
-              >
-                <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
-                  
-                  {/* Compact Header: Label + Close Button */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
-                      <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
-                          Menu
-                      </span>
-                      <button 
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
-                      >
-                          <X className="w-4 h-4" strokeWidth={3} />
-                      </button>
-                  </div>
-
-                  {/* Scrollable Nav Items */}
-                  <div className="overflow-y-auto py-2 px-2 space-y-1">
-                    {mobileNavItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = currentPage === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => handleNavClick(item.id)}
-                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all active:scale-95 ${
-                            isActive
-                              ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
-                              : 'text-white hover:bg-white/10 font-medium'
-                          }`}
+                {/* 2. The Frozen Menu Card */}
+                <motion.div
+                  initial="closed"
+                  animate="open"
+                  exit="closed"
+                  variants={menuVariants}
+                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
+                >
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
+                    
+                    {/* Compact Header: Label + Close Button */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
+                            Menu
+                        </span>
+                        <button 
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
                         >
-                          <div className="flex items-center gap-3">
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
-                            <span className="text-xs">{item.label}</span>
-                          </div>
-                          {isActive && <ChevronRight className="w-3 h-3" />}
+                            <X className="w-4 h-4" strokeWidth={3} />
                         </button>
-                      );
-                    })}
-                  </div>
+                    </div>
 
-                  {/* Compact Footer: Sign In / Dashboard */}
-                  <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
-                      <div>
-                          {user ? (
-                          <div className="grid grid-cols-[1fr_auto] gap-2">
-                              <button
-                              onClick={() => handleNavClick('dashboard')}
-                              className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95"
-                              >
-                                  <LayoutDashboard className="w-3.5 h-3.5" />
-                                  <span className="font-black text-xs">DASHBOARD</span>
-                              </button>
-                              <button
-                              onClick={async () => { await signOut(); handleNavClick('home'); }}
-                              className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors active:scale-95"
-                              >
-                                  <LogOut className="w-4 h-4" />
-                              </button>
-                          </div>
-                          ) : (
-                          <button
-                              onClick={() => handleNavClick('login')}
-                              className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95"
+                    {/* Scrollable Nav Items */}
+                    <div className="overflow-y-auto py-2 px-2 space-y-1">
+                      {mobileNavItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = currentPage === item.id;
+                        return (
+                          <motion.button
+                            key={item.id}
+                            variants={itemVariants}
+                            onClick={() => handleNavClick(item.id)}
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
+                              isActive
+                                ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
+                                : 'text-white hover:bg-white/10 font-medium'
+                            }`}
                           >
-                              <LogIn className="w-4 h-4" />
-                              <span className="font-black text-xs">SIGN IN</span>
-                          </button>
-                          )}
-                      </div>
-                  </div>
+                            <div className="flex items-center gap-3">
+                              <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
+                              <span className="text-xs">{item.label}</span>
+                            </div>
+                            {isActive && <ChevronRight className="w-3 h-3" />}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
 
-                </div>
-              </div>
-            </>
-          )}
+                    {/* Compact Footer: Sign In / Dashboard */}
+                    <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
+                        <motion.div variants={itemVariants}>
+                            {user ? (
+                            <div className="grid grid-cols-[1fr_auto] gap-2">
+                                <button
+                                onClick={() => handleNavClick('dashboard')}
+                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                >
+                                    <LayoutDashboard className="w-3.5 h-3.5" />
+                                    <span className="font-black text-xs">DASHBOARD</span>
+                                </button>
+                                <button
+                                onClick={async () => { await signOut(); handleNavClick('home'); }}
+                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </div>
+                            ) : (
+                            <button
+                                onClick={() => handleNavClick('login')}
+                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                            >
+                                <LogIn className="w-4 h-4" />
+                                <span className="font-black text-xs">SIGN IN</span>
+                            </button>
+                            )}
+                        </motion.div>
+                    </div>
+
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </nav>
       </header>
     </div>
   );
-} 
+}
