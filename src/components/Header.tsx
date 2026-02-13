@@ -264,12 +264,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             </div>
                         ) : (
                             <div className="relative z-10 text-center">
-                                <div className="mb-3 flex justify-center">
-                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                        <UserCircle className="w-6 h-6 text-white" />
-                                    </div>
-                                </div>
-                                <h3 className="text-white font-bold text-sm mb-3">Welcome to Ragga Main Site</h3>
+                                {/* REMOVED Welcome text and Icon container */}
                                 <button
                                     onClick={() => handleNavClick('login')}
                                     className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform group"
