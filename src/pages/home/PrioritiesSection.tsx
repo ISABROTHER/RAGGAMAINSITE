@@ -153,10 +153,10 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
             <span className="mt-3 h-1 w-16 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 motion-safe:transition-all motion-safe:duration-500 group-hover:w-32" />
           </div>
           
-          {/* FROSTED TEXT BOX FOR VISION STATEMENT */}
-          <div className="mt-8 inline-block max-w-4xl p-6 md:p-8 rounded-2xl bg-slate-50/80 backdrop-blur-md border border-slate-200/60 shadow-sm relative overflow-hidden">
+          {/* SOLID BLOCK COLOR BOX FOR VISION STATEMENT */}
+          <div className="mt-8 inline-block max-w-4xl p-6 md:p-8 rounded-2xl bg-slate-900 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-            <p className="text-base md:text-lg text-slate-700 leading-relaxed font-medium">
+            <p className="text-sm md:text-base text-white leading-relaxed font-medium">
               With the support of government and collaboration with the municipal assembly, I remain focused on building a constituency where opportunity is shared, education is accessible, and healthcare is a right, not a privilege.
             </p>
           </div>
