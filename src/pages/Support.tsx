@@ -404,4 +404,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       </div>
     </div>
   );
-}
+} 
