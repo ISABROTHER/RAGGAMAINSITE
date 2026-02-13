@@ -295,23 +295,26 @@ function ShareButtons({ slug, title, variant }: { slug: string; title: string; v
   );
 }
 
+const BOOK_PROJECT_IMAGE = 'https://i.imgur.com/4yctvPb.jpg';
+
 function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; onContribute: () => void }) {
+  const isBookProject = project.title.toLowerCase().includes('book') || project.title.toLowerCase().includes('obiara');
+  const displayImage = isBookProject ? BOOK_PROJECT_IMAGE : project.image_url;
+
   return (
     <div className="flutter-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
       <div className="relative h-56 overflow-hidden">
-        {project.image_url ? (
+        {displayImage ? (
           <img
-            src={project.image_url}
-            alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          />
-        ) : (
-          <img
-            src="https://i.imgur.com/4yctvPb.jpg"
+            src={displayImage}
             alt={project.title}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
+        ) : (
+          <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+            <BookOpen className="w-12 h-12 text-slate-200" />
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         <span className="absolute top-4 left-4 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-white/95 text-slate-900 rounded-full shadow-sm backdrop-blur-sm">
