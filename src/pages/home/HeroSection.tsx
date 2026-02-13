@@ -50,15 +50,21 @@ export function HeroSection() {
           key={idx}
           src={url}
           alt="Hon. Dr. Kwamena Minta Nyarku"
-          // FIXED: object-[center_20%] crops the top 20% on mobile
+          /**
+           * UPDATED: object-[center_20%] for mobile.
+           * This ensures the image starts its rendering focus 20% from its top edge,
+           * effectively reducing the visible top height as requested.
+           */
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out object-[center_20%] md:object-[center_-200px]"
           style={{ opacity: idx === currentIndex ? 1 : 0 }}
         />
       ))}
 
+      {/* Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
+      {/* Content Container */}
       <div className="absolute inset-0 flex flex-col justify-end pb-[12%] md:pb-[18%] pl-[5%] z-30">
         <div className="max-w-7xl w-full">
           <motion.div
@@ -93,6 +99,7 @@ export function HeroSection() {
               </motion.span>
             </h1>
 
+            {/* Typewriter Effect */}
             <div className="h-6 md:h-8 mb-2 overflow-hidden flex items-center">
               <p className="text-xs md:text-sm text-yellow-400 font-bold whitespace-nowrap truncate">
                 {displayedText}
@@ -104,6 +111,7 @@ export function HeroSection() {
               </p>
             </div>
 
+            {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 items-start">
               <Link
                 to="/issues"
@@ -122,6 +130,7 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* Image Pagination Indicators */}
       <div className="absolute bottom-28 right-4 md:right-8 flex flex-col gap-1.5">
         {HERO_IMAGES.map((_, idx) => (
           <button
