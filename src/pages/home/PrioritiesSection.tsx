@@ -174,13 +174,13 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                   <img src={priority.image} alt={priority.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 py-4 pr-4 text-left">
-                  <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2">{priority.title}</h4>
-                  {/* Updated Text: Bolder and Red Color */}
+                  <h4 className="text-base font-bold text-slate-900 leading-snug line-clamp-2 uppercase">{priority.title}</h4>
+                  {/* Updated Text: Bolder, Red Color, and Capitalized */}
                   <p className="text-[11px] font-black text-red-600 mt-1 uppercase tracking-wide">
-                    <Counter end={achievementCounts[priority.id]} /> initiatives delivered
+                    <Counter end={achievementCounts[priority.id]} /> INITIATIVES DELIVERED
                   </p>
                   <p className="text-xs text-slate-600 leading-snug mt-1 line-clamp-2">{priority.desc}</p>
-                  <span className="mt-2 inline-flex items-center text-xs font-semibold text-emerald-700 group">
+                  <span className="mt-2 inline-flex items-center text-xs font-semibold text-emerald-700 group uppercase">
                     View Details
                     <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -217,17 +217,17 @@ export function PrioritiesSection({ onNavigate }: PrioritiesSectionProps) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-transparent" />
                     <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 shadow-sm">
                       <Icon className={`w-4 h-4 ${priority.accentText}`} />
-                      <span className="text-xs font-bold text-slate-800">{priority.subtitle}</span>
+                      <span className="text-xs font-bold text-slate-800 uppercase">{priority.subtitle}</span>
                     </div>
                   </div>
 
-                  <h4 className="text-2xl font-extrabold text-slate-900 mb-2">{priority.title}</h4>
-                  {/* Updated Text: Bolder and Red Color */}
+                  <h4 className="text-2xl font-extrabold text-slate-900 mb-2 uppercase">{priority.title}</h4>
+                  {/* Updated Text: Bolder, Red Color, and Capitalized */}
                   <p className="text-sm font-black text-red-600 mb-3 uppercase tracking-wide">
-                    <Counter end={achievementCounts[priority.id]} /> initiatives delivered
+                    <Counter end={achievementCounts[priority.id]} /> INITIATIVES DELIVERED
                   </p>
                   <p className="text-slate-600 mb-6 leading-relaxed text-base flex-1">{priority.desc}</p>
-                  <button onClick={() => onNavigate("achievements")} className="font-bold inline-flex items-center text-base text-emerald-700 group-hover:underline decoration-2 underline-offset-4">
+                  <button onClick={() => onNavigate("achievements")} className="font-bold inline-flex items-center text-base text-emerald-700 group-hover:underline decoration-2 underline-offset-4 uppercase">
                     View Details 
                     <ArrowRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
                   </button>
