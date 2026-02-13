@@ -91,30 +91,57 @@ export function Support() {
           {/* Reduced pt-1 to pt-0 on mobile */}
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
-            {/* 1. Innovative Animated Title */}
+            {/* 1. Catchy Animated Title */}
             <motion.div 
               variants={titleContainer}
               initial="hidden"
               animate="visible"
-              className="mb-1"
+              className="mb-2"
             >
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase perspective-1000">
-                {Array.from("Ragga Foundation").map((letter, i) => (
-                  <motion.span key={i} variants={titleLetter} className="inline-block origin-bottom">
-                    {letter === " " ? "\u00A0" : letter}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase">
+                {Array.from("Ragga").map((letter, i) => (
+                  <motion.span
+                    key={`r-${i}`}
+                    variants={titleLetter}
+                    className="inline-block origin-bottom"
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+                <span>{"\u00A0"}</span>
+                {Array.from("Foundation").map((letter, i) => (
+                  <motion.span
+                    key={`f-${i}`}
+                    variants={titleLetter}
+                    className="inline-block origin-bottom text-green-700"
+                  >
+                    {letter}
                   </motion.span>
                 ))}
               </h1>
             </motion.div>
 
-            {/* 2. Slogan */}
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="h-px w-8 sm:w-12 bg-slate-200" />
-              <p className="text-base sm:text-lg font-bold uppercase tracking-[0.35em] text-green-700">
+            {/* Animated underline */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+              className="mx-auto w-24 sm:w-32 h-1 bg-gradient-to-r from-red-500 via-yellow-400 to-green-600 rounded-full origin-left mb-4"
+            />
+
+            {/* 2. Slogan — fades in after title */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5, duration: 0.5 }}
+              className="flex items-center justify-center gap-4 mb-4"
+            >
+              <div className="h-px w-8 sm:w-12 bg-slate-300" />
+              <p className="text-sm sm:text-base font-bold uppercase tracking-[0.35em] text-slate-500">
                 Obiara Ka Ho
               </p>
-              <div className="h-px w-8 sm:w-12 bg-slate-200" />
-            </div>
+              <div className="h-px w-8 sm:w-12 bg-slate-300" />
+            </motion.div>
             
             {/* 3. Description Box */}
             <motion.div 
