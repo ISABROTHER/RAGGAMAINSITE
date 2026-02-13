@@ -181,25 +181,26 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   animate="open"
                   exit="closed"
                   variants={menuVariants}
-                  className="fixed top-3 right-3 z-[70] w-[250px] origin-top-right"
+                  // Reduced width to 230px for a very compact look
+                  className="fixed top-3 right-3 z-[70] w-[230px] origin-top-right"
                 >
-                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/80 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[20px] overflow-hidden max-h-[85vh]">
+                  <div className="flex flex-col relative bg-gradient-to-b from-[#CE1126]/95 to-[#CE1126]/85 backdrop-blur-2xl shadow-2xl border border-white/20 ring-1 ring-white/10 rounded-[18px] overflow-hidden max-h-[85vh]">
                     
-                    {/* Compact Header: Label + Close Button */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
-                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-white/20 shrink-0 bg-black/5">
+                        <span className="text-white/90 text-[10px] font-black uppercase tracking-widest pl-1">
                             Menu
                         </span>
                         <button 
                             onClick={() => setMobileMenuOpen(false)}
-                            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+                            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors text-white border border-white/10"
                         >
-                            <X className="w-4 h-4" strokeWidth={3} />
+                            <X className="w-3.5 h-3.5" strokeWidth={3} />
                         </button>
                     </div>
 
-                    {/* Scrollable Nav Items */}
-                    <div className="overflow-y-auto py-2 px-2 space-y-1">
+                    {/* Nav Items with DIVIDERS */}
+                    <div className="overflow-y-auto">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = currentPage === item.id;
@@ -208,48 +209,50 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl w-full text-left transition-all ${
+                            // Added border-b border-white/10 for lines between items
+                            // Reduced padding to py-2 for compactness
+                            className={`flex items-center justify-between px-4 py-2 w-full text-left transition-all border-b border-white/10 last:border-0 ${
                               isActive
-                                ? 'bg-white text-[#CE1126] font-extrabold shadow-sm'
-                                : 'text-white hover:bg-white/10 font-medium'
+                                ? 'bg-white/10 text-white font-extrabold'
+                                : 'text-white hover:bg-white/5 font-medium'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <Icon className={`w-4 h-4 ${isActive ? 'text-[#CE1126]' : 'text-white/70'}`} />
-                              <span className="text-xs">{item.label}</span>
+                            <div className="flex items-center gap-2.5">
+                              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-white/70'}`} />
+                              <span className="text-[11px] uppercase tracking-wide">{item.label}</span>
                             </div>
-                            {isActive && <ChevronRight className="w-3 h-3" />}
+                            {isActive && <ChevronRight className="w-3 h-3 text-white" />}
                           </motion.button>
                         );
                       })}
                     </div>
 
-                    {/* Compact Footer: Sign In / Dashboard */}
-                    <div className="p-2 border-t border-white/10 bg-black/5 shrink-0">
+                    {/* Footer: Sign In / Dashboard */}
+                    <div className="border-t border-white/20 bg-black/10 shrink-0">
                         <motion.div variants={itemVariants}>
                             {user ? (
-                            <div className="grid grid-cols-[1fr_auto] gap-2">
+                            <div className="flex divide-x divide-white/20">
                                 <button
                                 onClick={() => handleNavClick('dashboard')}
-                                className="bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                className="flex-1 py-2.5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                                 >
                                     <LayoutDashboard className="w-3.5 h-3.5" />
-                                    <span className="font-black text-xs">DASHBOARD</span>
+                                    <span className="font-bold text-[10px] uppercase">Dashboard</span>
                                 </button>
                                 <button
                                 onClick={async () => { await signOut(); handleNavClick('home'); }}
-                                className="bg-white/10 text-white rounded-xl py-2.5 px-3 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                className="px-3 py-2.5 flex items-center justify-center hover:bg-red-900/30 transition-colors text-white"
                                 >
-                                    <LogOut className="w-4 h-4" />
+                                    <LogOut className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                             ) : (
                             <button
                                 onClick={() => handleNavClick('login')}
-                                className="w-full bg-white text-[#CE1126] rounded-xl py-2.5 px-3 flex items-center justify-center gap-2 shadow-sm"
+                                className="w-full py-2.5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-white"
                             >
-                                <LogIn className="w-4 h-4" />
-                                <span className="font-black text-xs">SIGN IN</span>
+                                <LogIn className="w-3.5 h-3.5" />
+                                <span className="font-bold text-[10px] uppercase">Sign In</span>
                             </button>
                             )}
                         </motion.div>
