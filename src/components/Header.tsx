@@ -97,32 +97,20 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   const containerVariants = {
     closed: { 
       opacity: 0, 
-      scale: 0.9,
-      y: 20,
-      transition: { 
-        type: "spring",
-        stiffness: 400,
-        damping: 40,
-        staggerChildren: 0.05,
-        staggerDirection: -1
-      }
+      scale: 0.95,
+      y: 10,
+      transition: { staggerChildren: 0.05, staggerDirection: -1 }
     },
     open: { 
       opacity: 1, 
       scale: 1,
       y: 0,
-      transition: { 
-        type: "spring",
-        stiffness: 400,
-        damping: 30,
-        staggerChildren: 0.07,
-        delayChildren: 0.1
-      }
+      transition: { type: "spring", stiffness: 400, damping: 30, staggerChildren: 0.07, delayChildren: 0.1 }
     }
   };
 
   const itemVariants = {
-    closed: { opacity: 0, x: 20, transition: { duration: 0.2 } },
+    closed: { opacity: 0, x: 20 },
     open: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
 
@@ -219,10 +207,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 >
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
                     
-                    {/* AUTH ON TOP - NO LOGO/ICONS */}
+                    {/* AUTH ON TOP - CLEAN FUNCTIONAL */}
                     <motion.div 
                       variants={itemVariants}
-                      className="relative p-4 bg-black/10 border-b border-white/10 overflow-hidden"
+                      className="relative p-4 bg-black/10 border-b border-white/10"
                     >
                         {user ? (
                             <div className="relative z-10">
@@ -240,7 +228,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                                 </div>
                                 <button
                                     onClick={() => handleNavClick('dashboard')}
-                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg active:scale-[0.98] transition-transform"
                                 >
                                     Open Dashboard
                                 </button>
@@ -249,7 +237,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             <div className="relative z-10">
                                 <button
                                     onClick={() => handleNavClick('login')}
-                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg active:scale-[0.98] transition-transform"
                                 >
                                     Sign In / Register
                                 </button>
@@ -257,7 +245,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                         )}
                     </motion.div>
 
-                    {/* NAV LIST */}
+                    {/* NAV LIST - INNOVATIVE SELECTION COLOURS */}
                     <div className="overflow-y-auto max-h-[55vh] p-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
@@ -267,22 +255,35 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                             key={item.id}
                             variants={itemVariants}
                             onClick={() => handleNavClick(item.id)}
-                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded w-full text-left transition-all overflow-hidden ${
+                            className={`group relative flex items-center justify-between px-4 py-3.5 rounded w-full text-left transition-all duration-300 ${
                               isActive
-                                ? 'bg-white/10 text-white shadow-inner ring-1 ring-white/20'
+                                ? 'bg-white shadow-xl scale-[1.02]' 
                                 : 'text-white/80 hover:bg-white/5 hover:text-white'
                             }`}
                           >
                             <div className="flex items-center gap-3 relative z-10">
                               <Icon 
-                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-white/70'}`} 
-                                strokeWidth={isActive ? 2.5 : 2}
+                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${
+                                    isActive ? 'text-[#CE1126]' : 'text-white/70'
+                                }`} 
+                                strokeWidth={isActive ? 3 : 2}
                               />
-                              <span className={`text-xs uppercase tracking-wider ${isActive ? 'font-black' : 'font-medium'}`}>
+                              <span className={`text-[13px] uppercase tracking-wider ${
+                                  isActive ? 'font-black text-[#CE1126]' : 'font-medium'
+                              }`}>
                                 {item.label}
                               </span>
                             </div>
-                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />}
+                            
+                            {/* LIVE ANIMATION INDICATOR */}
+                            {isActive && (
+                                <motion.div 
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: [1, 1.5, 1] }}
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                    className="w-2 h-2 rounded-full bg-[#CE1126] shadow-[0_0_8px_rgba(206,17,38,0.6)]"
+                                />
+                            )}
                           </motion.button>
                         );
                       })}
