@@ -307,7 +307,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           />
         ) : (
           <img
-            src="https://scontent.fosl3-2.fna.fbcdn.net/v/t1.6435-9/138253762_2098309610305895_5565221555174407013_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=AGtmbo8vlNIQ7kNvwEru_Uw&_nc_oc=Adnumtfsi8QFO00Usqlr7iTBPiKujKRcbQtv2tGWVh419h3IDDAybdqytP84J-dlrjB-8WbQbiK6jo2Eswaj5b0t&_nc_zt=23&_nc_ht=scontent.fosl3-2.fna&_nc_gid=p3TGKh1y4mksGTHkksOW-A&oh=00_Aft7hXAr0WKSY-mTeKRA5YW2af_rQLaC8K7DmRhjHM64YQ&oe=69B71443"
+            src="https://i.imgur.com/4yctvPb.jpeg"
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
