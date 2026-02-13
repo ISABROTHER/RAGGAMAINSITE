@@ -1,7 +1,7 @@
 // src/pages/home/HeroSection.tsx
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const HERO_IMAGES = [
@@ -13,30 +13,15 @@ const HERO_IMAGES = [
   "https://i.imgur.com/hmaoKHa.jpeg",
 ];
 
-const TAGLINES = [
-  "Building a Better Cape Coast North",
-  "Every Voice Matters, Every Community Counts",
-  "Transparent. Accountable. Results-Driven.",
-  "Your MP, Working Tirelessly for You",
-];
-
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(
     () => Math.floor(Math.random() * HERO_IMAGES.length)
   );
-  const [taglineIndex, setTaglineIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 4500);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, 3500);
     return () => clearInterval(interval);
   }, []);
 
@@ -69,27 +54,17 @@ export function HeroSection() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-3xl">
-              Hon. Dr. Kwamena{" "}
-              <span className="text-green-400">Minta Nyarku</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-4 max-w-4xl">
+              Building a Better <br/>
+              Constituency Together
             </h1>
 
-            <div className="h-8 md:h-10 mb-8 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={taglineIndex}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate"
-                >
-                  {TAGLINES[taglineIndex]}
-                </motion.p>
-              </AnimatePresence>
+            <div className="mb-8">
+                <p className="text-xl md:text-3xl text-green-400 font-black tracking-wide uppercase">
+                  Obiara Ka Ho
+                </p>
             </div>
 
-            {/* Added items-start to prevent button stretching */}
             <div className="flex flex-wrap gap-3 items-start">
               <Link
                 to="/issues"
@@ -98,10 +73,10 @@ export function HeroSection() {
                 Report an Issue <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                to="/ongoing-projects"
+                to="/achievements"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap"
               >
-                Track Projects
+                Achievements <Trophy className="w-4 h-4" />
               </Link>
             </div>
           </motion.div>
@@ -123,4 +98,4 @@ export function HeroSection() {
       </div>
     </section>
   );
-} 
+}
