@@ -119,10 +119,10 @@ export function HeroSection() {
                 Report an Issue <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                to="/ongoing-projects"
+                to="/projects"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-sm rounded-xl border border-white/20 transition-all whitespace-nowrap"
               >
-                Track Projects
+                Ongoing Projects
               </Link>
             </div>
           </motion.div>
