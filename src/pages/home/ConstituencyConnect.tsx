@@ -100,12 +100,14 @@ export function ConstituencyConnect() {
                     )}
 
                     <div className="grid grid-cols-2 gap-3 h-[52px]">
+                      {/* ANIMATED CHECK DATABASE BUTTON */}
                       <button onClick={() => setActiveTab('check')} className="relative h-full flex items-center justify-center gap-2 rounded-xl overflow-hidden group">
                         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,#e2e8f0_0%,#22c55e_50%,#e2e8f0_100%)] animate-[spin_3s_linear_infinite]" />
                         <div className="absolute inset-[1.5px] bg-white rounded-[10px]" />
                         <span className="relative z-10 text-xs font-black uppercase text-slate-700">Check Database</span>
                       </button>
-                      <button onClick={() => setView('register')} className="h-full flex items-center justify-center gap-2 bg-green-600 rounded-xl text-white font-black text-xs uppercase shadow-lg">
+                      
+                      <button onClick={() => setView('register')} className="h-full flex items-center justify-center gap-2 bg-green-600 rounded-xl text-white font-black text-xs uppercase shadow-lg hover:bg-green-700 transition-colors">
                         <UserPlus className="w-3.5 h-3.5" /> Register Now
                       </button>
                     </div>
@@ -115,59 +117,44 @@ export function ConstituencyConnect() {
                 {/* --- REGISTRATION FLOW (3 STEPS) --- */}
                 {view === "register" && (
                   <motion.div key="register" {...anim} className="p-6 text-left">
-                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-4"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
+                    <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-6"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
                     
-                    {/* STEP 1: CHOOSE TYPE - COMPACT UI */}
+                    {/* STEP 1: CHOOSE TYPE (Reverted to Vertical List) */}
                     {regStep === 1 && (
-                      <div>
-                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-5 tracking-widest">Step 1: Who are you?</h3>
-                        
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                            {/* Card 1: Resident */}
-                            <button 
-                                onClick={() => { setUserType("Resident"); setRegStep(2); }} 
-                                className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-100 rounded-xl hover:bg-green-100 hover:border-green-300 hover:shadow-md transition-all group h-32"
-                            >
-                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                                    <Home className="w-5 h-5 text-green-600" />
-                                </div>
-                                <p className="text-[11px] font-black text-slate-900 uppercase text-center leading-tight">I live in<br/>Cape Coast North</p>
-                                <span className="text-[9px] text-green-700 font-medium mt-1">Local Resident</span>
-                            </button>
-
-                            {/* Card 2: Diaspora */}
-                            <button 
-                                onClick={() => { setUserType("Diaspora"); setRegStep(2); }} 
-                                className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-white hover:border-green-300 hover:shadow-md transition-all group h-32"
-                            >
-                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                                    <Globe className="w-5 h-5 text-slate-600 group-hover:text-green-600 transition-colors" />
-                                </div>
-                                <p className="text-[11px] font-black text-slate-900 uppercase text-center leading-tight">Constituent<br/>Living Outside</p>
-                                <span className="text-[9px] text-slate-500 font-medium mt-1">Diaspora / Working Away</span>
-                            </button>
-                        </div>
-
-                        {/* Card 3: Non-Constituent (Full Width) */}
-                        <button 
-                            onClick={() => { setUserType("Non-constituent"); setRegStep(2); }} 
-                            className="w-full flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-white hover:border-slate-300 transition-all group"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                    <MessageSquare className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-[11px] font-black text-slate-900 uppercase">Not a constituent</p>
-                                    <p className="text-[9px] text-slate-500">General Inquiry / Business</p>
-                                </div>
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
+                        <div className="grid grid-cols-1 gap-3">
+                          <button onClick={() => { setUserType("Resident"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <Home className="w-5 h-5 text-green-600" />
                             </div>
-                            <ArrowLeft className="w-4 h-4 text-slate-300 rotate-180 group-hover:text-slate-500 transition-colors" />
-                        </button>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">I live in Cape Coast North</p>
+                              <p className="text-[10px] text-slate-500">Local Resident</p>
+                            </div>
+                          </button>
 
-                        <p className="text-[9px] text-slate-400 text-center mt-5 pt-4 border-t border-slate-50">
-                            “Your information is used only for constituency work and is not sold or published.”
-                        </p>
+                          <button onClick={() => { setUserType("Diaspora"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <Globe className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">Constituent Living Outside</p>
+                              <p className="text-[10px] text-slate-500">Diaspora / Working Away</p>
+                            </div>
+                          </button>
+
+                          <button onClick={() => { setUserType("Non-constituent"); setRegStep(2); }} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-green-500 transition-all group active:scale-[0.98]">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <MessageSquare className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-xs font-black text-slate-900 uppercase">Not a constituent</p>
+                              <p className="text-[10px] text-slate-500">General Inquiry / Business</p>
+                            </div>
+                          </button>
+                        </div>
+                        <p className="text-[9px] text-slate-400 text-center italic mt-4">“Your information is used only for constituency work and is not sold or published.”</p>
                       </div>
                     )}
 
@@ -216,7 +203,7 @@ export function ConstituencyConnect() {
                           </select>
                         </div>
                         
-                        <button onClick={() => setRegStep(3)} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase mt-4">
+                        <button onClick={() => setRegStep(3)} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase mt-4 hover:bg-slate-800 transition-colors">
                           Continue to Verification
                         </button>
                       </div>
@@ -237,7 +224,7 @@ export function ConstituencyConnect() {
                         <div className="flex gap-2">
                            <input type="text" placeholder="Enter OTP" className={`${inputCls} text-center tracking-[1em] font-bold`} maxLength={4} />
                         </div>
-                        <button onClick={() => setView("verified")} className="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xs uppercase shadow-xl">
+                        <button onClick={() => setView("verified")} className="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xs uppercase shadow-xl hover:bg-green-700 transition-colors">
                           Confirm & Register
                         </button>
                       </div>
@@ -255,7 +242,7 @@ export function ConstituencyConnect() {
                       <h3 className="text-lg font-black text-slate-900 uppercase">Registration Success</h3>
                       <p className="text-xs text-slate-500 mt-2">Your record has been tagged as <strong>{userType}</strong>. You will receive updates shortly.</p>
                     </div>
-                    <button onClick={reset} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase">Return Home</button>
+                    <button onClick={reset} className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs uppercase hover:bg-slate-800 transition-colors">Return Home</button>
                   </motion.div>
                 )}
 
