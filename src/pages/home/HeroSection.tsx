@@ -13,16 +13,18 @@ const HERO_IMAGES = [
   "https://i.imgur.com/hmaoKHa.jpeg",
 ];
 
-const TAGLINES = [
-  "OBIARA KA HO (EVERYONE IS INVOLVED)",
-];
+// The text to type out
+const TAGLINE_TEXT = "OBIARA KA HO (EVERYONE IS INVOLVED)";
 
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(
     () => Math.floor(Math.random() * HERO_IMAGES.length)
   );
-  const [taglineIndex, setTaglineIndex] = useState(0);
+  
+  // State for typewriter effect
+  const [displayedText, setDisplayedText] = useState("");
 
+  // Image rotation effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
@@ -30,11 +32,19 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
+  // Typewriter effect logic
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, 3500);
-    return () => clearInterval(interval);
+    let index = 0;
+    const typingInterval = setInterval(() => {
+      if (index <= TAGLINE_TEXT.length) {
+        setDisplayedText(TAGLINE_TEXT.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 100); // Adjust speed here (lower number = faster typing)
+
+    return () => clearInterval(typingInterval);
   }, []);
 
   return (
@@ -66,19 +76,17 @@ export function HeroSection() {
               <span className="text-green-400">We Want Together</span>
             </h1>
 
-            <div className="h-8 md:h-10 mb-8 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={taglineIndex}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate"
-                >
-                  {TAGLINES[taglineIndex]}
-                </motion.p>
-              </AnimatePresence>
+            {/* Typewriter Animation Container */}
+            <div className="h-8 md:h-10 mb-8 overflow-hidden flex items-center">
+              <p className="text-base md:text-xl text-white/70 font-medium whitespace-nowrap truncate">
+                {displayedText}
+                {/* Blinking Cursor */}
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                  className="inline-block ml-1 w-0.5 h-5 bg-green-400 align-middle"
+                />
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-3 items-start">
