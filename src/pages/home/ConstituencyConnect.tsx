@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, UserCheck, UserPlus, X, ShieldCheck, MapPin, ArrowLeft,
   Fingerprint, CheckCircle2, Database, ScanSearch, ShieldAlert,
-  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone
+  Info, Server, Briefcase, GraduationCap, Home, Globe, MessageSquare, Phone, Calendar
 } from "lucide-react";
 
 const COMMUNITIES = [
@@ -23,7 +23,7 @@ const anim = {
   transition: { duration: 0.2 }
 };
 
-const inputCls = "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800";
+const inputCls = "w-full px-3.5 py-3 bg-white/80 border border-slate-200 rounded-lg focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-slate-800 placeholder:text-slate-400";
 
 // --- Loading Animation ---
 function SearchLoadingBar({ onComplete }: { onComplete: () => void }) {
@@ -69,9 +69,15 @@ export function ConstituencyConnect() {
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase mb-10">
-          My <span className="text-green-300">Constituents</span>
-        </h2>
+        {/* HEADER SECTION - TEXT RESTORED */}
+        <div className="mb-10">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">
+            My <span className="text-green-300">Constituents</span>
+          </h2>
+          <p className="mt-4 text-green-50 text-sm md:text-base leading-relaxed max-w-lg mx-auto font-medium opacity-90">
+            Are you a student, business person or resident in Cape Coast North? Join my database so we can support you when opportunities arise.
+          </p>
+        </div>
 
         <div className="flex flex-col items-center">
           <div className="w-full max-w-[460px]">
@@ -119,7 +125,7 @@ export function ConstituencyConnect() {
                   <motion.div key="register" {...anim} className="p-6 text-left">
                     <button onClick={reset} className="flex items-center gap-1 text-slate-400 text-[10px] uppercase font-black mb-6"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
                     
-                    {/* STEP 1: CHOOSE TYPE (Reverted to Vertical List) */}
+                    {/* STEP 1: CHOOSE TYPE */}
                     {regStep === 1 && (
                       <div className="space-y-4">
                         <h3 className="text-xs font-black text-slate-900 uppercase text-center mb-4 tracking-widest">Step 1: Who are you?</h3>
@@ -167,7 +173,18 @@ export function ConstituencyConnect() {
 
                         <div className="space-y-3">
                           <input type="text" placeholder="Full Name" className={inputCls} />
-                          <input type="tel" placeholder="Phone Number" className={inputCls} />
+                          
+                          {/* PHONE AND DOB GRID */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <input type="tel" placeholder="Phone Number" className={inputCls} />
+                            <div className="relative">
+                                <input 
+                                    type="date" 
+                                    className={`${inputCls} text-slate-500 uppercase text-[10px] font-bold`} 
+                                    placeholder="Date of Birth"
+                                />
+                            </div>
+                          </div>
                           
                           {userType === "Resident" && (
                             <select className={inputCls}>
