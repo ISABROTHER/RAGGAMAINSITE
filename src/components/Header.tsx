@@ -149,14 +149,15 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               <AnimatePresence>
                 {!mobileMenuOpen && (
                   <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
                     onClick={() => setMobileMenuOpen(true)}
-                    className="flex items-center gap-2 pl-4 pr-3 py-2 rounded-full bg-[#CE1126] text-white shadow-xl border-2 border-white hover:bg-red-700 transition-colors"
+                    // CHANGED: Rectangular shape, white background (Not Red), compact padding
+                    className="flex items-center gap-2 px-3 py-2 bg-white text-slate-900 border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors rounded-md"
                   >
-                    <span className="font-black text-xs tracking-widest leading-none mt-[1px]">MENU</span>
-                    <Menu className="w-5 h-5" strokeWidth={3} />
+                    <span className="font-bold text-xs uppercase tracking-wider">Menu</span>
+                    <Menu className="w-5 h-5" strokeWidth={2.5} />
                   </motion.button>
                 )}
               </AnimatePresence>
