@@ -1,7 +1,7 @@
 // src/pages/home/LatestUpdatesSection.tsx
 import React, { useState } from 'react';
-import { Calendar, ArrowRight, Image as ImageIcon, ChevronRight, ChevronLeft } from 'lucide-react';
-import { AnimatedSection } from "../../components/AnimatedSection";
+import { Calendar, ArrowRight, Image as ImageIcon, ChevronRight, ChevronLeft, Quote } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface UpdateItem {
   id: number;
@@ -33,158 +33,176 @@ export const UPDATES: UpdateItem[] = [
       "https://i.imgur.com/2PVKXWQ.jpeg"
     ],
     category: "Accountability",
-    content: null // Content removed as requested
+    content: null // Keeping it clean per your previous request
   }
 ];
 
-// --- Gallery Component ---
-const GalleryViewer = ({ images, title }: { images: string[], title: string }) => {
+const GalleryViewer = ({ images }: { images: string[] }) => {
   const [activeIdx, setActiveIdx] = useState(0);
 
   const nextImage = () => setActiveIdx((prev) => (prev + 1) % images.length);
   const prevImage = () => setActiveIdx((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      {/* Main Active Image Stage - PORTRAIT ASPECT RATIO (4:5) */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-slate-900 border border-slate-200 shadow-sm group">
+    <div className="relative w-full group">
+      {/* Main Feature Container */}
+      <div className="relative aspect-[16/10] md:aspect-[16/9] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl">
+        <AnimatePresence mode="wait">
+          <motion.img 
+            key={activeIdx}
+            src={images[activeIdx]} 
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
         
-        {/* 1. Blurred Background Layer (Fills the portrait space) */}
-        <div 
-            className="absolute inset-0 bg-cover bg-center blur-2xl opacity-60 scale-110"
-            style={{ backgroundImage: `url(${images[activeIdx]})` }}
-        />
-
-        {/* 2. Sharp Foreground Image (Full Display - No Cropping) */}
-        <img 
-          src={images[activeIdx]} 
-          alt={`View ${activeIdx + 1}`} 
-          className="relative w-full h-full object-contain z-10 transition-all duration-500"
-        />
-        
-        {/* Navigation Overlays */}
-        <div className="absolute inset-0 flex items-center justify-between p-2 z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-            <button 
-              onClick={(e) => { e.stopPropagation(); prevImage(); }}
-              className="p-3 rounded-full bg-black/30 text-white hover:bg-black/60 backdrop-blur-md transition-all shadow-lg"
-              aria-label="Previous image"
-            >
-                <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); nextImage(); }}
-              className="p-3 rounded-full bg-black/30 text-white hover:bg-black/60 backdrop-blur-md transition-all shadow-lg"
-              aria-label="Next image"
-            >
-                <ChevronRight className="w-6 h-6" />
-            </button>
-        </div>
-
-        {/* Counter Badge */}
-        <div className="absolute bottom-4 right-4 px-3 py-1.5 bg-black/60 text-white text-xs font-bold rounded-lg backdrop-blur-md flex items-center gap-2 pointer-events-none z-20">
-            <ImageIcon className="w-4 h-4" />
-            {activeIdx + 1} / {images.length}
+        {/* Glass Overlay Controls */}
+        <div className="absolute inset-x-4 bottom-4 flex items-center justify-between z-20">
+            <div className="flex gap-2">
+                <button onClick={prevImage} className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all">
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button onClick={nextImage} className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all">
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+            <div className="px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold tracking-widest uppercase">
+                {activeIdx + 1} <span className="text-white/40 mx-1">/</span> {images.length}
+            </div>
         </div>
       </div>
 
-      {/* Thumbnail Strip */}
-      <div className="w-full overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
-        <div className="flex gap-2 min-w-min">
-            {images.map((img, idx) => (
-                <button 
-                    key={idx}
-                    onClick={() => setActiveIdx(idx)}
-                    className={`relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeIdx === idx ? 'border-amber-500 shadow-md scale-105 z-10 ring-2 ring-amber-500/50' : 'border-transparent opacity-60 hover:opacity-100'}`}
-                >
-                    <img src={img} alt="thumb" className="w-full h-full object-cover" />
-                </button>
-            ))}
-        </div>
+      {/* Modern Thumbnail Strip */}
+      <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide px-1">
+        {images.slice(0, 6).map((img, idx) => (
+          <button 
+            key={idx}
+            onClick={() => setActiveIdx(idx)}
+            className={`relative flex-shrink-0 w-16 h-12 rounded-xl overflow-hidden transition-all duration-300 ${activeIdx === idx ? 'ring-2 ring-green-500 scale-105 shadow-lg' : 'opacity-40 hover:opacity-100'}`}
+          >
+            <img src={img} className="w-full h-full object-cover" />
+          </button>
+        ))}
+        {images.length > 6 && (
+            <div className="flex-shrink-0 w-16 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-400">
+                +{images.length - 6}
+            </div>
+        )}
       </div>
     </div>
   );
 };
 
-// --- Main Section Component ---
-interface LatestUpdatesSectionProps {
-  onNavigate: (page: string, param?: string) => void;
-}
-
 export function LatestUpdatesSection({ onNavigate }: LatestUpdatesSectionProps) {
-  const item = UPDATES[0]; // We only have one featured update
+  const item = UPDATES[0];
 
   return (
-    <section className="py-12 md:py-16 bg-white border-b border-slate-100 relative z-10">
+    <section className="py-20 md:py-28 bg-[#F8FAFC] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="flex items-end justify-between mb-8 border-b border-slate-100 pb-4 md:pb-6">
-            <div>
-                <h4 className="text-green-700 font-extrabold text-xs uppercase tracking-widest mb-2">
-                    Latest Activity
-                </h4>
-                <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-                    News & Updates
-                </h2>
-            </div>
-            <div className="hidden md:block">
-                 <button 
+        {/* Innovative Header Design */}
+        <div className="relative mb-16 md:mb-24">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="relative">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        className="flex items-center gap-3 mb-4"
+                    >
+                        <span className="w-12 h-[2px] bg-green-600 rounded-full" />
+                        <span className="text-green-700 font-black text-xs uppercase tracking-[0.3em]">The Ragga Report</span>
+                    </motion.div>
+                    <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-none">
+                        Latest <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">Milestones.</span>
+                    </h2>
+                </div>
+                <button 
                     onClick={() => onNavigate('read-story', String(item.id))}
-                    className="text-sm font-bold text-slate-500 hover:text-green-700 flex items-center gap-2 transition-colors"
+                    className="group flex items-center gap-4 text-slate-400 hover:text-green-700 transition-colors"
                 >
-                    View All Stories <ArrowRight className="w-4 h-4" />
+                    <span className="text-xs font-black uppercase tracking-widest">Explore Archive</span>
+                    <div className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-green-600 group-hover:bg-green-50 transition-all">
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                 </button>
             </div>
         </div>
 
-        {/* Main Content Card - Mobile First Order */}
-        <AnimatedSection>
-          <div className="bg-slate-50 rounded-2xl md:rounded-3xl p-5 md:p-8 lg:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40">
-              <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16">
-                  
-                  {/* MOBILE ORDER: 1 (Gallery Top) */}
-                  <div className="order-1 lg:order-2 relative w-full">
-                      <GalleryViewer images={item.images} title={item.title} />
-                  </div>
+        {/* Content Template: "The Feature Card" */}
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Left Column: Visuals (Col 1-7) */}
+            <div className="lg:col-span-7">
+                <GalleryViewer images={item.images} />
+            </div>
 
-                  {/* MOBILE ORDER: 2 (Text Bottom) */}
-                  <div className="order-2 lg:order-1 flex flex-col justify-center">
-                      <div className="flex items-center gap-3 mb-4 md:mb-6">
-                          <span className="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-extrabold uppercase tracking-wide rounded-full">
-                              {item.category}
-                          </span>
-                          <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wide">
-                              <Calendar className="w-3.5 h-3.5" />
-                              <span>{item.date}</span>
-                          </div>
-                      </div>
-
-                      <h3 className="text-2xl md:text-4xl font-bold text-slate-900 leading-tight mb-4 md:mb-6">
-                          {item.title}
-                      </h3>
-
-                      {item.content && (
-                        <div className="text-slate-600 leading-relaxed text-base md:text-lg mb-6 md:mb-8">
-                            {item.content}
+            {/* Right Column: Information (Col 8-12) */}
+            <div className="lg:col-span-5 lg:pl-8">
+                <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-slate-100 relative">
+                    <Quote className="absolute top-8 right-8 w-12 h-12 text-slate-50" />
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Published</span>
+                                <span className="text-sm font-bold text-slate-900">{item.date}</span>
+                            </div>
+                            <div className="w-px h-8 bg-slate-100" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Category</span>
+                                <span className="text-sm font-bold text-green-600">{item.category}</span>
+                            </div>
                         </div>
-                      )}
 
-                      <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                          <button 
-                              onClick={() => onNavigate('read-story', String(item.id))}
-                              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-800 hover:bg-green-900 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-green-900/20 w-full sm:w-auto"
-                          >
-                              Read Full Report
-                              <ArrowRight className="w-4 h-4" />
-                          </button>
-                      </div>
-                  </div>
+                        <h3 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight mb-8">
+                            {item.title}
+                        </h3>
 
-              </div>
-          </div>
-        </AnimatedSection>
+                        <div className="space-y-6 mb-10">
+                            <div className="flex items-start gap-4">
+                                <div className="w-2 h-2 rounded-full bg-green-500 mt-2 shrink-0" />
+                                <p className="text-slate-500 font-medium text-sm leading-relaxed italic">
+                                    "This report outlines the tangible results achieved through collective effort in Cape Coast North."
+                                </p>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => onNavigate('read-story', String(item.id))}
+                            className="w-full py-5 bg-slate-900 hover:bg-green-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] flex items-center justify-center gap-3 group"
+                        >
+                            Read Full Report
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Social Proof Mini-Card */}
+                <div className="mt-6 flex items-center justify-between p-6 bg-green-600 rounded-3xl text-white shadow-xl shadow-green-900/10">
+                    <div className="flex -space-x-3">
+                        {[1,2,3,4].map(i => (
+                            <div key={i} className="w-8 h-8 rounded-full border-2 border-green-600 bg-green-100 flex items-center justify-center overflow-hidden">
+                                <img src={`https://i.pravatar.cc/100?img=${i+10}`} />
+                            </div>
+                        ))}
+                        <div className="w-8 h-8 rounded-full border-2 border-green-600 bg-white/20 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold">
+                            +1k
+                        </div>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Join the discussion</span>
+                </div>
+            </div>
+        </div>
 
       </div>
     </section>
   );
+}
+
+interface LatestUpdatesSectionProps {
+  onNavigate: (page: string, param?: string) => void;
 }
