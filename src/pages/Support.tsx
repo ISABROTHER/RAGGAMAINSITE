@@ -296,30 +296,21 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           {/* Buttons */}
           <div className="flex items-center gap-2">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              animate={{
-                scale: [1, 1.03, 1],
-                boxShadow: [
-                  '0 0 0 0 rgba(220, 38, 38, 0.5), 0 4px 20px rgba(220, 38, 38, 0.3)',
-                  '0 0 0 6px rgba(220, 38, 38, 0), 0 4px 30px rgba(220, 38, 38, 0.5)',
-                  '0 0 0 0 rgba(220, 38, 38, 0.5), 0 4px 20px rgba(220, 38, 38, 0.3)',
-                ],
-              }}
-              transition={{
-                scale: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
-                boxShadow: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
-              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
               onClick={onContribute}
-              className="flex-1 py-4 bg-red-600 text-white rounded-xl font-black text-sm uppercase tracking-widest flex items-center justify-center relative overflow-hidden"
+              className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center relative overflow-hidden"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[shimmer_1.5s_infinite]" />
               <style>{`
-                @keyframes shimmer {
-                  0% { transform: translateX(-100%); }
-                  100% { transform: translateX(100%); }
+                @keyframes sweepLight {
+                  0% { left: -30%; }
+                  100% { left: 130%; }
                 }
               `}</style>
+              <span
+                className="absolute top-0 h-full w-[30%] bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                style={{ animation: 'sweepLight 2.5s ease-in-out infinite' }}
+              />
               <span className="relative z-10">Please Donate</span>
             </motion.button>
             <motion.button
