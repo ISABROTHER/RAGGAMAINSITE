@@ -94,10 +94,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     onNavigate(pageId);
   };
 
-  // --------------------------------------------------------------------------
-  // INNOVATIVE ANIMATION VARIANTS
-  // --------------------------------------------------------------------------
-  
   const containerVariants = {
     closed: { 
       opacity: 0, 
@@ -138,7 +134,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
           <div className="flex justify-between items-center h-full">
-            {/* Logo - Standard Position */}
+            {/* Logo */}
             <button
               onClick={() => handleNavClick('home')}
               className="flex items-center space-x-3 group transition-transform hover:scale-[1.01] focus:outline-none"
@@ -186,7 +182,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle - Rectangular Sharp Design */}
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden relative z-50">
               <button
                 onClick={(e) => {
@@ -201,13 +197,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </div>
           </div>
 
-          {/* --------------------------------------------------------------------------
-             INNOVATIVE MOBILE DROPDOWN - 500x MODE
-             -------------------------------------------------------------------------- */}
+          {/* INNOVATIVE MOBILE DROPDOWN */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <>
-                {/* 1. Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -215,7 +208,6 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   className="fixed inset-0 z-[60] bg-slate-900/20 backdrop-blur-[2px]"
                 />
                 
-                {/* 2. The Ruby Glass Card */}
                 <motion.div
                   ref={menuRef}
                   initial="closed"
@@ -227,25 +219,17 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 >
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
                     
-                    {/* --- INNOVATION: AUTH ON TOP --- */}
+                    {/* AUTH ON TOP - NO LOGO/ICONS */}
                     <motion.div 
                       variants={itemVariants}
                       className="relative p-4 bg-black/10 border-b border-white/10 overflow-hidden"
                     >
-                        {/* Decorative background glow */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
-
                         {user ? (
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-white text-[#CE1126] flex items-center justify-center font-bold text-lg shadow-inner">
-                                            {profile?.full_name?.charAt(0) || 'U'}
-                                        </div>
-                                        <div>
-                                            <p className="text-white text-sm font-bold leading-tight">{profile?.full_name || 'Constituent'}</p>
-                                            <p className="text-white/60 text-[10px] uppercase tracking-wider">Active Member</p>
-                                        </div>
+                                    <div>
+                                        <p className="text-white text-sm font-bold leading-tight">{profile?.full_name || 'Constituent'}</p>
+                                        <p className="text-white/60 text-[10px] uppercase tracking-wider">Active Member</p>
                                     </div>
                                     <button 
                                         onClick={async () => { await signOut(); handleNavClick('home'); }}
@@ -258,25 +242,22 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                                     onClick={() => handleNavClick('dashboard')}
                                     className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
                                 >
-                                    <LayoutDashboard className="w-4 h-4" />
                                     Open Dashboard
                                 </button>
                             </div>
                         ) : (
-                            <div className="relative z-10 text-center">
-                                {/* REMOVED Welcome text and Icon container */}
+                            <div className="relative z-10">
                                 <button
                                     onClick={() => handleNavClick('login')}
-                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform group"
+                                    className="w-full py-3 bg-white text-[#CE1126] font-black text-xs uppercase tracking-widest rounded shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
                                 >
-                                    <Sparkles className="w-4 h-4 text-yellow-500 fill-yellow-500 group-hover:animate-pulse" />
                                     Sign In / Register
                                 </button>
                             </div>
                         )}
                     </motion.div>
 
-                    {/* --- INNOVATION: SCROLLABLE NAV LIST --- */}
+                    {/* NAV LIST */}
                     <div className="overflow-y-auto max-h-[55vh] p-2 space-y-1">
                       {mobileNavItems.map((item) => {
                         const Icon = item.icon;
@@ -292,32 +273,20 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                                 : 'text-white/80 hover:bg-white/5 hover:text-white'
                             }`}
                           >
-                            {/* Hover Highlight Effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                            
                             <div className="flex items-center gap-3 relative z-10">
                               <Icon 
-                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-white/70'}`} 
+                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-white/70'}`} 
                                 strokeWidth={isActive ? 2.5 : 2}
                               />
                               <span className={`text-xs uppercase tracking-wider ${isActive ? 'font-black' : 'font-medium'}`}>
                                 {item.label}
                               </span>
                             </div>
-                            
-                            {isActive && (
-                                <motion.div 
-                                    layoutId="activeIndicator"
-                                    className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                                />
-                            )}
+                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />}
                           </motion.button>
                         );
                       })}
                     </div>
-
-                    {/* Footer Decoration */}
-                    <div className="h-1.5 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full" />
                   </div>
                 </motion.div>
               </>
