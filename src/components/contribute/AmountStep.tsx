@@ -35,25 +35,9 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
     <div className="flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4">
 
-        {/* Hero number display */}
-        <div className={`rounded-2xl p-5 mb-4 text-center transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
-          <div className="flex items-baseline justify-center">
-            <input
-              type="text"
-              inputMode="numeric"
-              value={amount === 0 ? '' : amount.toLocaleString()}
-              onChange={e => {
-                const val = parseInt(e.target.value.replace(/,/g, ''));
-                setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
-              }}
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => setInputFocused(false)}
-              className="bg-transparent text-4xl font-extrabold text-slate-900 outline-none w-full text-center tabular-nums"
-              placeholder="0"
-            />
-          </div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{unitLabel}</p>
-          <div className="flex items-center justify-center gap-4 mt-3">
+        {/* Number display */}
+        <div className={`rounded-xl px-4 py-3 mb-3 transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
+          <div className="flex items-center justify-between">
             <motion.button
               whileTap={{ scale: 0.85 }}
               onMouseDown={() => startAdjust('down')}
@@ -61,10 +45,27 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-50"
+              className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-3.5 h-3.5" />
             </motion.button>
+            <div className="flex items-baseline gap-1.5">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={amount === 0 ? '' : amount.toLocaleString()}
+                onChange={e => {
+                  const val = parseInt(e.target.value.replace(/,/g, ''));
+                  setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
+                }}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                className="bg-transparent text-2xl font-extrabold text-slate-900 outline-none text-right tabular-nums"
+                style={{ width: `${Math.max(2, (amount || 0).toLocaleString().length) * 0.85}em` }}
+                placeholder="0"
+              />
+              <span className="text-xs font-bold text-slate-400">{unitLabel}</span>
+            </div>
             <motion.button
               whileTap={{ scale: 0.85 }}
               onMouseDown={() => startAdjust('up')}
@@ -72,9 +73,9 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-50"
+              className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
             </motion.button>
           </div>
 
