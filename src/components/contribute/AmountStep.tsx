@@ -29,7 +29,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
     intervalRef.current = setInterval(fn, 80);
   };
 
-  const sliderPercent = Math.min(100, (amount / Math.min(maxUnits, 2000)) * 100);
+  const sliderPercent = Math.min(100, (amount / maxUnits) * 100);
 
   return (
     <div className="flex flex-col min-h-0">
@@ -101,7 +101,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               <input
                 type="range"
                 min="1"
-                max={Math.min(maxUnits, 2000)}
+                max={maxUnits}
                 step="1"
                 value={amount}
                 onChange={e => setAmount(parseInt(e.target.value))}
@@ -110,7 +110,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
             </div>
             <div className="flex justify-between text-[9px] font-semibold text-slate-300 mt-1 px-0.5">
               <span>1</span>
-              <span>{Math.min(maxUnits, 2000).toLocaleString()}</span>
+              <span>{maxUnits.toLocaleString()}</span>
             </div>
           </div>
         </div>
