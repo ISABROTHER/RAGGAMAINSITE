@@ -36,14 +36,15 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
   };
 
   const sliderPercent = Math.min(100, (amount / maxUnits) * 100);
+  const displayLabel = amount === 1 ? unitLabel.replace(/s$/i, '') : unitLabel;
 
   return (
-    <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4">
+    <div className="flex flex-col min-h-0 h-full">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-2 pb-3 space-y-3">
 
-        {/* Number display */}
-        <div className={`rounded-xl px-4 py-3 mb-3 transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
-          <div className="flex items-center justify-between">
+        {/* Number display — compact row */}
+        <div className={`rounded-xl px-3 py-3 transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
+          <div className="flex items-center gap-2">
             <motion.button
               whileTap={{ scale: 0.85 }}
               onMouseDown={() => startAdjust('down')}
@@ -51,11 +52,11 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
+              className="w-9 h-9 flex-shrink-0 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
               <Minus className="w-3.5 h-3.5" />
             </motion.button>
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex-1 flex items-baseline justify-center gap-1 min-w-0 overflow-hidden">
               <input
                 type="text"
                 inputMode="numeric"
@@ -66,11 +67,11 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 }}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                className="bg-transparent text-2xl font-extrabold text-slate-900 outline-none text-right tabular-nums"
-                style={{ width: `${Math.max(2, (amount || 0).toLocaleString().length) * 0.85}em` }}
+                className="bg-transparent text-xl font-extrabold text-slate-900 outline-none text-right tabular-nums flex-shrink min-w-[40px] max-w-[100px]"
+                style={{ fontSize: '20px' }}
                 placeholder="0"
               />
-              <span className="text-2xl font-extrabold text-slate-900">{amount === 1 ? unitLabel.replace(/s$/i, '') : unitLabel}</span>
+              <span className="text-base font-extrabold text-slate-900 flex-shrink-0 truncate">{displayLabel}</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.85 }}
@@ -79,71 +80,68 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
+              className="w-9 h-9 flex-shrink-0 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
               <Plus className="w-3.5 h-3.5" />
             </motion.button>
           </div>
+        </div>
 
-          {/* Slider */}
-          <div className="mt-4 px-1">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Drag to adjust</p>
-              <motion.span
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="text-[9px] text-slate-300"
-              >
-                ← →
-              </motion.span>
-            </div>
-            <div className="relative h-8 flex items-center">
-              {/* Track background */}
-              <div className="absolute inset-x-0 h-2.5 bg-slate-200 rounded-full" />
-              {/* Track fill */}
-              <motion.div
-                className="absolute left-0 h-2.5 bg-green-500 rounded-full"
-                animate={{ width: `${sliderPercent}%` }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-              />
-              {/* Thumb with pulse */}
-              <motion.div
-                className="absolute w-6 h-6 bg-white border-[3px] border-green-500 rounded-full shadow-lg cursor-grab active:cursor-grabbing"
-                animate={{ 
-                  left: `calc(${sliderPercent}% - 12px)`,
-                  boxShadow: [
-                    '0 2px 8px rgba(22, 163, 74, 0.2)',
-                    '0 2px 16px rgba(22, 163, 74, 0.4)',
-                    '0 2px 8px rgba(22, 163, 74, 0.2)',
-                  ],
-                }}
-                transition={{ 
-                  left: { duration: 0.15, ease: 'easeOut' },
-                  boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-                }}
-              />
-              {/* Invisible native input on top for interaction */}
-              <input
-                type="range"
-                min="1"
-                max={maxUnits}
-                step="1"
-                value={amount}
-                onChange={e => setAmount(parseInt(e.target.value))}
-                className="absolute inset-0 w-full opacity-0 cursor-grab active:cursor-grabbing"
-              />
-            </div>
-            <div className="flex justify-between text-[9px] font-semibold text-slate-300 mt-1 px-0.5">
-              <span>1</span>
-              <span>{maxUnits.toLocaleString()}</span>
-            </div>
+        {/* Slider */}
+        <div className="px-1">
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">Drag to adjust</p>
+            <motion.span
+              animate={{ x: [0, 4, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="text-[8px] text-slate-300"
+            >
+              ← →
+            </motion.span>
+          </div>
+          <div className="relative h-7 flex items-center">
+            <div className="absolute inset-x-0 h-2 bg-slate-200 rounded-full" />
+            <motion.div
+              className="absolute left-0 h-2 bg-green-500 rounded-full"
+              animate={{ width: `${sliderPercent}%` }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            />
+            <motion.div
+              className="absolute w-5 h-5 bg-white border-[3px] border-green-500 rounded-full shadow-md"
+              animate={{
+                left: `calc(${sliderPercent}% - 10px)`,
+                boxShadow: [
+                  '0 2px 6px rgba(22, 163, 74, 0.2)',
+                  '0 2px 12px rgba(22, 163, 74, 0.4)',
+                  '0 2px 6px rgba(22, 163, 74, 0.2)',
+                ],
+              }}
+              transition={{
+                left: { duration: 0.15, ease: 'easeOut' },
+                boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+              }}
+            />
+            <input
+              type="range"
+              min="1"
+              max={maxUnits}
+              step="1"
+              value={amount}
+              onChange={e => setAmount(parseInt(e.target.value))}
+              className="absolute inset-0 w-full opacity-0 cursor-grab"
+              style={{ fontSize: '16px' }}
+            />
+          </div>
+          <div className="flex justify-between text-[8px] font-semibold text-slate-300 mt-0.5 px-0.5">
+            <span>1</span>
+            <span>{maxUnits.toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Quick select presets */}
-        <div className="mb-4">
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2.5 px-0.5">Quick Select</p>
-          <div className="grid grid-cols-3 gap-2">
+        {/* Quick select */}
+        <div>
+          <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2 px-0.5">Quick Select</p>
+          <div className="grid grid-cols-3 gap-1.5">
             {QUICK_AMOUNTS.map((n, i) => {
               const active = amount === n;
               return (
@@ -154,20 +152,19 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
                   onClick={() => setAmount(n)}
-                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                  className={`py-2 rounded-lg text-[11px] font-bold border transition-all ${
                     active
-                      ? 'bg-green-600 text-white border-green-600 shadow-md shadow-green-600/20'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'
+                      ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-600/20'
+                      : 'bg-white text-slate-600 border-slate-200'
                   }`}
                 >
                   {n.toLocaleString()}
                 </motion.button>
               );
             })}
-            {/* Custom input tile */}
-            <div className={`py-1 px-2 rounded-xl border text-xs font-bold flex items-center justify-center transition-all ${
+            <div className={`py-0.5 px-2 rounded-lg border text-[11px] font-bold flex items-center justify-center transition-all ${
               !QUICK_AMOUNTS.includes(amount) && amount > 0
-                ? 'border-green-600 bg-green-600 shadow-md shadow-green-600/20'
+                ? 'border-green-600 bg-green-600 shadow-sm shadow-green-600/20'
                 : 'border-dashed border-slate-300 bg-white'
             }`}>
               <input
@@ -179,7 +176,8 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                   const val = parseInt(e.target.value.replace(/,/g, ''));
                   setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
                 }}
-                className={`w-full text-center bg-transparent outline-none tabular-nums ${
+                style={{ fontSize: '16px' }}
+                className={`w-full text-center text-[11px] bg-transparent outline-none tabular-nums ${
                   !QUICK_AMOUNTS.includes(amount) && amount > 0
                     ? 'text-white placeholder:text-white/50'
                     : 'text-slate-600 placeholder:text-slate-400'
@@ -190,16 +188,16 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         </div>
 
         {/* Total card */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-lg">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
-            <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.2em] mb-2">Total</p>
+            <p className="text-[8px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
             <div className="flex items-baseline justify-between">
               <motion.p
                 key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-extrabold text-white tabular-nums"
+                className="text-xl font-extrabold text-white tabular-nums"
               >
                 GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
@@ -207,7 +205,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 key={`usd-${totalUSD}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-lg font-extrabold text-green-400 tabular-nums"
+                className="text-base font-extrabold text-green-400 tabular-nums"
               >
                 ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
@@ -216,7 +214,8 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         </div>
       </div>
 
-      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom">
+      {/* Continue button — fixed at bottom with safe spacing */}
+      <div className="shrink-0 px-4 sm:px-6 pb-4 pt-2 safe-bottom">
         <motion.button
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.02 }}
@@ -232,7 +231,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           transition={{
             boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
           }}
-          className="w-full py-4 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-extrabold text-sm tracking-wider uppercase disabled:shadow-none flex items-center justify-center gap-2 min-h-[56px] relative overflow-hidden"
+          className="w-full py-3.5 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl font-extrabold text-sm tracking-wider uppercase disabled:shadow-none flex items-center justify-center gap-2 relative overflow-hidden"
         >
           {amount >= 1 && (
             <>
@@ -258,7 +257,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               animate={amount >= 1 ? { x: [0, 5, 0] } : {}}
               transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-4 h-4" />
             </motion.span>
           </span>
         </motion.button>
