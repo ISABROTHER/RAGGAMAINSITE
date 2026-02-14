@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Minus, Plus, ArrowRight, Sparkles } from 'lucide-react';
+import { Minus, Plus, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PRESETS } from './types';
 
@@ -13,17 +13,19 @@ interface AmountStepProps {
   onNext: () => void;
 }
 
-const IMPACT_TIERS = [
-  { max: 10, label: 'A thoughtful start', emoji: '1 student helped' },
-  { max: 50, label: 'Equipping a classroom', emoji: 'Up to 50 students' },
-  { max: 200, label: 'Empowering a school', emoji: 'Full school covered' },
-  { max: 1000, label: 'Transforming a community', emoji: 'Multiple schools' },
-  { max: Infinity, label: 'Changing thousands of lives', emoji: 'Entire constituency' },
-];
+const IMPACT_MAP: Record<number, string> = {
+  10: '1 student helped',
+  50: 'A full classroom',
+  100: '2 classrooms covered',
+  200: 'An entire school',
+  500: 'Multiple schools',
+  1000: 'Transforming a community',
+};
 
 export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
+  const isCustom = !PRESETS.includes(amount);
 
   const stopAdjust = () => {
     if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
@@ -37,48 +39,14 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
     intervalRef.current = setInterval(fn, 80);
   };
 
-  const impact = IMPACT_TIERS.find(t => amount <= t.max) || IMPACT_TIERS[IMPACT_TIERS.length - 1];
-  const progressPercent = Math.min(100, (amount / Math.min(maxUnits, 2000)) * 100);
-
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4 space-y-6">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 px-0.5">Select Amount</p>
-          <div className="grid grid-cols-3 gap-3">
-            {PRESETS.map((n, i) => {
-              const active = amount === n;
-              return (
-                <motion.button
-                  key={n}
-                  whileTap={{ scale: 0.94 }}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.3 }}
-                  onClick={() => setAmount(n)}
-                  className={`flutter-btn relative py-5 rounded-2xl font-bold text-sm border-2 overflow-hidden min-h-[56px] ${
-                    active
-                      ? 'border-green-600 bg-green-600 text-white shadow-lg shadow-green-600/30'
-                      : 'border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300'
-                  }`}
-                >
-                  {active && (
-                    <motion.div
-                      layoutId="preset-glow"
-                      className="absolute inset-0 bg-green-500 opacity-20"
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{n.toLocaleString()}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4">
 
-        <div className={`rounded-2xl p-6 transition-all duration-300 ${inputFocused ? 'bg-green-50/60 ring-2 ring-green-300/40' : 'bg-slate-50'}`}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-5">Custom Amount</p>
-          <div className="flex items-center gap-4">
+        {/* Big number display */}
+        <div className={`rounded-2xl p-5 mb-5 text-center transition-all duration-300 ${inputFocused ? 'bg-green-50/60 ring-2 ring-green-300/40' : 'bg-slate-50'}`}>
+          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-3">How many {unitLabel}?</p>
+          <div className="flex items-center justify-center gap-3">
             <motion.button
               whileTap={{ scale: 0.88 }}
               onMouseDown={() => startAdjust('down')}
@@ -86,28 +54,23 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="flutter-btn w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center text-slate-600 shadow-sm hover:border-slate-300 active:bg-slate-50"
+              className="w-11 h-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-50"
             >
-              <Minus className="w-5 h-5" />
+              <Minus className="w-4 h-4" />
             </motion.button>
-            <div className="flex-1 text-center">
-              <div className="flex items-baseline justify-center gap-1">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={amount === 0 ? '' : amount.toLocaleString()}
-                  onChange={e => {
-                    const val = parseInt(e.target.value.replace(/,/g, ''));
-                    setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
-                  }}
-                  onFocus={() => setInputFocused(true)}
-                  onBlur={() => setInputFocused(false)}
-                  className="bg-transparent text-5xl sm:text-4xl font-extrabold text-slate-900 outline-none w-full max-w-[140px] text-center tabular-nums"
-                  placeholder="0"
-                />
-              </div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{unitLabel}</p>
-            </div>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={amount === 0 ? '' : amount.toLocaleString()}
+              onChange={e => {
+                const val = parseInt(e.target.value.replace(/,/g, ''));
+                setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
+              }}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
+              className="bg-transparent text-4xl font-extrabold text-slate-900 outline-none w-[120px] text-center tabular-nums"
+              placeholder="0"
+            />
             <motion.button
               whileTap={{ scale: 0.88 }}
               onMouseDown={() => startAdjust('up')}
@@ -115,86 +78,64 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="flutter-btn w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center text-slate-600 shadow-sm hover:border-slate-300 active:bg-slate-50"
+              className="w-11 h-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-50"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
             </motion.button>
           </div>
-          <div className="mt-5 px-1">
-            <input
-              type="range"
-              min="1"
-              max={Math.min(maxUnits, 2000)}
-              step="1"
-              value={amount}
-              onChange={e => setAmount(parseInt(e.target.value))}
-              className="w-full flutter-slider"
-            />
-          </div>
+          {/* Inline total */}
+          <motion.p
+            key={totalGHS}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xs text-slate-400 font-semibold mt-2 tabular-nums"
+          >
+            GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ~${totalUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          </motion.p>
         </div>
 
-        <motion.div
-          key={impact.label}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-4 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-green-200/50"
-        >
-          <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center shrink-0 shadow-sm">
-            <Sparkles className="w-5 h-5 text-green-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-bold text-green-900 leading-tight">{impact.label}</p>
-            <p className="text-[11px] text-green-700/70 font-medium mt-0.5">{impact.emoji}</p>
-          </div>
-          <div className="w-11 h-11 rounded-full border-[3px] border-green-200 flex items-center justify-center shrink-0">
-            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="14" fill="none" stroke="#dcfce7" strokeWidth="3" />
-              <motion.circle
-                cx="18" cy="18" r="14" fill="none" stroke="#16a34a" strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray="87.96"
-                animate={{ strokeDashoffset: 87.96 - (87.96 * progressPercent) / 100 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              />
-            </svg>
-          </div>
-        </motion.div>
-
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-lg">
-          <div className="absolute inset-0 flutter-shimmer-bg" />
-          <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
-              <motion.p
-                key={totalGHS}
-                initial={{ opacity: 0, y: -4 }}
+        {/* Quick select — presets with impact */}
+        <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-3 px-0.5">Quick Select</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {PRESETS.map((n, i) => {
+            const active = amount === n;
+            return (
+              <motion.button
+                key={n}
+                whileTap={{ scale: 0.96 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-3xl sm:text-2xl font-extrabold text-white tabular-nums"
+                transition={{ delay: i * 0.03 }}
+                onClick={() => setAmount(n)}
+                className={`text-left px-4 py-3.5 rounded-xl border transition-all ${
+                  active
+                    ? 'border-green-600 bg-green-600 shadow-lg shadow-green-600/20'
+                    : 'border-slate-150 bg-white hover:border-slate-300'
+                }`}
               >
-                GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </motion.p>
-            </div>
-            <div className="text-right space-y-1">
-              <p className="text-[10px] text-white/30 font-medium tabular-nums">
-                ~ ${totalUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD
-              </p>
-              <p className="text-[10px] text-white/20 font-medium">
-                GH₵{Number(totalGHS / (amount || 1)).toFixed(2)} / {unitLabel.replace(/s$/i, '')}
-              </p>
-            </div>
-          </div>
+                <span className={`text-base font-extrabold tabular-nums ${active ? 'text-white' : 'text-slate-800'}`}>
+                  {n.toLocaleString()}
+                </span>
+                <span className={`block text-[10px] font-medium mt-0.5 ${active ? 'text-white/70' : 'text-slate-400'}`}>
+                  {IMPACT_MAP[n]}
+                </span>
+              </motion.button>
+            );
+          })}
         </div>
+
       </div>
 
+      {/* Continue */}
       <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom">
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
           disabled={amount < 1}
-          className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
+          className="w-full py-4 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-sm tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-2"
         >
           Continue
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </motion.button>
       </div>
     </div>
