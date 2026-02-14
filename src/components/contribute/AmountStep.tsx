@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Minus, Plus, ArrowRight, Sparkles } from 'lucide-react';
+import { Minus, Plus, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PRESETS } from './types';
 
@@ -12,14 +12,6 @@ interface AmountStepProps {
   maxUnits: number;
   onNext: () => void;
 }
-
-const IMPACT_TIERS = [
-  { max: 10, label: 'A thoughtful start', emoji: '1 student helped' },
-  { max: 50, label: 'Equipping a classroom', emoji: 'Up to 50 students' },
-  { max: 200, label: 'Empowering a school', emoji: 'Full school covered' },
-  { max: 1000, label: 'Transforming a community', emoji: 'Multiple schools' },
-  { max: Infinity, label: 'Changing thousands of lives', emoji: 'Entire constituency' },
-];
 
 export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -36,9 +28,6 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
     fn();
     intervalRef.current = setInterval(fn, 80);
   };
-
-  const impact = IMPACT_TIERS.find(t => amount <= t.max) || IMPACT_TIERS[IMPACT_TIERS.length - 1];
-  const progressPercent = Math.min(100, (amount / Math.min(maxUnits, 2000)) * 100);
 
   return (
     <div className="flex flex-col min-h-0">
@@ -132,33 +121,6 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
             />
           </div>
         </div>
-
-        <motion.div
-          key={impact.label}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-4 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-green-200/50"
-        >
-          <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center shrink-0 shadow-sm">
-            <Sparkles className="w-5 h-5 text-green-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-bold text-green-900 leading-tight">{impact.label}</p>
-            <p className="text-[11px] text-green-700/70 font-medium mt-0.5">{impact.emoji}</p>
-          </div>
-          <div className="w-11 h-11 rounded-full border-[3px] border-green-200 flex items-center justify-center shrink-0">
-            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="14" fill="none" stroke="#dcfce7" strokeWidth="3" />
-              <motion.circle
-                cx="18" cy="18" r="14" fill="none" stroke="#16a34a" strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray="87.96"
-                animate={{ strokeDashoffset: 87.96 - (87.96 * progressPercent) / 100 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              />
-            </svg>
-          </div>
-        </motion.div>
 
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
