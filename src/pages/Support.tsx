@@ -231,6 +231,15 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
   const displayImage = isBookProject ? BOOK_PROJECT_IMAGE : project.image_url;
   const [showShare, setShowShare] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [donateTextIndex, setDonateTextIndex] = useState(0);
+  const donateTexts = ['Please Donate', 'Make a Difference', 'Change a Life', 'Give Hope'];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDonateTextIndex((prev) => (prev + 1) % donateTexts.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   const shareUrl = `${window.location.origin}/support?project=${project.slug}`;
   const shareText = `Support "${project.title}" on Ragga Foundation!`;
@@ -301,55 +310,16 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               onClick={onContribute}
               className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center relative overflow-hidden"
             >
-              <style>{`
-                @keyframes borderTrace {
-                  0% { top: 0; left: -10%; }
-                  25% { top: 0; left: 100%; }
-                  25.1% { top: 0; left: 100%; }
-                  50% { top: 100%; left: 100%; }
-                  50.1% { top: 100%; left: 100%; }
-                  75% { top: 100%; left: -10%; }
-                  75.1% { top: 100%; left: -10%; }
-                  100% { top: 0; left: -10%; }
-                }
-                @keyframes borderTraceV {
-                  0% { top: -10%; left: 0; }
-                  25% { top: -10%; left: 0; }
-                  25.1% { top: -10%; left: 100%; }
-                  50% { top: 100%; left: 100%; }
-                  50.1% { top: 100%; left: 100%; }
-                  75% { top: 100%; left: 0; }
-                  75.1% { top: 100%; left: 0; }
-                  100% { top: -10%; left: 0; }
-                }
-                .neon-trace {
-                  position: absolute;
-                  border-radius: 12px;
-                  overflow: hidden;
-                  inset: -2px;
-                  z-index: 0;
-                }
-                .neon-trace::before {
-                  content: '';
-                  position: absolute;
-                  width: 30%;
-                  height: 2px;
-                  background: linear-gradient(90deg, transparent, #fff, transparent);
-                  box-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.5);
-                  animation: borderTrace 3s linear infinite;
-                }
-                .neon-trace::after {
-                  content: '';
-                  position: absolute;
-                  width: 2px;
-                  height: 30%;
-                  background: linear-gradient(180deg, transparent, #fff, transparent);
-                  box-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.5);
-                  animation: borderTraceV 3s linear infinite;
-                }
-              `}</style>
-              <span className="neon-trace" />
-              <span className="relative z-10">Please Donate</span>
+              <motion.span
+                key={donateTextIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="relative z-10"
+              >
+                {donateTexts[donateTextIndex]}
+              </motion.span>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
