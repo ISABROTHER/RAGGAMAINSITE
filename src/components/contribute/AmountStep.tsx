@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { Minus, Plus, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { PRESETS } from './types';
+
+const QUICK_AMOUNTS = [10, 50, 100, 200, 500];
 
 interface AmountStepProps {
   amount: number;
@@ -143,7 +144,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         <div className="mb-4">
           <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2.5 px-0.5">Quick Select</p>
           <div className="grid grid-cols-3 gap-2">
-            {PRESETS.map((n, i) => {
+            {QUICK_AMOUNTS.map((n, i) => {
               const active = amount === n;
               return (
                 <motion.button
@@ -165,7 +166,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
             })}
             {/* Custom input tile */}
             <div className={`py-1 px-2 rounded-xl border text-xs font-bold flex items-center justify-center transition-all ${
-              !PRESETS.includes(amount) && amount > 0
+              !QUICK_AMOUNTS.includes(amount) && amount > 0
                 ? 'border-green-600 bg-green-600 shadow-md shadow-green-600/20'
                 : 'border-dashed border-slate-300 bg-white'
             }`}>
@@ -173,13 +174,13 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 type="text"
                 inputMode="numeric"
                 placeholder="Custom"
-                value={!PRESETS.includes(amount) && amount > 0 ? amount.toLocaleString() : ''}
+                value={!QUICK_AMOUNTS.includes(amount) && amount > 0 ? amount.toLocaleString() : ''}
                 onChange={e => {
                   const val = parseInt(e.target.value.replace(/,/g, ''));
                   setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
                 }}
                 className={`w-full text-center bg-transparent outline-none tabular-nums ${
-                  !PRESETS.includes(amount) && amount > 0
+                  !QUICK_AMOUNTS.includes(amount) && amount > 0
                     ? 'text-white placeholder:text-white/50'
                     : 'text-slate-600 placeholder:text-slate-400'
                 }`}
@@ -228,4 +229,4 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
       </div>
     </div>
   );
-} 
+}
