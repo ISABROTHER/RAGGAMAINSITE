@@ -23,10 +23,14 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
 
   const startAdjust = (dir: 'up' | 'down') => {
     stopAdjust();
-    const step = amount >= 100 ? 10 : 1;
-    const fn = () => setAmount(dir === 'up' ? Math.min(maxUnits, amount + step) : Math.max(1, amount - step));
-    fn();
-    intervalRef.current = setInterval(fn, 80);
+    const doStep = () => {
+      setAmount((prev: number) => {
+        const step = prev >= 100 ? 10 : 1;
+        return dir === 'up' ? Math.min(maxUnits, prev + step) : Math.max(1, prev - step);
+      });
+    };
+    doStep();
+    intervalRef.current = setInterval(doStep, 80);
   };
 
   const sliderPercent = Math.min(100, (amount / maxUnits) * 100);
