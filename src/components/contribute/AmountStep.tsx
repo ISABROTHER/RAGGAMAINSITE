@@ -84,22 +84,42 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
             </motion.button>
           </div>
 
-          {/* Visible styled slider */}
+          {/* Slider */}
           <div className="mt-4 px-1">
-            <div className="relative h-6 flex items-center">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Drag to adjust</p>
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                className="text-[9px] text-slate-300"
+              >
+                ← →
+              </motion.span>
+            </div>
+            <div className="relative h-8 flex items-center">
               {/* Track background */}
-              <div className="absolute inset-x-0 h-2 bg-slate-200 rounded-full" />
+              <div className="absolute inset-x-0 h-2.5 bg-slate-200 rounded-full" />
               {/* Track fill */}
               <motion.div
-                className="absolute left-0 h-2 bg-green-500 rounded-full"
+                className="absolute left-0 h-2.5 bg-green-500 rounded-full"
                 animate={{ width: `${sliderPercent}%` }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
               />
-              {/* Thumb */}
+              {/* Thumb with pulse */}
               <motion.div
-                className="absolute w-5 h-5 bg-white border-[3px] border-green-500 rounded-full shadow-md cursor-grab active:cursor-grabbing"
-                animate={{ left: `calc(${sliderPercent}% - 10px)` }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute w-6 h-6 bg-white border-[3px] border-green-500 rounded-full shadow-lg cursor-grab active:cursor-grabbing"
+                animate={{ 
+                  left: `calc(${sliderPercent}% - 12px)`,
+                  boxShadow: [
+                    '0 2px 8px rgba(22, 163, 74, 0.2)',
+                    '0 2px 16px rgba(22, 163, 74, 0.4)',
+                    '0 2px 8px rgba(22, 163, 74, 0.2)',
+                  ],
+                }}
+                transition={{ 
+                  left: { duration: 0.15, ease: 'easeOut' },
+                  boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+                }}
               />
               {/* Invisible native input on top for interaction */}
               <input
