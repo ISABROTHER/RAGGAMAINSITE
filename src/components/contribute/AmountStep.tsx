@@ -214,8 +214,8 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         </div>
       </div>
 
-      {/* Continue button — fixed at bottom with safe spacing */}
-      <div className="shrink-0 px-4 sm:px-6 pb-4 pt-2 safe-bottom">
+      {/* Continue button */}
+      <div className="shrink-0 px-4 sm:px-6 pb-8 pt-3 safe-bottom">
         <motion.button
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.02 }}
