@@ -145,25 +145,25 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         {/* Total card */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
-          <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1">Total</p>
+          <div className="relative z-10">
+            <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.2em] mb-2">Total</p>
+            <div className="flex items-baseline justify-between">
               <motion.p
-                key={totalGHS}
+                key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-2xl font-extrabold text-white tabular-nums"
               >
                 GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
-            </div>
-            <div className="text-right space-y-0.5">
-              <p className="text-[10px] text-white/30 font-medium tabular-nums">
-                ~ ${totalUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD
-              </p>
-              <p className="text-[10px] text-white/20 font-medium">
-                GH₵{Number(totalGHS / (amount || 1)).toFixed(2)} / {unitLabel.replace(/s$/i, '')}
-              </p>
+              <motion.p
+                key={`usd-${totalUSD}`}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-lg font-extrabold text-green-400 tabular-nums"
+              >
+                ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </motion.p>
             </div>
           </div>
         </div>
