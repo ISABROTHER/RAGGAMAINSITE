@@ -37,7 +37,23 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
 
         {/* Hero number display */}
         <div className={`rounded-2xl p-5 mb-4 text-center transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-baseline justify-center">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={amount === 0 ? '' : amount.toLocaleString()}
+              onChange={e => {
+                const val = parseInt(e.target.value.replace(/,/g, ''));
+                setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
+              }}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
+              className="bg-transparent text-4xl font-extrabold text-slate-900 outline-none w-full text-center tabular-nums"
+              placeholder="0"
+            />
+          </div>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{unitLabel}</p>
+          <div className="flex items-center justify-center gap-4 mt-3">
             <motion.button
               whileTap={{ scale: 0.85 }}
               onMouseDown={() => startAdjust('down')}
@@ -49,24 +65,6 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
             >
               <Minus className="w-4 h-4" />
             </motion.button>
-            <div className="flex-1 text-center">
-              <div className="flex items-baseline justify-center">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={amount === 0 ? '' : amount.toLocaleString()}
-                  onChange={e => {
-                    const val = parseInt(e.target.value.replace(/,/g, ''));
-                    setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
-                  }}
-                  onFocus={() => setInputFocused(true)}
-                  onBlur={() => setInputFocused(false)}
-                  className="bg-transparent text-4xl font-extrabold text-slate-900 outline-none w-[110px] text-center tabular-nums"
-                  placeholder="0"
-                />
-                <span className="text-sm font-bold text-slate-400 ml-1">{unitLabel}</span>
-              </div>
-            </div>
             <motion.button
               whileTap={{ scale: 0.85 }}
               onMouseDown={() => startAdjust('up')}
