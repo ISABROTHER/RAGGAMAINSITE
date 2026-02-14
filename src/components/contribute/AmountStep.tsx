@@ -221,10 +221,34 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
           disabled={amount < 1}
-          className="w-full py-4 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-sm tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-2 min-h-[56px]"
+          animate={amount >= 1 ? {
+            boxShadow: [
+              '0 4px 15px rgba(220, 38, 38, 0.2)',
+              '0 4px 25px rgba(220, 38, 38, 0.4)',
+              '0 4px 15px rgba(220, 38, 38, 0.2)',
+            ],
+          } : {}}
+          transition={{
+            boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="w-full py-4 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-sm tracking-wide disabled:shadow-none flex items-center justify-center gap-2 min-h-[56px] relative overflow-hidden"
         >
-          Continue
-          <ArrowRight className="w-4 h-4" />
+          {amount >= 1 && (
+            <span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              style={{ animation: 'btnShimmer 2s ease-in-out infinite' }}
+            />
+          )}
+          <style>{`
+            @keyframes btnShimmer {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+          <span className="relative z-10 flex items-center gap-2">
+            Continue
+            <ArrowRight className="w-4 h-4" />
+          </span>
         </motion.button>
       </div>
     </div>
