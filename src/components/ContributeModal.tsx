@@ -92,7 +92,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
       const popup = new Paystack();
       popup.newTransaction({
-        key: 'pk_test_0384219b0cda58507d42d42605bf6844211579cb',
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email,
         amount: Math.round(totalGHS * 100),
         currency: 'GHS',
