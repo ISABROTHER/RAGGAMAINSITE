@@ -115,21 +115,21 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           </div>
         </div>
 
-        {/* Horizontal scroll preset pills */}
+        {/* Quick select presets */}
         <div className="mb-4">
           <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2.5 px-0.5">Quick Select</p>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          <div className="grid grid-cols-3 gap-2">
             {PRESETS.map((n, i) => {
               const active = amount === n;
               return (
                 <motion.button
                   key={n}
                   whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
                   onClick={() => setAmount(n)}
-                  className={`flex-shrink-0 px-5 py-2.5 rounded-full text-xs font-bold border transition-all ${
+                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
                     active
                       ? 'bg-green-600 text-white border-green-600 shadow-md shadow-green-600/20'
                       : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'
