@@ -228,4 +228,4 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
       </div>
     </div>
   );
-}
+} 
