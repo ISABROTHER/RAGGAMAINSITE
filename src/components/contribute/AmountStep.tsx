@@ -64,7 +64,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 style={{ width: `${Math.max(2, (amount || 0).toLocaleString().length) * 0.85}em` }}
                 placeholder="0"
               />
-              <span className="text-xs font-bold text-slate-400">{unitLabel}</span>
+              <span className="text-2xl font-extrabold text-slate-900">{unitLabel}</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.85 }}
