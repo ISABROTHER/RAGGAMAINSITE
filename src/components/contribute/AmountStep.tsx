@@ -163,6 +163,28 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 </motion.button>
               );
             })}
+            {/* Custom input tile */}
+            <div className={`py-1 px-2 rounded-xl border text-xs font-bold flex items-center justify-center transition-all ${
+              !PRESETS.includes(amount) && amount > 0
+                ? 'border-green-600 bg-green-600 shadow-md shadow-green-600/20'
+                : 'border-dashed border-slate-300 bg-white'
+            }`}>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="Custom"
+                value={!PRESETS.includes(amount) && amount > 0 ? amount.toLocaleString() : ''}
+                onChange={e => {
+                  const val = parseInt(e.target.value.replace(/,/g, ''));
+                  setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
+                }}
+                className={`w-full text-center bg-transparent outline-none tabular-nums ${
+                  !PRESETS.includes(amount) && amount > 0
+                    ? 'text-white placeholder:text-white/50'
+                    : 'text-slate-600 placeholder:text-slate-400'
+                }`}
+              />
+            </div>
           </div>
         </div>
 
