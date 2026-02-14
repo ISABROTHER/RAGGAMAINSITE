@@ -15,6 +15,8 @@ interface AmountStepProps {
 
 export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const amountRef = useRef(amount);
+  amountRef.current = amount;
   const [inputFocused, setInputFocused] = useState(false);
 
   const stopAdjust = () => {
@@ -24,10 +26,9 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
   const startAdjust = (dir: 'up' | 'down') => {
     stopAdjust();
     const doStep = () => {
-      setAmount((prev: number) => {
-        const step = prev >= 100 ? 10 : 1;
-        return dir === 'up' ? Math.min(maxUnits, prev + step) : Math.max(1, prev - step);
-      });
+      const current = amountRef.current;
+      const step = current >= 100 ? 10 : 1;
+      setAmount(dir === 'up' ? Math.min(maxUnits, current + step) : Math.max(1, current - step));
     };
     doStep();
     intervalRef.current = setInterval(doStep, 80);
@@ -68,7 +69,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 style={{ width: `${Math.max(2, (amount || 0).toLocaleString().length) * 0.85}em` }}
                 placeholder="0"
               />
-              <span className="text-2xl font-extrabold text-slate-900">{unitLabel}</span>
+              <span className="text-2xl font-extrabold text-slate-900">{amount === 1 ? unitLabel.replace(/s$/i, '') : unitLabel}</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.85 }}
