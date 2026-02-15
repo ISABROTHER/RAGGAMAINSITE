@@ -36,10 +36,10 @@ export function Login({ onNavigate }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#CE1126]/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-600/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#CE1126]/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-600/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
@@ -51,7 +51,7 @@ export function Login({ onNavigate }: LoginProps) {
         >
           <button
             onClick={() => onNavigate('home')}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm font-medium mb-6 transition-colors"
+            className="flex items-center gap-1.5 text-slate-400 hover:text-slate-900 text-sm font-medium mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to site
@@ -63,12 +63,12 @@ export function Login({ onNavigate }: LoginProps) {
               alt="Cape Coast North"
               className="h-20 sm:h-24 object-contain mx-auto mb-5"
             />
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Welcome Back</h1>
-            <p className="text-slate-400 mt-2 text-sm">Sign in to your constituency portal</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
+            <p className="text-slate-500 mt-2 text-sm">Sign in to your constituency portal</p>
           </div>
 
-          <div className="bg-white/[0.06] backdrop-blur-xl rounded-3xl border border-white/10 p-5 sm:p-7">
-            <div className="flex bg-white/5 rounded-xl p-1 mb-6">
+          <div className="bg-slate-50 backdrop-blur-xl rounded-3xl border border-slate-200 p-5 sm:p-7">
+            <div className="flex bg-slate-200/60 rounded-xl p-1 mb-6">
               {([
                 { key: 'email' as AuthMethod, label: 'Email', icon: Mail },
                 { key: 'phone' as AuthMethod, label: 'Phone', icon: Phone },
@@ -80,7 +80,7 @@ export function Login({ onNavigate }: LoginProps) {
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     method === key
                       ? 'bg-white text-slate-900 shadow-md'
-                      : 'text-slate-400 hover:text-white'
+                      : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -97,7 +97,7 @@ export function Login({ onNavigate }: LoginProps) {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-xl px-4 py-3 font-medium"
+                    className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 font-medium"
                   >
                     {error}
                   </motion.div>
@@ -113,7 +113,7 @@ export function Login({ onNavigate }: LoginProps) {
                     exit={{ opacity: 0, x: 12 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
                       Email Address
                     </label>
                     <input
@@ -123,7 +123,7 @@ export function Login({ onNavigate }: LoginProps) {
                       required={method === 'email'}
                       autoComplete="email"
                       placeholder="you@example.com"
-                      className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-medium placeholder:text-slate-500 focus:bg-white/10 focus:border-white/25 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                      className="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                     />
                   </motion.div>
                 ) : (
@@ -134,11 +134,11 @@ export function Login({ onNavigate }: LoginProps) {
                     exit={{ opacity: 0, x: 12 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
                       Phone Number
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">+233</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">+233</span>
                       <input
                         type="tel"
                         value={phone}
@@ -146,7 +146,7 @@ export function Login({ onNavigate }: LoginProps) {
                         required={method === 'phone'}
                         autoComplete="tel"
                         placeholder="24 123 4567"
-                        className="w-full pl-16 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-medium placeholder:text-slate-500 focus:bg-white/10 focus:border-white/25 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                        className="w-full pl-16 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                       />
                     </div>
                   </motion.div>
@@ -154,7 +154,7 @@ export function Login({ onNavigate }: LoginProps) {
               </AnimatePresence>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -165,12 +165,12 @@ export function Login({ onNavigate }: LoginProps) {
                     required
                     autoComplete="current-password"
                     placeholder="Enter your password"
-                    className="w-full px-4 py-3.5 pr-12 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-medium placeholder:text-slate-500 focus:bg-white/10 focus:border-white/25 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                    className="w-full px-4 py-3.5 pr-12 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-white transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-900 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -194,17 +194,17 @@ export function Login({ onNavigate }: LoginProps) {
               </motion.button>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-white/5 text-center">
+            <div className="mt-6 pt-5 border-t border-slate-200 text-center">
               <p className="text-sm text-slate-500">
                 Don't have an account?{' '}
-                <button onClick={() => onNavigate('register')} className="font-bold text-white hover:text-[#CE1126] transition-colors">
+                <button onClick={() => onNavigate('register')} className="font-bold text-slate-900 hover:text-[#CE1126] transition-colors">
                   Create one
                 </button>
               </p>
             </div>
           </div>
 
-          <p className="text-center text-[11px] text-slate-600 mt-6">
+          <p className="text-center text-[11px] text-slate-400 mt-6">
             Cape Coast North Constituency Portal
           </p>
         </motion.div>
