@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, ChevronRight, ChevronLeft, Globe, Search, Bell } from 'lucide-react';
+import { LogOut, ChevronRight, ChevronLeft, Globe, Search, Bell, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,17 +29,9 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
   const activeLabel = navItems.find(n => n.id === activeTab)?.label || '';
 
-  // Close expanded sidebar when clicking outside on mobile
   useEffect(() => {
-    if (!expanded) return;
-    const handleClick = (e: MouseEvent) => {
-      const sidebar = document.getElementById('sidebar-expanded');
-      if (sidebar && !sidebar.contains(e.target as Node)) {
-        setExpanded(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.body.style.overflow = expanded ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [expanded]);
 
   const handleNavClick = (id: string) => {
@@ -54,108 +46,132 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
 
-      {/* Icon sidebar — always visible on all screens */}
-      <aside className="fixed left-0 top-0 bottom-0 w-[60px] bg-white border-r border-slate-200 z-40 flex flex-col items-center py-3">
-        {/* Logo */}
-        <div className="mb-2">
-          <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
-        </div>
+      {/* Icon sidebar — only visible when NOT expanded */}
+      <AnimatePresence>
+        {!expanded && (
+          <motion.aside
+            initial={{ x: -60, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -60, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed left-0 top-0 bottom-0 w-[60px] bg-white border-r border-slate-200 z-40 flex flex-col items-center py-3"
+          >
+            {/* Logo */}
+            <div className="mb-2">
+              <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
+            </div>
 
-        <div className="w-8 h-px bg-slate-200 mb-2" />
+            <div className="w-8 h-px bg-slate-200 mb-2" />
 
-        {/* Expand toggle */}
-        <button
-          onClick={() => { setExpanded(!expanded); setSearchQuery(''); }}
-          className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors mb-2"
-        >
-          {expanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-        </button>
+            {/* Expand */}
+            <button
+              onClick={() => { setExpanded(true); setSearchQuery(''); }}
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors mb-2"
+              title="Expand menu"
+            >
+              <Menu className="w-[18px] h-[18px]" />
+            </button>
 
-        <div className="w-8 h-px bg-slate-200 mb-2" />
+            <div className="w-8 h-px bg-slate-200 mb-2" />
 
-        {/* Nav icons */}
-        <nav className="flex-1 flex flex-col items-center gap-0.5 overflow-y-auto w-full px-2">
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const active = activeTab === item.id;
-            return (
+            {/* Nav icons */}
+            <nav className="flex-1 flex flex-col items-center gap-0.5 overflow-y-auto w-full px-2">
+              {navItems.map(item => {
+                const Icon = item.icon;
+                const active = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    title={item.label}
+                    className={`relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 ${
+                      active
+                        ? 'bg-[#CE1126] text-white'
+                        : 'text-slate-400 hover:text-[#CE1126] hover:bg-red-50'
+                    }`}
+                  >
+                    {active && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-[#CE1126] -ml-2" />
+                    )}
+                    <Icon className="w-[18px] h-[18px]" />
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Bottom icons */}
+            <div className="flex flex-col items-center gap-0.5 mt-2">
+              <div className="w-8 h-px bg-slate-200 mb-1" />
               <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                title={item.label}
-                className={`relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 ${
-                  active
-                    ? 'bg-[#CE1126] text-white'
-                    : 'text-slate-400 hover:text-[#CE1126] hover:bg-red-50'
-                }`}
+                onClick={() => navigate('/')}
+                title="Back to Website"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-[#006B3F] hover:bg-green-50 transition-colors"
               >
-                {active && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-[#CE1126] -ml-2" />
-                )}
-                <Icon className="w-[18px] h-[18px]" />
+                <Globe className="w-[18px] h-[18px]" />
               </button>
-            );
-          })}
-        </nav>
+              <button
+                onClick={async () => { await signOut(); navigate('/'); }}
+                title="Log Out"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-[#CE1126] hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-[18px] h-[18px]" />
+              </button>
+              <div className="w-8 h-px bg-slate-200 my-1" />
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]"
+                title={profile?.full_name || 'User'}
+              >
+                {initial}
+              </div>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
-        {/* Bottom icons */}
-        <div className="flex flex-col items-center gap-0.5 mt-2">
-          <div className="w-8 h-px bg-slate-200 mb-1" />
-          <button
-            onClick={() => navigate('/')}
-            title="Back to Website"
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-[#006B3F] hover:bg-green-50 transition-colors"
-          >
-            <Globe className="w-[18px] h-[18px]" />
-          </button>
-          <button
-            onClick={async () => { await signOut(); navigate('/'); }}
-            title="Log Out"
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-[#CE1126] hover:bg-red-50 transition-colors"
-          >
-            <LogOut className="w-[18px] h-[18px]" />
-          </button>
-          <div className="w-8 h-px bg-slate-200 my-1" />
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]"
-            title={profile?.full_name || 'User'}
-          >
-            {initial}
-          </div>
-        </div>
-      </aside>
-
-      {/* Expanded sidebar panel — slides out from icon bar */}
+      {/* Expanded sidebar — replaces icon bar */}
       <AnimatePresence>
         {expanded && (
           <>
-            {/* Backdrop on mobile */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-              style={{ left: 60 }}
+              className="fixed inset-0 bg-black/20 z-40"
               onClick={() => setExpanded(false)}
             />
             <motion.div
-              id="sidebar-expanded"
-              initial={{ x: -200, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -200, opacity: 0 }}
+              initial={{ x: -260 }}
+              animate={{ x: 0 }}
+              exit={{ x: -260 }}
               transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              className="fixed left-[60px] top-0 bottom-0 w-52 bg-white border-r border-slate-200 shadow-lg z-40 flex flex-col"
+              className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 shadow-xl z-50 flex flex-col"
             >
-              {/* Header */}
-              <div className="px-4 h-14 flex items-center border-b border-slate-100 shrink-0">
-                <span className="font-bold text-[#CE1126] text-sm">CCN Portal</span>
+              {/* Header with close */}
+              <div className="flex items-center justify-between px-4 h-14 border-b border-slate-100 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
+                  <span className="font-bold text-[#CE1126] text-sm">CCN Portal</span>
+                </div>
+                <button
+                  onClick={() => setExpanded(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
               </div>
 
               {/* User */}
               <div className="px-4 py-3 shrink-0">
-                <p className="font-semibold text-slate-900 text-sm truncate">{profile?.full_name || 'User'}</p>
-                <p className="text-[10px] text-[#CE1126] font-medium uppercase tracking-wider">{roleLabel}</p>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-xs shrink-0">
+                    {initial}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 text-sm truncate leading-tight">{profile?.full_name || 'User'}</p>
+                    <p className="text-[10px] text-[#CE1126] font-medium uppercase tracking-wider">{roleLabel}</p>
+                  </div>
+                </div>
               </div>
 
               <div className="mx-3 h-px bg-slate-100 shrink-0" />
@@ -174,7 +190,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
                 </div>
               </div>
 
-              {/* Nav labels */}
+              {/* Nav */}
               <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto">
                 {filteredNav.map(item => {
                   const Icon = item.icon;
@@ -200,8 +216,8 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
                 )}
               </nav>
 
-              {/* Bottom */}
-              <div className="px-2.5 py-2.5 border-t border-slate-100 space-y-0.5 shrink-0">
+              {/* Bottom — close to bottom edge */}
+              <div className="px-2.5 py-2 border-t border-slate-100 shrink-0">
                 <button
                   onClick={() => { setExpanded(false); navigate('/'); }}
                   className="flex items-center w-full px-3 py-2.5 rounded-lg text-[13px] text-slate-700 hover:bg-green-50 hover:text-[#006B3F] transition-colors font-medium"
@@ -223,7 +239,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
       </AnimatePresence>
 
       {/* Top bar */}
-      <div className="fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 flex items-center px-4 sm:px-6 gap-3" style={{ left: 60 }}>
+      <div className="fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 flex items-center px-4 sm:px-6 gap-3 transition-all duration-200" style={{ left: expanded ? 0 : 60 }}>
         <h2 className="font-bold text-slate-900 text-sm">{activeLabel}</h2>
         <div className="flex-1" />
         <AnimatePresence>
@@ -266,7 +282,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
       </div>
 
       {/* Main content */}
-      <main className="flex-1 ml-[60px] w-full pt-12 transition-all duration-300">
+      <main className="flex-1 ml-[60px] w-full pt-12 transition-all duration-200" style={{ marginLeft: expanded ? 0 : 60 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 lg:py-6">
           <AnimatePresence mode="wait">
             <motion.div
