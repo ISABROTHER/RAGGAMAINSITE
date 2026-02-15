@@ -75,7 +75,8 @@ export function Support() {
 
         const raised = contribs?.reduce((sum, c) => sum + (c.units_contributed || 0), 0) || 0;
         const donorCount = contribs?.length || 0;
-        const percent = p.target_units > 0 ? Math.min(100, Math.round((raised / p.target_units) * 100)) : 0;
+        const rawPercent = p.target_units > 0 ? (raised / p.target_units) * 100 : 0;
+        const percent = raised > 0 ? Math.min(100, Math.max(1, Math.round(rawPercent))) : 0;
         return { ...p, raised_units: raised, donor_count: donorCount, percent };
       })
     );
