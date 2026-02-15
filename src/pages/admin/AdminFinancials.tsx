@@ -41,6 +41,7 @@ interface AdminFinancialsProps {
 }
 
 type Period = '7d' | '30d' | '90d' | 'all';
+type DonationView = 'verified' | 'listed';
 
 // Mini donut SVG
 function MiniDonut({ value, max, color }: { value: number; max: number; color: string }) {
@@ -107,6 +108,7 @@ function BarChart({ data, labels }: { data: number[]; labels: string[] }) {
 
 export function AdminFinancials({ contributions, projects }: AdminFinancialsProps) {
   const [period, setPeriod] = useState<Period>('30d');
+  const [donationView, setDonationView] = useState<DonationView>('verified');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [showProjectDetail, setShowProjectDetail] = useState(false);
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
@@ -114,23 +116,27 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
   const verified = useMemo(() =>
     contributions.filter(c => c.status === 'completed' && c.payment_reference), [contributions]
   );
+  const listed = useMemo(() =>
+    contributions.filter(c => c.payment_reference), [contributions]
+  );
+  const scopedContributions = donationView === 'verified' ? verified : listed;
   const projectMap = useMemo(() => new Map(projects.map(p => [p.id, p])), [projects]);
 
   const filteredByPeriod = useMemo(() => {
     const now = Date.now();
     const days = period === '7d' ? 7 : period === '30d' ? 30 : period === '90d' ? 90 : Infinity;
-    return verified.filter(c => (now - new Date(c.created_at).getTime()) < days * 86400000);
-  }, [verified, period]);
+    return scopedContributions.filter(c => (now - new Date(c.created_at).getTime()) < days * 86400000);
+  }, [scopedContributions, period]);
 
   const prevPeriod = useMemo(() => {
     const now = Date.now();
     const days = period === '7d' ? 7 : period === '30d' ? 30 : period === '90d' ? 90 : Infinity;
     if (days === Infinity) return [];
-    return verified.filter(c => {
+    return scopedContributions.filter(c => {
       const t = now - new Date(c.created_at).getTime();
       return t >= days * 86400000 && t < days * 2 * 86400000;
     });
-  }, [verified, period]);
+  }, [scopedContributions, period]);
 
   const totalRaised = filteredByPeriod.reduce((s, c) => s + Number(c.amount_ghs), 0);
   const prevRaised = prevPeriod.reduce((s, c) => s + Number(c.amount_ghs), 0);
@@ -150,7 +156,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
   const monthlyData = useMemo(() => {
     const months: number[] = new Array(12).fill(0);
     const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    verified.forEach(c => {
+    scopedContributions.forEach(c => {
       const m = new Date(c.created_at).getMonth();
       months[m] += Number(c.amount_ghs);
     });
@@ -160,7 +166,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
       data: months.slice(startMonth, currentMonth + 1),
       labels: labels.slice(startMonth, currentMonth + 1),
     };
-  }, [verified]);
+  }, [scopedContributions]);
 
   // By project
   const byProject = useMemo(() => {
@@ -212,7 +218,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
     const rows = filteredByPeriod.map(c => `${fmtDate(c.created_at)},"${c.donor_first_name} ${c.donor_last_name}",${c.donor_contact},${c.amount_ghs},${c.payment_method},"${projectMap.get(c.project_id)?.title || ''}",${c.payment_reference}`).join('\n');
     const blob = new Blob([h + rows], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = `donations-${period}-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    a.download = `donations-${donationView}-${period}-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
   };
 
   const ChangeBadge = ({ val }: { val: number }) => {
@@ -285,11 +291,11 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm">Donation History</h3>
-            <span className="flex items-center gap-1 text-[10px] text-green-600 font-bold"><ShieldCheck className="w-3 h-3" />Verified</span>
+            <span className={`flex items-center gap-1 text-[10px] font-bold ${donationView === 'verified' ? 'text-green-600' : 'text-blue-600'}`}><ShieldCheck className="w-3 h-3" />{donationView === 'verified' ? 'Verified' : 'Listed'}</span>
           </div>
           <div className="divide-y divide-slate-50">
             {projContribs.length === 0 ? (
-              <div className="p-10 text-center text-slate-400 text-sm">No verified donations</div>
+              <div className="p-10 text-center text-slate-400 text-sm">{donationView === 'verified' ? 'No verified donations' : 'No listed donations'}</div>
             ) : projContribs.map(c => {
               const anon = c.donor_first_name.toLowerCase() === 'anonymous';
               return (
@@ -329,8 +335,8 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
       {/* Header row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-            <ShieldCheck className="w-3 h-3" />Paystack Verified Only
+          <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${donationView === 'verified' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50'}`}>
+            <ShieldCheck className="w-3 h-3" />{donationView === 'verified' ? 'Paystack Verified Only' : 'Listed Donations'}
           </span>
           {pendingCount > 0 && (
             <span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
@@ -339,6 +345,14 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
           )}
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex bg-white rounded-xl border border-slate-200 p-0.5">
+            <button onClick={() => setDonationView('verified')} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${donationView === 'verified' ? 'bg-[#CE1126] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+              Verified
+            </button>
+            <button onClick={() => setDonationView('listed')} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${donationView === 'listed' ? 'bg-[#CE1126] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+              Listed
+            </button>
+          </div>
           <div className="flex bg-white rounded-xl border border-slate-200 p-0.5">
             {(['7d', '30d', '90d', 'all'] as Period[]).map(p => (
               <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${period === p ? 'bg-[#CE1126] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
@@ -355,7 +369,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
       {/* Stat cards — 3 across like reference, stacked 1-col on small mobile */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
-          { label: 'Total Raised', sub: `${filteredByPeriod.length} verified payments`, value: fmtGHS(totalRaised), change: raisedPct, color: '#006B3F', donutVal: totalRaised, donutMax: totalRaised + prevRaised || 1 },
+          { label: 'Total Raised', sub: `${filteredByPeriod.length} ${donationView === 'verified' ? 'verified payments' : 'listed donations'}`, value: fmtGHS(totalRaised), change: raisedPct, color: '#006B3F', donutVal: totalRaised, donutMax: totalRaised + prevRaised || 1 },
           { label: 'Unique Donors', sub: `Avg ${fmtGHS(avgDonation)} each`, value: uniqueDonors.toString(), change: donorsPct, color: '#CE1126', donutVal: uniqueDonors, donutMax: uniqueDonors + prevDonors || 1 },
           { label: 'Avg Donation', sub: `From ${uniqueDonors} donors`, value: fmtGHS(avgDonation), change: avgPct, color: '#FCD116', donutVal: avgDonation, donutMax: avgDonation + prevAvg || 1 },
         ].map(s => (
@@ -458,7 +472,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredByPeriod.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-slate-400 text-sm">No verified transactions</td></tr>
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-slate-400 text-sm">{donationView === 'verified' ? 'No verified transactions' : 'No listed donations'}</td></tr>
               ) : filteredByPeriod.slice(0, 15).map(c => (
                 <tr key={c.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => { setSelectedProjectId(c.project_id); setShowProjectDetail(true); }}>
                   <td className="px-4 py-3">
@@ -468,8 +482,9 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
                   <td className="px-4 py-3 text-xs text-slate-600 max-w-[160px] truncate">{projectMap.get(c.project_id)?.title || '-'}</td>
                   <td className="px-4 py-3 text-xs text-slate-500">{fmtDate(c.created_at)}</td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-600">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500" />Verified
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${c.status === 'completed' ? 'text-green-600' : c.status === 'pending' ? 'text-amber-600' : c.status === 'failed' ? 'text-red-600' : 'text-blue-600'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${c.status === 'completed' ? 'bg-green-500' : c.status === 'pending' ? 'bg-amber-500' : c.status === 'failed' ? 'bg-red-500' : 'bg-blue-500'}`} />
+                      {c.status === 'completed' ? 'Verified' : c.status === 'pending' ? 'Pending' : c.status === 'failed' ? 'Failed' : 'Listed'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm font-bold text-slate-900 text-right">{fmtGHS(Number(c.amount_ghs))}</td>
@@ -482,7 +497,7 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
         {/* Mobile cards */}
         <div className="sm:hidden divide-y divide-slate-50">
           {filteredByPeriod.length === 0 ? (
-            <div className="p-10 text-center text-slate-400 text-sm">No verified transactions</div>
+            <div className="p-10 text-center text-slate-400 text-sm">{donationView === 'verified' ? 'No verified transactions' : 'No listed donations'}</div>
           ) : filteredByPeriod.slice(0, 15).map(c => (
             <div key={c.id} className="p-3 hover:bg-slate-50/50 transition-colors" onClick={() => { setSelectedProjectId(c.project_id); setShowProjectDetail(true); }}>
               <div className="flex items-center gap-3">
@@ -507,4 +522,4 @@ export function AdminFinancials({ contributions, projects }: AdminFinancialsProp
       </div>
     </motion.div>
   );
-} 
+}
