@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   LayoutDashboard, FolderOpen, DollarSign, Users,
   FileText, MessageSquare, Megaphone, AlertTriangle,
-  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar
+  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar, UsersRound
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -20,12 +20,14 @@ import { AdminSettings } from './admin/AdminSettings';
 import { AdminAssemblymen } from './admin/AdminAssemblymen';
 import { AdminAchievements } from './admin/AdminAchievements';
 import { AdminAppointments } from './admin/AdminAppointments';
+import { AdminConstituents } from './admin/AdminConstituents';
 
 const ALL_NAV = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: FolderOpen },
   { id: 'donations', label: 'Donations', icon: DollarSign },
   { id: 'assemblymen', label: 'Assemblymen', icon: UserCheck },
+  { id: 'constituents', label: 'Constituents', icon: UsersRound },
   { id: 'achievements', label: 'Achievements', icon: Award },
   { id: 'appointments', label: 'Appointments', icon: Calendar },
   { id: 'issues', label: 'Issues', icon: AlertTriangle },
@@ -147,6 +149,8 @@ export function Admin() {
       )}
 
       {activeTab === 'assemblymen' && <AdminAssemblymen />}
+
+      {activeTab === 'constituents' && <AdminConstituents />}
 
       {activeTab === 'achievements' && <AdminAchievements />}
 
