@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   LayoutDashboard, FolderOpen, DollarSign, Users,
   FileText, MessageSquare, Megaphone, AlertTriangle,
@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { DashboardShell } from '../components/dashboard/DashboardShell';
 import { MessagePanel } from '../components/dashboard/MessagePanel';
 import { AnnouncementPanel } from '../components/dashboard/AnnouncementPanel';
@@ -20,7 +21,7 @@ import { AdminAssemblymen } from './admin/AdminAssemblymen';
 import { AdminAchievements } from './admin/AdminAchievements';
 import { AdminAppointments } from './admin/AdminAppointments';
 
-const NAV = [
+const ALL_NAV = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: FolderOpen },
   { id: 'donations', label: 'Donations', icon: DollarSign },
@@ -36,8 +37,15 @@ const NAV = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
+const VIEWER_NAV = [
+  { id: 'donations', label: 'Donations', icon: DollarSign },
+];
+
 export function Admin() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const { profile } = useAuth();
+  const isViewer = profile?.role === 'viewer';
+  const NAV = useMemo(() => isViewer ? VIEWER_NAV : ALL_NAV, [isViewer]);
+  const [activeTab, setActiveTab] = useState(isViewer ? 'donations' : 'overview');
   const [events, setEvents] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -66,6 +74,12 @@ export function Admin() {
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  useEffect(() => {
+    if (isViewer && activeTab !== 'donations') {
+      setActiveTab('donations');
+    }
+  }, [isViewer, activeTab]);
 
   useEffect(() => {
     const channel = supabase
@@ -105,7 +119,7 @@ export function Admin() {
       activeTab={activeTab}
       onTabChange={setActiveTab}
       accentColor="#CE1126"
-      roleLabel="Administrator"
+      roleLabel={isViewer ? "Viewer" : "Administrator"}
     >
       {activeTab === 'overview' && (
         <AdminOverview
