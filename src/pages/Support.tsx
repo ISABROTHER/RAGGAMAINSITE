@@ -1,7 +1,3 @@
-
-
-
-
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send, Users, ChevronDown, ClipboardList } from 'lucide-react';
@@ -374,17 +370,14 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
 
           {/* Progress */}
           <div className="mb-4">
-            <div className="flex items-center justify-between text-[11px] mb-1.5">
-              <span className="font-semibold text-slate-600 tabular-nums">
-                {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
-              </span>
-              {/* Wall of Thanks — typing animation */}
+            <div className="flex items-center justify-end text-[11px] mb-1.5">
+              {/* Wall of Appreciation — typing animation */}
               {project.donor_count > 0 && (
                 <motion.button
                   onClick={fetchDonors}
                   whileTap={{ scale: 0.95 }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/30 transition-colors overflow-hidden"
-                  title="View Wall of Thanks"
+                  title="View Wall of Appreciation"
                 >
                   <motion.span
                     animate={{ rotate: [0, -10, 10, -10, 0] }}
@@ -393,7 +386,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     <ClipboardList className="w-3 h-3" />
                   </motion.span>
                   <span className="text-[10px] font-bold">
-                    {`Wall of Thanks · ${project.donor_count} ${project.donor_count === 1 ? 'donor' : 'donors'}`.split('').map((char, i) => (
+                    {`Wall of Appreciation · ${project.donor_count} ${project.donor_count === 1 ? 'donor' : 'donors'}`.split('').map((char, i) => (
                       <motion.span
                         key={i}
                         initial={{ opacity: 0 }}
