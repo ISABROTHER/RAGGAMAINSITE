@@ -7,7 +7,6 @@ interface LoginProps {
   onNavigate: (page: string) => void;
 }
 
-// Normalize phone: strip non-digits, remove leading 0 or 233
 function normalizePhone(raw: string): string {
   let digits = raw.replace(/\D/g, '');
   if (digits.startsWith('233')) digits = digits.slice(3);
@@ -15,9 +14,10 @@ function normalizePhone(raw: string): string {
   return digits;
 }
 
+
 export function Login({ onNavigate }: LoginProps) {
   const { signIn } = useAuth();
-  const [phone, setPhone] = useState('');
+  const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -46,17 +46,31 @@ export function Login({ onNavigate }: LoginProps) {
     e.preventDefault();
     setError('');
 
-    const normalized = normalizePhone(phone);
-    if (normalized.length < 9) {
-      setError('Enter a valid phone number');
+    const trimmed = identity.trim();
+    if (!trimmed) {
+      setError('Enter your phone number or email');
       return;
     }
 
+    let identifier: string;
+
+    // Email detected — use directly
+    if (trimmed.includes('@') && trimmed.includes('.')) {
+      identifier = trimmed.toLowerCase();
+    } else {
+      // Treat as phone number
+      const normalized = normalizePhone(trimmed);
+      if (normalized.length < 9) {
+        setError('Enter a valid phone number or email address');
+        return;
+      }
+      identifier = `${normalized}@phone.ccn.local`;
+    }
+
     setLoading(true);
-    const identifier = `${normalized}@phone.ccn.local`;
     const { error: err } = await signIn(identifier, password);
     if (err) {
-      setError('Invalid phone number or password');
+      setError('Invalid credentials');
       setLoading(false);
     } else {
       onNavigate('dashboard');
@@ -65,7 +79,6 @@ export function Login({ onNavigate }: LoginProps) {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-[#fafafa] flex flex-col relative overflow-x-hidden overflow-y-auto">
-      {/* Ghana flag stripe */}
       <div className="fixed top-0 left-0 right-0 h-1 flex z-20">
         <div className="flex-1 bg-[#CE1126]" />
         <div className="flex-1 bg-[#FCD116]" />
@@ -128,15 +141,15 @@ export function Login({ onNavigate }: LoginProps) {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Phone Number
+                  Phone Number or Email
                 </label>
                 <input
-                  type="tel"
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
+                  type="text"
+                  value={identity}
+                  onChange={e => setIdentity(e.target.value)}
                   required
-                  autoComplete="tel"
-                  placeholder="e.g. 0241234567 or 241234567"
+                  autoComplete="username"
+                  placeholder="e.g. 0241234567 or +233241234567"
                   className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                 />
               </div>
