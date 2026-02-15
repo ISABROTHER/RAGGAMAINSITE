@@ -1,3 +1,7 @@
+
+
+
+
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send, Users, ChevronDown, ClipboardList } from 'lucide-react';
@@ -389,7 +393,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     <ClipboardList className="w-3 h-3" />
                   </motion.span>
                   <span className="text-[10px] font-bold">
-                    {'Wall of Thanks'.split('').map((char, i) => (
+                    {`Wall of Thanks · ${project.donor_count} ${project.donor_count === 1 ? 'donor' : 'donors'}`.split('').map((char, i) => (
                       <motion.span
                         key={i}
                         initial={{ opacity: 0 }}
@@ -649,4 +653,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       )}
     </>
   );
-} 
+}
