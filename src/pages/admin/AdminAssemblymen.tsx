@@ -1,8 +1,11 @@
 diff --git a/src/pages/admin/AdminAssemblymen.tsx b/src/pages/admin/AdminAssemblymen.tsx
-index 119f9ca82cd6f52e21514274a2d26b6c36add536..3caacc4542f5c71f38075bcfc064f71322acb5ad 100644
+index 119f9ca82cd6f52e21514274a2d26b6c36add536..f2ed3589e5dfd0f1390020098bab238cbe64fc5c 100644
 --- a/src/pages/admin/AdminAssemblymen.tsx
 +++ b/src/pages/admin/AdminAssemblymen.tsx
-@@ -3,145 +3,149 @@ import { motion } from 'framer-motion';
+@@ -1,147 +1,151 @@
+-import { useState, useEffect } from 'react';
++import { useState, useEffect, type FormEvent } from 'react';
+ import { motion } from 'framer-motion';
  import { UserCheck, Mail, Phone, MapPin, Calendar, Edit, Trash2, Plus, Loader2, Users } from 'lucide-react';
  import { supabase } from '../../lib/supabase';
  import { Button } from '../../components/Button';
@@ -46,7 +49,8 @@ index 119f9ca82cd6f52e21514274a2d26b6c36add536..3caacc4542f5c71f38075bcfc064f713
      setLoading(false);
    };
  
-   const handleSubmit = async (e: React.FormEvent) => {
+-  const handleSubmit = async (e: React.FormEvent) => {
++  const handleSubmit = async (e: FormEvent) => {
      e.preventDefault();
  
      if (editingId) {
@@ -259,4 +263,3 @@ index 119f9ca82cd6f52e21514274a2d26b6c36add536..3caacc4542f5c71f38075bcfc064f713
                        </span>
                      </div>
                      <div className="flex items-center justify-between">
- 
