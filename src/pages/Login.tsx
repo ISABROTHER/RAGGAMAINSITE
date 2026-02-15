@@ -11,7 +11,7 @@ type AuthMethod = 'email' | 'phone';
 
 export function Login({ onNavigate }: LoginProps) {
   const { signIn } = useAuth();
-  const [method, setMethod] = useState<AuthMethod>('email');
+  const [method, setMethod] = useState<AuthMethod>('phone');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +20,7 @@ export function Login({ onNavigate }: LoginProps) {
   const [loading, setLoading] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  const identifier = method === 'email' ? email : `${phone}@phone.ccn.local`;
+  const identifier = method === 'email' ? email : `${phone.replace(/\D/g, '')}@phone.ccn.local`;
 
   useEffect(() => {
     const initialHeight = window.innerHeight;
@@ -105,11 +105,11 @@ export function Login({ onNavigate }: LoginProps) {
             {/* Green top accent */}
             <div className="h-0.5 w-12 bg-[#006B3F] rounded-full mx-auto mb-5" />
 
-            {/* Email / Phone toggle */}
+            {/* Phone / Email toggle — Phone first */}
             <div className="flex bg-slate-100 rounded-lg p-0.5 mb-5">
               {([
-                { key: 'email' as AuthMethod, label: 'Email', icon: Mail },
                 { key: 'phone' as AuthMethod, label: 'Phone', icon: Phone },
+                { key: 'email' as AuthMethod, label: 'Email', icon: Mail },
               ]).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
@@ -152,28 +152,7 @@ export function Login({ onNavigate }: LoginProps) {
               </AnimatePresence>
 
               <AnimatePresence mode="wait">
-                {method === 'email' ? (
-                  <motion.div
-                    key="email-field"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      required={method === 'email'}
-                      autoComplete="email"
-                      placeholder="you@example.com"
-                      className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
-                    />
-                  </motion.div>
-                ) : (
+                {method === 'phone' ? (
                   <motion.div
                     key="phone-field"
                     initial={{ opacity: 0, x: -10 }}
@@ -196,6 +175,27 @@ export function Login({ onNavigate }: LoginProps) {
                         className="w-full pl-14 pr-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                       />
                     </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="email-field"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required={method === 'email'}
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
