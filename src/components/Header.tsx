@@ -66,7 +66,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
 
   const mobileNavItems = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'support', label: 'Support Ragga', icon: Heart },
+    { id: 'support', label: 'RAGGA FOUNDATION', icon: Heart },
     { id: 'about', label: 'About Profile', icon: User },
     { id: 'achievements', label: 'Achievements', icon: Award },
     { id: 'assemblymen', label: 'Assemblymen', icon: Users },
