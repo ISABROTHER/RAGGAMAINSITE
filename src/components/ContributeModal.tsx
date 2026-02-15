@@ -78,11 +78,21 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     }
   };
 
+  const generateSecureReference = (): string => {
+    const timestamp = Date.now();
+    const randomBytes = new Uint8Array(16);
+    crypto.getRandomValues(randomBytes);
+    const randomHex = Array.from(randomBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    return `BK_${timestamp}_${randomHex.substring(0, 12)}`;
+  };
+
   const handlePay = async () => {
     setError('');
     setModalState('processing');
 
-    const ref = 'BK_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    const ref = generateSecureReference();
     setReference(ref);
 
     try {
