@@ -1,7 +1,7 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send, Users, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
 import { supabase } from '../lib/supabase';
@@ -23,6 +23,30 @@ interface ProjectWithProgress extends Project {
   raised_units: number;
   donor_count: number;
   percent: number;
+}
+
+interface Donor {
+  display_name: string;
+  units: number;
+  time_ago: string;
+}
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs}h ago`;
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 5) return `${diffWeeks}w ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) return `${diffMonths}mo ago`;
+  return `${Math.floor(diffDays / 365)}y ago`;
 }
 
 export function Support() {
@@ -105,15 +129,12 @@ export function Support() {
   }, [projects, searchQuery, activeCategory]);
 
   return (
-    // Reduced pt-16 to pt-14 on mobile to aggressively close the gap to the header
     <div className="min-h-screen bg-slate-50 pt-4 sm:pt-6 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <AnimatedSection>
-          {/* Reduced pt-1 to pt-0 on mobile */}
           <div className="text-center pt-0 sm:pt-4 pb-12 sm:pb-20">
             
-            {/* 1. Animated Title — smooth fade-in + slide up */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -124,7 +145,6 @@ export function Support() {
               <span className="text-green-700">Foundation</span>
             </motion.h1>
 
-            {/* Animated underline */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
@@ -132,8 +152,6 @@ export function Support() {
               className="mx-auto w-24 sm:w-32 h-1 bg-gradient-to-r from-red-500 via-yellow-400 to-green-600 rounded-full origin-left mb-4"
             />
 
-            
-            {/* 3. Description Box */}
             <motion.div 
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -148,14 +166,12 @@ export function Support() {
           </div>
         </AnimatedSection>
 
-        {/* Search & Filter Bar — always visible */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
           className="mb-10"
         >
-          {/* Search Input */}
           <div className="relative mb-5">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
@@ -175,7 +191,6 @@ export function Support() {
             )}
           </div>
 
-          {/* Category Filter Pills */}
           {categories.length > 1 && (
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
               <SlidersHorizontal className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -204,7 +219,6 @@ export function Support() {
           </div>
         ) : (
           <>
-            {/* Results Count */}
             <div className="flex items-center gap-4 mb-8 mt-10 px-1">
               <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
                 {filteredProjects.length} {filteredProjects.length === 1 ? 'Project' : 'Projects'}
@@ -261,6 +275,13 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
   const [donateTextIndex, setDonateTextIndex] = useState(0);
   const donateTexts = ['Please Donate', 'Make a Difference', 'Change a Life', 'Give Hope'];
 
+  // Donor book state
+  const [showDonorBook, setShowDonorBook] = useState(false);
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [loadingDonors, setLoadingDonors] = useState(false);
+  const [donorPage, setDonorPage] = useState(1);
+  const DONORS_PER_PAGE = 10;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDonateTextIndex((prev) => (prev + 1) % donateTexts.length);
@@ -278,6 +299,39 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       setTimeout(() => setCopied(false), 2000);
     } catch { /* ignore */ }
   };
+
+  const fetchDonors = async () => {
+    if (donors.length > 0) {
+      setShowDonorBook(true);
+      return;
+    }
+    setLoadingDonors(true);
+    setShowDonorBook(true);
+
+    const { data } = await supabase
+      .from('contributions')
+      .select('donor_first_name, donor_last_name, units_contributed, created_at')
+      .eq('project_id', project.id)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false });
+
+    if (data) {
+      const mapped: Donor[] = data.map((d) => {
+        const firstName = d.donor_first_name || 'Anonymous';
+        const lastInitial = d.donor_last_name ? d.donor_last_name.charAt(0).toUpperCase() + '.' : '';
+        return {
+          display_name: lastInitial ? `${firstName} ${lastInitial}` : firstName,
+          units: d.units_contributed || 0,
+          time_ago: timeAgo(d.created_at),
+        };
+      });
+      setDonors(mapped);
+    }
+    setLoadingDonors(false);
+  };
+
+  const paginatedDonors = donors.slice(0, donorPage * DONORS_PER_PAGE);
+  const hasMore = paginatedDonors.length < donors.length;
 
   return (
     <>
@@ -316,10 +370,21 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
 
           {/* Progress */}
           <div className="mb-4">
-            <div className="flex justify-between text-[11px] mb-1.5">
+            <div className="flex items-center justify-between text-[11px] mb-1.5">
               <span className="font-semibold text-slate-600 tabular-nums">
                 {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
               </span>
+              {/* Tiny Donor Book Button */}
+              {project.donor_count > 0 && (
+                <button
+                  onClick={fetchDonors}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 hover:bg-green-100 text-green-700 transition-colors"
+                  title="View donors"
+                >
+                  <Users className="w-3 h-3" />
+                  <span className="text-[10px] font-bold tabular-nums">{project.donor_count}</span>
+                </button>
+              )}
             </div>
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
               <div
@@ -376,6 +441,106 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           </div>
         </div>
       </div>
+
+      {/* Donor Book Bottom Sheet */}
+      <AnimatePresence>
+        {showDonorBook && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+            onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-white rounded-t-2xl px-5 pt-4 pb-6 max-h-[70vh] flex flex-col"
+            >
+              {/* Handle */}
+              <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-3 flex-shrink-0" />
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4 text-green-700" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Donor Book</p>
+                    <p className="text-[10px] text-slate-400">{project.donor_count} supporter{project.donor_count !== 1 ? 's' : ''}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
+                  className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5 text-slate-500" />
+                </button>
+              </div>
+
+              {/* Donor List */}
+              <div className="overflow-y-auto flex-1 -mx-1 px-1 scrollbar-hide">
+                {loadingDonors ? (
+                  <div className="flex items-center justify-center py-10">
+                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
+                  </div>
+                ) : donors.length === 0 ? (
+                  <div className="text-center py-10">
+                    <Users className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+                    <p className="text-xs text-slate-400">No donations yet. Be the first!</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      {paginatedDonors.map((donor, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.03, duration: 0.2 }}
+                          className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] font-bold text-white">
+                                {donor.display_name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-slate-800 truncate">
+                                {donor.display_name}
+                              </p>
+                              <p className="text-[10px] text-slate-400">{donor.time_ago}</p>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full tabular-nums flex-shrink-0">
+                            {donor.units.toLocaleString()} {project.unit_label}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Load More */}
+                    {hasMore && (
+                      <button
+                        onClick={() => setDonorPage((p) => p + 1)}
+                        className="w-full mt-3 py-2 flex items-center justify-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider hover:bg-green-50 rounded-xl transition-colors"
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                        Show more
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Share Bottom Sheet */}
       {showShare && (
