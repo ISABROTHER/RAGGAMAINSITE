@@ -16,13 +16,19 @@ function normalizePhone(raw: string): string {
 
 
 export function Login({ onNavigate }: LoginProps) {
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      onNavigate('dashboard');
+    }
+  }, [user, onNavigate]);
 
   useEffect(() => {
     const initialHeight = window.innerHeight;
@@ -72,8 +78,6 @@ export function Login({ onNavigate }: LoginProps) {
     if (err) {
       setError('Invalid credentials');
       setLoading(false);
-    } else {
-      onNavigate('dashboard');
     }
   };
 
