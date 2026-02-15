@@ -66,9 +66,9 @@ export function Login({ onNavigate }: LoginProps) {
             Back to site
           </button>
 
-          {/* Logo + heading */}
+          {/* Logo */}
           <div className="text-center mb-8">
-            <div className="relative inline-block mb-5">
+            <div className="relative inline-block">
               <div className="absolute -inset-3 bg-gradient-to-br from-[#006B3F]/10 via-[#FCD116]/10 to-[#CE1126]/10 rounded-full blur-xl" />
               <img
                 src="https://i.imgur.com/1GfnCQc.png"
@@ -76,8 +76,6 @@ export function Login({ onNavigate }: LoginProps) {
                 className="relative h-20 sm:h-24 object-contain mx-auto"
               />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
-            <p className="text-slate-500 mt-2 text-sm">Sign in to your constituency portal</p>
           </div>
 
           {/* Card */}
@@ -221,10 +219,6 @@ export function Login({ onNavigate }: LoginProps) {
               </p>
             </div>
           </div>
-
-          <p className="text-center text-[11px] text-slate-400 mt-6">
-            Cape Coast North Constituency Portal
-          </p>
         </motion.div>
       </div>
     </div>
