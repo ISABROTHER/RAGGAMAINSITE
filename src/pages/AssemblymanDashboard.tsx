@@ -1,250 +1,300 @@
-import { useState, useEffect } from 'react';
-import {
-  LayoutDashboard, MessageSquare, Megaphone, Users,
-  AlertTriangle, CalendarDays, TrendingUp, BarChart3,
-  MapPin, FileText, Clock
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { DashboardShell } from '../components/dashboard/DashboardShell';
-import { MessagePanel } from '../components/dashboard/MessagePanel';
-import { AnnouncementPanel } from '../components/dashboard/AnnouncementPanel';
-
-const NAV = [
-  { id: 'overview', label: 'Home', icon: LayoutDashboard },
-  { id: 'messages', label: 'Messages', icon: MessageSquare },
-  { id: 'announcements', label: 'Announce', icon: Megaphone },
-  { id: 'issues', label: 'Issues', icon: AlertTriangle },
-  { id: 'constituents', label: 'People', icon: Users },
-];
-
-export function AssemblymanDashboard() {
-  const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [issues, setIssues] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
-  const [constituents, setConstituents] = useState<any[]>([]);
-  const [posts, setPosts] = useState<any[]>([]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const [issRes, evRes, constRes, postRes] = await Promise.all([
-        supabase.from('issues').select('*').order('created_at', { ascending: false }),
-        supabase.from('events').select('*').order('event_date', { ascending: false }).limit(5),
-        supabase.from('profiles').select('id, full_name, phone, zone, role, created_at').eq('role', 'constituent'),
-        supabase.from('blog_posts').select('*').eq('published', true).order('published_at', { ascending: false }).limit(5),
-      ]);
-      if (issRes.data) setIssues(issRes.data);
-      if (evRes.data) setEvents(evRes.data);
-      if (constRes.data) setConstituents(constRes.data);
-      if (postRes.data) setPosts(postRes.data);
-    };
-    loadData();
-  }, []);
-
-  const openIssues = issues.filter(i => i.status === 'open').length;
-  const inProgressIssues = issues.filter(i => i.status === 'in_progress').length;
-
-  const stats = [
-    { label: 'Constituents', value: constituents.length.toString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Open Issues', value: openIssues.toString(), icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'In Progress', value: inProgressIssues.toString(), icon: TrendingUp, color: 'text-teal-600', bg: 'bg-teal-50' },
-    { label: 'Events', value: events.length.toString(), icon: CalendarDays, color: 'text-green-600', bg: 'bg-green-50' },
-  ];
-
-  const priorityCounts = {
-    high: issues.filter(i => i.priority === 'high').length,
-    medium: issues.filter(i => i.priority === 'medium').length,
-    low: issues.filter(i => i.priority === 'low').length,
-  };
-
-  return (
-    <DashboardShell
-      navItems={NAV}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      accentColor="#2563eb"
-      roleLabel="Assemblyman"
-    >
-      {activeTab === 'overview' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-          <div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-              Welcome, Hon. {profile?.full_name?.split(' ').slice(-1)[0] || 'Representative'}
-            </h2>
-            <p className="text-slate-500 mt-1.5 font-medium">Your constituency at a glance</p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
-            {stats.map(s => (
-              <div key={s.label} className="bg-white p-4 lg:p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <div className={`w-10 h-10 rounded-xl ${s.bg} ${s.color} flex items-center justify-center mb-3`}>
-                  <s.icon className="w-5 h-5" />
-                </div>
-                <p className="text-2xl font-black text-slate-900">{s.value}</p>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-slate-900">Issues by Priority</h3>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { label: 'High', count: priorityCounts.high, color: 'bg-red-500', total: issues.length },
-                  { label: 'Medium', count: priorityCounts.medium, color: 'bg-amber-500', total: issues.length },
-                  { label: 'Low', count: priorityCounts.low, color: 'bg-green-500', total: issues.length },
-                ].map(p => (
-                  <div key={p.label}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-semibold text-slate-600">{p.label}</span>
-                      <span className="text-xs font-bold text-slate-900">{p.count}</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full ${p.color} rounded-full transition-all`} style={{ width: `${p.total ? (p.count / p.total) * 100 : 0}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 p-5">
-              <h3 className="font-bold text-slate-900 mb-4">Recent Issues</h3>
-              <div className="space-y-2.5">
-                {issues.slice(0, 4).map(i => (
-                  <div key={i.id} className="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-xl">
-                    <div className={`w-2 h-2 mt-1.5 rounded-full shrink-0 ${i.priority === 'high' ? 'bg-red-500' : i.priority === 'medium' ? 'bg-amber-500' : 'bg-green-500'}`} />
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900">{i.category}</p>
-                      <p className="text-[11px] text-slate-500 truncate">{i.description}</p>
-                    </div>
-                  </div>
-                ))}
-                {issues.length === 0 && <p className="text-sm text-slate-400 italic">No issues reported</p>}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 p-5">
-              <h3 className="font-bold text-slate-900 mb-4">Latest News</h3>
-              <div className="space-y-2.5">
-                {posts.slice(0, 4).map(p => (
-                  <div key={p.id} className="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-xl">
-                    <FileText className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate">{p.title}</p>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Clock className="w-3 h-3 text-slate-300" />
-                        <p className="text-[10px] text-slate-400">{new Date(p.published_at || p.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {posts.length === 0 && <p className="text-sm text-slate-400 italic">No updates</p>}
-              </div>
-            </div>
-          </div>
-
-          <AnnouncementPanel canPost />
-        </motion.div>
-      )}
-
-      {activeTab === 'messages' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Messages</h2>
-          <MessagePanel />
-        </motion.div>
-      )}
-
-      {activeTab === 'announcements' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Announcements</h2>
-          <p className="text-slate-500 font-medium">Post announcements to constituents and other members</p>
-          <AnnouncementPanel canPost />
-        </motion.div>
-      )}
-
-      {activeTab === 'issues' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Constituency Issues</h2>
-            <span className="text-sm font-bold text-slate-500">{issues.length} total</span>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            {issues.length === 0 ? (
-              <div className="p-12 text-center text-slate-400">
-                <AlertTriangle className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">No issues reported</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {issues.map(issue => (
-                  <div key={issue.id} className="p-4 hover:bg-slate-50 transition-colors">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`w-2 h-2 rounded-full ${issue.priority === 'high' ? 'bg-red-500' : issue.priority === 'medium' ? 'bg-amber-500' : 'bg-green-500'}`} />
-                          <p className="text-sm font-bold text-slate-900">{issue.category}</p>
-                          {issue.subcategory && <span className="text-[10px] text-slate-400 font-medium">/ {issue.subcategory}</span>}
-                        </div>
-                        <p className="text-xs text-slate-600 line-clamp-2">{issue.description}</p>
-                        {issue.location && (
-                          <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />{issue.location}
-                          </p>
-                        )}
-                      </div>
-                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
-                        issue.status === 'resolved' ? 'bg-green-100 text-green-700'
-                        : issue.status === 'in_progress' ? 'bg-blue-100 text-blue-700'
-                        : 'bg-amber-100 text-amber-700'
-                      }`}>
-                        {issue.status?.replace('_', ' ') || 'open'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {activeTab === 'constituents' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Constituents</h2>
-            <span className="text-sm font-bold text-slate-500">{constituents.length} members</span>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            {constituents.length === 0 ? (
-              <div className="p-12 text-center text-slate-400">
-                <Users className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">No constituents registered yet</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {constituents.map(c => (
-                  <div key={c.id} className="p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm shrink-0">
-                      {(c.full_name || 'U').charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900">{c.full_name || 'Unknown'}</p>
-                      <p className="text-xs text-slate-500">{c.phone || 'No phone'}{c.zone ? ` | ${c.zone}` : ''}</p>
-                    </div>
-                    <span className="text-[10px] text-slate-400">{new Date(c.created_at).toLocaleDateString()}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </DashboardShell>
-  );
-} 
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/src/pages/Assemblymen.tsx b/src/pages/Assemblymen.tsx
+index 0460d611b767ee1d3fcd19919ccd78425d4d3204..467c366df3fe5bebdfa99cd854649b0475c5aeb8 100644
+--- a/src/pages/Assemblymen.tsx
++++ b/src/pages/Assemblymen.tsx
+@@ -1,196 +1,243 @@
+ // src/pages/Assemblymen.tsx
+-import { useState, useMemo } from 'react';
++import { useEffect, useMemo, useState } from 'react';
+ import { Phone, Search, Crosshair, MapPin, Loader2, Quote } from 'lucide-react';
+ import { motion, AnimatePresence } from 'framer-motion';
+ import { AnimatedSection } from '../components/AnimatedSection';
+-import { LOCATIONS } from '../data/locations';
++import { supabase } from '../lib/supabase';
++
++interface AssemblyMember {
++  id: string;
++  assemblyman: string;
++  zone: string;
++  phone: string;
++  photoUrl: string;
++}
++
++const DEFAULT_MEMBER_PHOTO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Flag_of_Ghana.svg/640px-Flag_of_Ghana.svg.png';
+ 
+ export function Assemblymen() {
+   const [searchQuery, setSearchQuery] = useState('');
+   const [isLocating, setIsLocating] = useState(false);
+   const [detectedZone, setDetectedZone] = useState<string | null>(null);
++  const [members, setMembers] = useState<AssemblyMember[]>([]);
++
++  useEffect(() => {
++    const fetchAssemblyMembers = async () => {
++      const { data } = await supabase
++        .from('profiles')
++        .select('id, full_name, phone, zone, avatar_url, is_active')
++        .eq('role', 'assemblyman')
++        .eq('is_active', true)
++        .order('created_at', { ascending: false });
++
++      if (!data) {
++        setMembers([]);
++        return;
++      }
++
++      const mappedMembers: AssemblyMember[] = data
++        .filter((member) => member.full_name && member.zone)
++        .map((member) => ({
++          id: member.id,
++          assemblyman: member.full_name,
++          zone: member.zone ?? '',
++          phone: member.phone ?? '',
++          photoUrl: member.avatar_url || DEFAULT_MEMBER_PHOTO,
++        }));
++
++      setMembers(mappedMembers);
++    };
++
++    fetchAssemblyMembers();
++
++    const channel = supabase
++      .channel('assembly-members-live')
++      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
++        fetchAssemblyMembers();
++      })
++      .subscribe();
++
++    return () => {
++      supabase.removeChannel(channel);
++    };
++  }, []);
+ 
+   const formatPhoneNumber = (phone: string) => {
+     return phone.replace('+233 ', '0').replace('+233', '0');
+   };
+ 
+   const filteredMembers = useMemo(() => {
+-    return LOCATIONS.filter(
++    return members.filter(
+       (m) =>
+         m.assemblyman.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         m.zone.toLowerCase().includes(searchQuery.toLowerCase())
+     );
+-  }, [searchQuery]);
++  }, [members, searchQuery]);
+ 
+   const handleLiveLocation = () => {
+     setIsLocating(true);
+     setDetectedZone(null);
+ 
+     if (!navigator.geolocation) {
+-      alert("Location services are not supported by your browser.");
++      alert('Location services are not supported by your browser.');
+       setIsLocating(false);
+       return;
+     }
+ 
+     navigator.geolocation.getCurrentPosition(
+-      (position) => {
++      () => {
+         setTimeout(() => {
+           setIsLocating(false);
+-          // Simulation of zone detection logic
+-          const matchedZone = "Abura"; 
++          const matchedZone = 'Abura';
+           setDetectedZone(matchedZone);
+           setSearchQuery(matchedZone);
+         }, 1200);
+       },
+       () => {
+         setIsLocating(false);
+       }
+     );
+   };
+ 
+   return (
+-    <div className="min-h-screen bg-slate-50 pt-10 pb-20 font-sans"> 
++    <div className="min-h-screen bg-slate-50 pt-10 pb-20 font-sans">
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+-        
+-        {/* --- STANDARD HEADING BLOCK --- */}
+         <div className="text-center mb-6">
+           <div className="flex flex-col items-center justify-center group">
+-            {/* Main Heading */}
+             <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-center bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 bg-clip-text text-transparent uppercase">
+               Assemblymen
+             </h1>
+-            
+-            {/* Subtitle: IN CAPE COAST NORTH */}
++
+             <p className="mt-2 text-sm md:text-xl font-bold text-green-700/80 tracking-[0.2em] uppercase">
+               IN CAPE COAST NORTH
+             </p>
+ 
+             <span className="mt-4 h-1.5 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all group-hover:w-32" />
+           </div>
+ 
+-          {/* PERSONAL NARRATIVE DESCRIPTION (NORMAL FONT) */}
+           <div className="mt-8 max-w-4xl mx-auto">
+             <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
+               <Quote className="absolute -top-2 -left-2 w-12 h-12 text-slate-50 pointer-events-none" />
+               <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium text-center relative z-10">
+                 "As your MP, I work directly with our Assembly Members. They are on the ground every day, listening to the people, following up on projects, and making sure community issues are raised. That is why their role matters to our development."
+               </p>
+             </div>
+           </div>
+         </div>
+ 
+-        {/* --- COMPACT SEARCH & LIVE HUB --- */}
+         <div className="max-w-3xl mx-auto mb-8">
+           <div className="flex flex-col md:flex-row items-center gap-3">
+             <div className="relative w-full group">
+               <div className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-green-600 transition-colors">
+                 <Search className="w-full h-full" />
+               </div>
+-              <input 
++              <input
+                 type="text"
+                 placeholder="Search by name or town..."
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+                 className="w-full pl-12 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-4 focus:ring-green-500/5 focus:border-green-600 transition-all outline-none font-bold text-slate-900 text-base"
+               />
+             </div>
+ 
+-            <button 
++            <button
+               onClick={handleLiveLocation}
+               disabled={isLocating}
+               className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all active:scale-95 disabled:opacity-80 whitespace-nowrap shadow-md"
+             >
+               {isLocating ? (
+                 <Loader2 className="w-4 h-4 animate-spin text-green-400" />
+               ) : (
+                 <Crosshair className="w-4 h-4" />
+               )}
+-              <span>{isLocating ? "Locating..." : "Live Location"}</span>
++              <span>{isLocating ? 'Locating...' : 'Live Location'}</span>
+             </button>
+           </div>
+-          
++
+           <div className="mt-3 flex justify-center">
+             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-3 py-1 bg-slate-100 rounded-full border border-slate-200/50">
+               {filteredMembers.length} Representatives Active
+             </span>
+           </div>
+         </div>
+-        
+-        {/* --- ASSEMBLY MEMBERS GRID (TOWN NAME AS PRIMARY) --- */}
++
+         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+           {filteredMembers.map((member, index) => (
+-            <AnimatedSection key={member.zone} delay={(index % 5) * 50}>
++            <AnimatedSection key={member.id} delay={(index % 5) * 50}>
+               <div
+                 className={`flex flex-col items-center text-center group bg-white border rounded-2xl p-3 h-full transition-all duration-300 ${
+-                  detectedZone === member.zone 
+-                  ? 'border-green-500 shadow-xl ring-4 ring-green-50' 
+-                  : 'border-slate-100 hover:shadow-lg hover:border-green-200'
++                  detectedZone === member.zone
++                    ? 'border-green-500 shadow-xl ring-4 ring-green-50'
++                    : 'border-slate-100 hover:shadow-lg hover:border-green-200'
+                 }`}
+               >
+                 <div className="w-full aspect-[3/4] bg-slate-50 overflow-hidden rounded-xl mb-3 relative">
+-                  <img 
+-                    src={member.photoUrl} 
++                  <img
++                    src={member.photoUrl}
+                     alt={member.assemblyman}
+                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                   />
+                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent h-1/2"></div>
+-                  
++
+                   <AnimatePresence>
+                     {detectedZone === member.zone && (
+-                      <motion.div 
++                      <motion.div
+                         initial={{ opacity: 0, scale: 0 }}
+                         animate={{ opacity: 1, scale: 1 }}
+                         className="absolute top-2 right-2 bg-green-600 text-white p-1.5 rounded-lg shadow-lg z-10"
+                       >
+                         <MapPin className="w-4 h-4" />
+                       </motion.div>
+                     )}
+                   </AnimatePresence>
+                 </div>
+-                
++
+                 <div className="w-full flex flex-col flex-1">
+-                  {/* Assemblyman name - reduced from 12px to 11px (~10% reduction) */}
+                   <p className="text-[11px] font-black tracking-widest text-green-700 uppercase mb-1">
+                     {member.assemblyman}
+                   </p>
+-                  
+-                  {/* Town (Zone) as big primary text */}
++
+                   <p className="text-sm font-black text-slate-900 leading-tight uppercase line-clamp-2 mb-3">
+                     {member.zone}
+                   </p>
+-                  
++
+                   <div className="mt-auto">
+-                    <a 
+-                      href={`tel:${member.phone}`}
+-                      className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-green-50 hover:text-green-700 hover:border-green-100 transition-all"
+-                    >
+-                      <Phone className="w-3.5 h-3.5 text-green-600" />
+-                      <span>{formatPhoneNumber(member.phone)}</span>
+-                    </a>
++                    {member.phone ? (
++                      <a
++                        href={`tel:${member.phone}`}
++                        className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-green-50 hover:text-green-700 hover:border-green-100 transition-all"
++                      >
++                        <Phone className="w-3.5 h-3.5 text-green-600" />
++                        <span>{formatPhoneNumber(member.phone)}</span>
++                      </a>
++                    ) : (
++                      <div className="py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-400">
++                        No phone number
++                      </div>
++                    )}
+                   </div>
+                 </div>
+               </div>
+             </AnimatedSection>
+           ))}
+         </div>
+ 
+-        {/* Empty State */}
+         {filteredMembers.length === 0 && (
+-          <motion.div 
++          <motion.div
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 mt-8"
+           >
+-             <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">No members found</p>
+-             <button 
++            <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">No members found</p>
++            <button
+               onClick={() => setSearchQuery('')}
+               className="mt-4 text-green-600 font-black text-xs uppercase underline underline-offset-4"
+             >
+               Show all members
+             </button>
+           </motion.div>
+         )}
+       </div>
+     </div>
+   );
+-}
+\ No newline at end of file
++}
+ 
+EOF
+)
