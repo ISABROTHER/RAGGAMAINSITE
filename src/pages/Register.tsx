@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, ArrowRight, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Loader2, CheckCircle2, ArrowLeft, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -11,8 +11,8 @@ interface RegisterProps {
 export function Register({ onNavigate }: RegisterProps) {
   const { signUp } = useAuth();
   const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [recoveryEmail, setRecoveryEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -42,26 +42,49 @@ export function Register({ onNavigate }: RegisterProps) {
     e.preventDefault();
     setError('');
 
+    const trimmedPhone = phone.replace(/\D/g, '');
+    if (trimmedPhone.length < 9) {
+      setError('Enter a valid phone number');
+      return;
+    }
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
 
+    if (!recoveryEmail.includes('@')) {
+      setError('Enter a valid recovery email');
+      return;
+    }
+
     setLoading(true);
-    const { error: err } = await signUp(email, password, { full_name: fullName, phone });
+
+    // Use phone-based email as Supabase auth identity
+    const authEmail = `${trimmedPhone}@phone.ccn.local`;
+
+    const { error: err } = await signUp(authEmail, password, {
+      full_name: fullName,
+      phone: trimmedPhone,
+    });
 
     if (err) {
-      setError(err);
+      if (err.toLowerCase().includes('already registered')) {
+        setError('This phone number is already registered');
+      } else {
+        setError(err);
+      }
       setLoading(false);
       return;
     }
 
+    // Save full profile with recovery email
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
       await supabase.from('profiles').update({
         full_name: fullName,
-        phone,
-        email,
+        phone: trimmedPhone,
+        email: recoveryEmail,
         role: 'constituent',
       }).eq('id', session.user.id);
     }
@@ -97,7 +120,7 @@ export function Register({ onNavigate }: RegisterProps) {
               </motion.div>
               <h2 className="text-xl font-black text-slate-900 mb-2">Account Created</h2>
               <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                Your account has been set up successfully. Sign in to access your dashboard.
+                You can now sign in with your phone number and password.
               </p>
               <motion.button
                 whileTap={{ scale: 0.98 }}
@@ -194,18 +217,6 @@ export function Register({ onNavigate }: RegisterProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  placeholder="you@example.com"
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
-                />
-              </div>
-
-              <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">Phone Number</label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">+233</span>
@@ -213,6 +224,7 @@ export function Register({ onNavigate }: RegisterProps) {
                     type="tel"
                     value={phone}
                     onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    required
                     placeholder="24 123 4567"
                     className="w-full pl-14 pr-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                   />
@@ -251,6 +263,23 @@ export function Register({ onNavigate }: RegisterProps) {
                     />
                   ))}
                 </div>
+              </div>
+
+              {/* Recovery email — security layer */}
+              <div className="pt-2 mt-1 border-t border-slate-100">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Shield className="w-3.5 h-3.5 text-[#006B3F]" />
+                  <label className="text-xs font-semibold text-slate-700">Recovery Email</label>
+                </div>
+                <input
+                  type="email"
+                  value={recoveryEmail}
+                  onChange={e => setRecoveryEmail(e.target.value)}
+                  required
+                  placeholder="you@example.com"
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                />
+                <p className="text-[11px] text-slate-400 mt-1.5">Used to recover your account if you forget your password</p>
               </div>
 
               <motion.button
