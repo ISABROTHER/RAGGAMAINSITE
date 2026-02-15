@@ -649,4 +649,4 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
       )}
     </>
   );
-}
+} 
