@@ -7,6 +7,14 @@ interface LoginProps {
   onNavigate: (page: string) => void;
 }
 
+// Normalize phone: strip non-digits, remove leading 0 or 233
+function normalizePhone(raw: string): string {
+  let digits = raw.replace(/\D/g, '');
+  if (digits.startsWith('233')) digits = digits.slice(3);
+  if (digits.startsWith('0')) digits = digits.slice(1);
+  return digits;
+}
+
 export function Login({ onNavigate }: LoginProps) {
   const { signIn } = useAuth();
   const [phone, setPhone] = useState('');
@@ -37,11 +45,18 @@ export function Login({ onNavigate }: LoginProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const normalized = normalizePhone(phone);
+    if (normalized.length < 9) {
+      setError('Enter a valid phone number');
+      return;
+    }
+
     setLoading(true);
-    const identifier = `${phone.replace(/\D/g, '')}@phone.ccn.local`;
+    const identifier = `${normalized}@phone.ccn.local`;
     const { error: err } = await signIn(identifier, password);
     if (err) {
-      setError(err);
+      setError('Invalid phone number or password');
       setLoading(false);
     } else {
       onNavigate('dashboard');
@@ -59,7 +74,6 @@ export function Login({ onNavigate }: LoginProps) {
 
       <div className="relative flex-1 flex flex-col items-center justify-start sm:justify-center px-4 pt-8 pb-6 sm:py-12">
         <div className="w-full max-w-[400px]">
-          {/* Back button */}
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -71,7 +85,6 @@ export function Login({ onNavigate }: LoginProps) {
             Back to site
           </motion.button>
 
-          {/* Logo — collapses on keyboard */}
           <AnimatePresence>
             {!keyboardOpen && (
               <motion.div
@@ -90,14 +103,12 @@ export function Login({ onNavigate }: LoginProps) {
             )}
           </AnimatePresence>
 
-          {/* Card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
             className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] p-5 sm:p-6"
           >
-            {/* Green top accent */}
             <div className="h-0.5 w-12 bg-[#006B3F] rounded-full mx-auto mb-5" />
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,18 +130,15 @@ export function Login({ onNavigate }: LoginProps) {
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Phone Number
                 </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">+233</span>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    required
-                    autoComplete="tel"
-                    placeholder="24 123 4567"
-                    className="w-full pl-14 pr-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
-                  />
-                </div>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  required
+                  autoComplete="tel"
+                  placeholder="e.g. 0241234567 or 241234567"
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                />
               </div>
 
               <div>
