@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   Menu as MenuIcon, X, Home, User, Users, HardHat, Award,
-  Calendar, MessageSquareWarning, Vote, Heart, LogOut
+  Calendar, MessageSquareWarning, Vote, Heart, LogOut, LayoutDashboard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -74,6 +74,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'polls', label: 'Polls & Tracker', icon: Vote },
     { id: 'issues', label: 'Report Issue', icon: MessageSquareWarning },
+    ...(user ? [{ id: 'dashboard', label: 'My Dashboard', icon: LayoutDashboard }] : []),
   ];
 
   const handleNavClick = (pageId: string) => {
@@ -172,12 +173,21 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   <div className="flex flex-col relative bg-gradient-to-br from-[#CE1126]/95 via-[#b00e1f]/95 to-[#8a0b18]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden">
                     <motion.div variants={itemVariants} className="p-5 bg-black/10 border-b border-white/10">
                         {user ? (
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-white text-sm font-bold">{profile?.full_name || 'Constituent'}</p>
-                                    <p className="text-white/60 text-[10px] uppercase">Active</p>
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                        <p className="text-white text-sm font-bold">{profile?.full_name || 'Constituent'}</p>
+                                        <p className="text-white/60 text-[10px] uppercase">Active</p>
+                                    </div>
+                                    <button onClick={async () => { await signOut(); handleNavClick('home'); }} className="p-2 rounded-full bg-white/10 text-white"><LogOut className="w-4 h-4" /></button>
                                 </div>
-                                <button onClick={async () => { await signOut(); handleNavClick('home'); }} className="p-2 rounded-full bg-white/10 text-white"><LogOut className="w-4 h-4" /></button>
+                                <button
+                                    onClick={() => handleNavClick('dashboard')}
+                                    className="w-full py-2.5 bg-white text-[#CE1126] font-bold text-xs uppercase rounded-lg shadow-lg flex items-center justify-center gap-2"
+                                >
+                                    <LayoutDashboard className="w-4 h-4" />
+                                    My Dashboard
+                                </button>
                             </div>
                         ) : (
                             <button onClick={() => handleNavClick('login')} className="w-full py-3.5 bg-white text-[#CE1126] font-black text-xs uppercase rounded shadow-lg">Sign In</button>
