@@ -8,6 +8,14 @@ interface RegisterProps {
   onNavigate: (page: string) => void;
 }
 
+// Normalize phone: strip non-digits, remove leading 0 or 233
+function normalizePhone(raw: string): string {
+  let digits = raw.replace(/\D/g, '');
+  if (digits.startsWith('233')) digits = digits.slice(3);
+  if (digits.startsWith('0')) digits = digits.slice(1);
+  return digits;
+}
+
 export function Register({ onNavigate }: RegisterProps) {
   const { signUp } = useAuth();
   const [fullName, setFullName] = useState('');
@@ -42,8 +50,8 @@ export function Register({ onNavigate }: RegisterProps) {
     e.preventDefault();
     setError('');
 
-    const trimmedPhone = phone.replace(/\D/g, '');
-    if (trimmedPhone.length < 9) {
+    const normalized = normalizePhone(phone);
+    if (normalized.length < 9) {
       setError('Enter a valid phone number');
       return;
     }
@@ -60,12 +68,11 @@ export function Register({ onNavigate }: RegisterProps) {
 
     setLoading(true);
 
-    // Use phone-based email as Supabase auth identity
-    const authEmail = `${trimmedPhone}@phone.ccn.local`;
+    const authEmail = `${normalized}@phone.ccn.local`;
 
     const { error: err } = await signUp(authEmail, password, {
       full_name: fullName,
-      phone: trimmedPhone,
+      phone: normalized,
     });
 
     if (err) {
@@ -78,12 +85,11 @@ export function Register({ onNavigate }: RegisterProps) {
       return;
     }
 
-    // Save full profile with recovery email
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
       await supabase.from('profiles').update({
         full_name: fullName,
-        phone: trimmedPhone,
+        phone: normalized,
         email: recoveryEmail,
         role: 'constituent',
       }).eq('id', session.user.id);
@@ -148,7 +154,6 @@ export function Register({ onNavigate }: RegisterProps) {
 
       <div className="relative flex-1 flex flex-col items-center justify-start sm:justify-center px-4 pt-8 pb-6 sm:py-12">
         <div className="w-full max-w-[400px]">
-          {/* Back button */}
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -160,7 +165,6 @@ export function Register({ onNavigate }: RegisterProps) {
             Back to site
           </motion.button>
 
-          {/* Logo — collapses on keyboard */}
           <AnimatePresence>
             {!keyboardOpen && (
               <motion.div
@@ -179,14 +183,12 @@ export function Register({ onNavigate }: RegisterProps) {
             )}
           </AnimatePresence>
 
-          {/* Card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
             className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] p-5 sm:p-6"
           >
-            {/* Green top accent */}
             <div className="h-0.5 w-12 bg-[#006B3F] rounded-full mx-auto mb-5" />
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -218,17 +220,14 @@ export function Register({ onNavigate }: RegisterProps) {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">Phone Number</label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">+233</span>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    required
-                    placeholder="24 123 4567"
-                    className="w-full pl-14 pr-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
-                  />
-                </div>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  required
+                  placeholder="e.g. 0241234567 or 241234567"
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                />
               </div>
 
               <div>
@@ -267,7 +266,7 @@ export function Register({ onNavigate }: RegisterProps) {
 
               {/* Recovery email — security layer */}
               <div className="pt-2 mt-1 border-t border-slate-100">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <Shield className="w-3.5 h-3.5 text-[#006B3F]" />
                   <label className="text-xs font-semibold text-slate-700">Recovery Email</label>
                 </div>
