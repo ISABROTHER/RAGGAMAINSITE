@@ -56,20 +56,24 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
             transition={{ duration: 0.2 }}
             className="fixed left-0 top-0 bottom-0 w-[60px] bg-white border-r border-slate-200 z-40 flex flex-col items-center py-3"
           >
-            {/* Logo */}
-            <div className="mb-2">
-              <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
+            {/* Avatar */}
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-xs mb-2"
+              title={profile?.full_name || 'User'}
+            >
+              {initial}
             </div>
 
             <div className="w-8 h-px bg-slate-200 mb-2" />
 
-            {/* Expand */}
+            {/* Expand — hamburger + arrow */}
             <button
               onClick={() => { setExpanded(true); setSearchQuery(''); }}
-              className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors mb-2"
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors mb-2 relative"
               title="Expand menu"
             >
               <Menu className="w-[18px] h-[18px]" />
+              <ChevronRight className="w-3 h-3 absolute -right-0.5 top-1/2 -translate-y-1/2 text-[#CE1126]" />
             </button>
 
             <div className="w-8 h-px bg-slate-200 mb-2" />
@@ -116,13 +120,6 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               >
                 <LogOut className="w-[18px] h-[18px]" />
               </button>
-              <div className="w-8 h-px bg-slate-200 my-1" />
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]"
-                title={profile?.full_name || 'User'}
-              >
-                {initial}
-              </div>
             </div>
           </motion.aside>
         )}
@@ -147,23 +144,9 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               transition={{ type: 'spring', stiffness: 400, damping: 35 }}
               className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 shadow-xl z-50 flex flex-col"
             >
-              {/* Header with close */}
+              {/* Header — user name + close */}
               <div className="flex items-center justify-between px-4 h-14 border-b border-slate-100 shrink-0">
-                <div className="flex items-center gap-2.5">
-                  <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
-                  <span className="font-bold text-[#CE1126] text-sm">CCN Portal</span>
-                </div>
-                <button
-                  onClick={() => setExpanded(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* User */}
-              <div className="px-4 py-3 shrink-0">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-xs shrink-0">
                     {initial}
                   </div>
@@ -172,6 +155,12 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
                     <p className="text-[10px] text-[#CE1126] font-medium uppercase tracking-wider">{roleLabel}</p>
                   </div>
                 </div>
+                <button
+                  onClick={() => setExpanded(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
               </div>
 
               <div className="mx-3 h-px bg-slate-100 shrink-0" />
