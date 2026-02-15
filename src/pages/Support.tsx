@@ -1,6 +1,6 @@
 // src/pages/Support.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send, Users, ChevronDown } from 'lucide-react';
+import { BookOpen, Loader2, Search, SlidersHorizontal, X, Share2, Copy, Check, MessageCircle, Twitter, Send, Users, ChevronDown, ClipboardList } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { ContributeModal } from '../components/ContributeModal';
@@ -374,15 +374,15 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <span className="font-semibold text-slate-600 tabular-nums">
                 {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
               </span>
-              {/* Tiny Donor Book Button */}
+              {/* Donation Board Button — icon + number */}
               {project.donor_count > 0 && (
                 <button
                   onClick={fetchDonors}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 hover:bg-green-100 text-green-700 transition-colors"
-                  title="View donors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-all active:scale-95"
+                  title="View donation board"
                 >
-                  <Users className="w-3 h-3" />
-                  <span className="text-[10px] font-bold tabular-nums">{project.donor_count}</span>
+                  <ClipboardList className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-extrabold tabular-nums">{project.donor_count}</span>
                 </button>
               )}
             </div>
@@ -442,56 +442,54 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
         </div>
       </div>
 
-      {/* Donor Book Bottom Sheet */}
+      {/* Donation Board — Centered Modal (never touches screen edges) */}
       <AnimatePresence>
         {showDonorBook && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-5"
             onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
           >
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm bg-white rounded-t-2xl px-5 pt-4 pb-6 max-h-[70vh] flex flex-col"
+              className="w-full max-w-sm bg-white rounded-2xl shadow-2xl flex flex-col max-h-[75vh] overflow-hidden"
             >
-              {/* Handle */}
-              <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-3 flex-shrink-0" />
-
               {/* Header */}
-              <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <BookOpen className="w-4 h-4 text-green-700" />
+              <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-slate-100 flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <ClipboardList className="w-5 h-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Donor Book</p>
-                    <p className="text-[10px] text-slate-400">{project.donor_count} supporter{project.donor_count !== 1 ? 's' : ''}</p>
+                    <p className="text-sm font-bold text-slate-900">Donation Board</p>
+                    <p className="text-[11px] text-slate-400">{project.donor_count} supporter{project.donor_count !== 1 ? 's' : ''}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
-                  className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors"
+                  className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors active:scale-95"
                 >
-                  <X className="w-3.5 h-3.5 text-slate-500" />
+                  <X className="w-4 h-4 text-slate-500" />
                 </button>
               </div>
 
               {/* Donor List */}
-              <div className="overflow-y-auto flex-1 -mx-1 px-1 scrollbar-hide">
+              <div className="overflow-y-auto flex-1 px-4 py-3 scrollbar-hide">
                 {loadingDonors ? (
-                  <div className="flex items-center justify-center py-10">
-                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
                   </div>
                 ) : donors.length === 0 ? (
-                  <div className="text-center py-10">
-                    <Users className="w-8 h-8 text-slate-200 mx-auto mb-2" />
-                    <p className="text-xs text-slate-400">No donations yet. Be the first!</p>
+                  <div className="text-center py-12">
+                    <Users className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                    <p className="text-sm text-slate-400 font-medium">No donations yet</p>
+                    <p className="text-[11px] text-slate-300 mt-1">Be the first to donate!</p>
                   </div>
                 ) : (
                   <>
@@ -505,8 +503,8 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                           className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-colors"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[10px] font-bold text-white">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[11px] font-bold text-white">
                                 {donor.display_name.charAt(0).toUpperCase()}
                               </span>
                             </div>
@@ -517,7 +515,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                               <p className="text-[10px] text-slate-400">{donor.time_ago}</p>
                             </div>
                           </div>
-                          <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full tabular-nums flex-shrink-0">
+                          <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full tabular-nums flex-shrink-0">
                             {donor.units.toLocaleString()} {project.unit_label}
                           </span>
                         </motion.div>
@@ -528,14 +526,24 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     {hasMore && (
                       <button
                         onClick={() => setDonorPage((p) => p + 1)}
-                        className="w-full mt-3 py-2 flex items-center justify-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider hover:bg-green-50 rounded-xl transition-colors"
+                        className="w-full mt-3 py-2.5 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-600 uppercase tracking-wider hover:bg-amber-50 rounded-xl transition-colors active:scale-95"
                       >
-                        <ChevronDown className="w-3 h-3" />
+                        <ChevronDown className="w-3.5 h-3.5" />
                         Show more
                       </button>
                     )}
                   </>
                 )}
+              </div>
+
+              {/* Footer close button */}
+              <div className="px-4 pb-4 pt-2 flex-shrink-0">
+                <button
+                  onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
+                  className="w-full py-3 bg-slate-100 text-slate-500 rounded-xl font-bold text-[11px] uppercase tracking-wider hover:bg-slate-200 transition-colors active:scale-[0.98]"
+                >
+                  Close
+                </button>
               </div>
             </motion.div>
           </motion.div>
