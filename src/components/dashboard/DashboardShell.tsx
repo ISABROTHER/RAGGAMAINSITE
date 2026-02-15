@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, ChevronRight, ChevronLeft, Globe, Menu, X, Search, Bell } from 'lucide-react';
+import { LogOut, ChevronRight, ChevronLeft, Globe, Search, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -22,200 +22,215 @@ interface DashboardShellProps {
 export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, roleLabel, children }: DashboardShellProps) {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
   const activeLabel = navItems.find(n => n.id === activeTab)?.label || '';
 
+  // Close expanded sidebar when clicking outside on mobile
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
+    if (!expanded) return;
+    const handleClick = (e: MouseEvent) => {
+      const sidebar = document.getElementById('sidebar-expanded');
+      if (sidebar && !sidebar.contains(e.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [expanded]);
 
   const handleNavClick = (id: string) => {
     onTabChange(id);
-    setMobileOpen(false);
+    setExpanded(false);
   };
 
   const filteredNav = searchQuery
     ? navItems.filter(n => n.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : navItems;
 
-  const sidebarContent = (isMobile: boolean) => (
-    <>
-      {/* Logo + toggle */}
-      <div className={`flex items-center ${collapsed && !isMobile ? 'justify-center px-2' : 'justify-between px-4'} h-14 border-b border-white/[0.06] shrink-0`}>
-        {(isMobile || !collapsed) && (
-          <div className="flex items-center gap-2.5 min-w-0">
-            <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain shrink-0" />
-            <span className="font-bold text-white text-sm truncate">CCN Portal</span>
-          </div>
-        )}
-        {isMobile ? (
-          <button onClick={() => setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white hover:bg-white/10">
-            <X className="w-5 h-5" />
-          </button>
-        ) : (
-          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white hover:bg-white/10 shrink-0">
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
-        )}
-      </div>
-
-      {/* User */}
-      <div className={`${collapsed && !isMobile ? 'px-2 py-3 flex justify-center' : 'px-4 py-3'} shrink-0`}>
-        {collapsed && !isMobile ? (
-          <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-xs" title={profile?.full_name || 'User'}>
-            {initial}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-xs shrink-0">
-              {initial}
-            </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-white text-sm truncate leading-tight">{profile?.full_name || 'User'}</p>
-              <p className="text-[10px] text-[#FCD116] font-medium uppercase tracking-wider">{roleLabel}</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="mx-3 h-px bg-white/[0.06] shrink-0" />
-
-      {/* Nav search */}
-      {(isMobile || !collapsed) && (
-        <div className="px-3 pt-2.5 pb-1 shrink-0">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search menu..."
-              className="w-full pl-8 pr-3 py-2 bg-white/[0.06] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-white/30 focus:bg-white/10 focus:border-[#FCD116]/30 focus:outline-none transition-all"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Nav */}
-      <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto">
-        {filteredNav.map(item => {
-          const Icon = item.icon;
-          const active = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id)}
-              title={collapsed && !isMobile ? item.label : undefined}
-              className={`relative flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group ${
-                active
-                  ? 'bg-white/[0.12] text-white'
-                  : 'text-white hover:bg-white/[0.06]'
-              }`}
-            >
-              {active && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#FCD116]" />
-              )}
-              <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-[#FCD116]' : 'text-white/50 group-hover:text-white'}`} />
-              {(isMobile || !collapsed) && <span className="ml-3 truncate">{item.label}</span>}
-              {(isMobile || !collapsed) && active && <ChevronRight className="w-3.5 h-3.5 ml-auto text-[#FCD116]/60" />}
-            </button>
-          );
-        })}
-        {searchQuery && filteredNav.length === 0 && (
-          <p className="text-xs text-white/30 text-center py-4">No results</p>
-        )}
-      </nav>
-
-      {/* Bottom */}
-      <div className="px-2.5 py-2.5 border-t border-white/[0.06] space-y-0.5 shrink-0">
-        <button
-          onClick={() => { setMobileOpen(false); navigate('/'); }}
-          title={collapsed && !isMobile ? 'Back to Website' : undefined}
-          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white hover:bg-white/[0.06] transition-colors font-medium`}
-        >
-          <Globe className="w-[18px] h-[18px] shrink-0 text-[#006B3F]" />
-          {(isMobile || !collapsed) && <span className="ml-3">Back to Website</span>}
-        </button>
-        <button
-          onClick={async () => { setMobileOpen(false); await signOut(); navigate('/'); }}
-          title={collapsed && !isMobile ? 'Log Out' : undefined}
-          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white hover:bg-[#CE1126]/30 transition-colors font-medium`}
-        >
-          <LogOut className="w-[18px] h-[18px] shrink-0 text-[#CE1126]" />
-          {(isMobile || !collapsed) && <span className="ml-3">Log Out</span>}
-        </button>
-      </div>
-    </>
-  );
-
-  const desktopWidth = collapsed ? 'w-[68px]' : 'w-60';
-  const mainMargin = collapsed ? 'lg:ml-[68px]' : 'lg:ml-60';
-
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
-      {/* Mobile frosted top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-30 flex items-center px-3 gap-3">
-        <button onClick={() => setMobileOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100/80 transition-colors active:scale-95">
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-6 w-6 object-contain" />
-          <span className="font-bold text-slate-900 text-sm truncate">{activeLabel}</span>
-        </div>
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100/80 transition-colors relative">
-          <Bell className="w-[18px] h-[18px]" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#CE1126] rounded-full" />
-        </button>
-        <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-[10px]">
-          {initial}
-        </div>
-      </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* Icon sidebar — always visible on all screens */}
+      <aside className="fixed left-0 top-0 bottom-0 w-[60px] bg-white border-r border-slate-200 z-40 flex flex-col items-center py-3">
+        {/* Logo */}
+        <div className="mb-2">
+          <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain" />
+        </div>
+
+        <div className="w-8 h-px bg-slate-200 mb-2" />
+
+        {/* Expand toggle */}
+        <button
+          onClick={() => { setExpanded(!expanded); setSearchQuery(''); }}
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors mb-2"
+        >
+          {expanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        </button>
+
+        <div className="w-8 h-px bg-slate-200 mb-2" />
+
+        {/* Nav icons */}
+        <nav className="flex-1 flex flex-col items-center gap-0.5 overflow-y-auto w-full px-2">
+          {navItems.map(item => {
+            const Icon = item.icon;
+            const active = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                title={item.label}
+                className={`relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 ${
+                  active
+                    ? 'bg-[#CE1126] text-white'
+                    : 'text-slate-400 hover:text-[#CE1126] hover:bg-red-50'
+                }`}
+              >
+                {active && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-[#CE1126] -ml-2" />
+                )}
+                <Icon className="w-[18px] h-[18px]" />
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Bottom icons */}
+        <div className="flex flex-col items-center gap-0.5 mt-2">
+          <div className="w-8 h-px bg-slate-200 mb-1" />
+          <button
+            onClick={() => navigate('/')}
+            title="Back to Website"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-[#006B3F] hover:bg-green-50 transition-colors"
+          >
+            <Globe className="w-[18px] h-[18px]" />
+          </button>
+          <button
+            onClick={async () => { await signOut(); navigate('/'); }}
+            title="Log Out"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-[#CE1126] hover:bg-red-50 transition-colors"
+          >
+            <LogOut className="w-[18px] h-[18px]" />
+          </button>
+          <div className="w-8 h-px bg-slate-200 my-1" />
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]"
+            title={profile?.full_name || 'User'}
+          >
+            {initial}
+          </div>
+        </div>
+      </aside>
+
+      {/* Expanded sidebar panel — slides out from icon bar */}
       <AnimatePresence>
-        {mobileOpen && (
-          <div className="lg:hidden fixed inset-0 z-50">
+        {expanded && (
+          <>
+            {/* Backdrop on mobile */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setMobileOpen(false)}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+              style={{ left: 60 }}
+              onClick={() => setExpanded(false)}
             />
             <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
+              id="sidebar-expanded"
+              initial={{ x: -200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -200, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              className="absolute left-0 top-0 bottom-0 w-64 bg-[#1a1a2e] shadow-2xl flex flex-col"
+              className="fixed left-[60px] top-0 bottom-0 w-52 bg-white border-r border-slate-200 shadow-lg z-40 flex flex-col"
             >
-              {sidebarContent(true)}
+              {/* Header */}
+              <div className="px-4 h-14 flex items-center border-b border-slate-100 shrink-0">
+                <span className="font-bold text-[#CE1126] text-sm">CCN Portal</span>
+              </div>
+
+              {/* User */}
+              <div className="px-4 py-3 shrink-0">
+                <p className="font-semibold text-slate-900 text-sm truncate">{profile?.full_name || 'User'}</p>
+                <p className="text-[10px] text-[#CE1126] font-medium uppercase tracking-wider">{roleLabel}</p>
+              </div>
+
+              <div className="mx-3 h-px bg-slate-100 shrink-0" />
+
+              {/* Search */}
+              <div className="px-3 pt-2.5 pb-1 shrink-0">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search menu..."
+                    className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#CE1126]/30 focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Nav labels */}
+              <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto">
+                {filteredNav.map(item => {
+                  const Icon = item.icon;
+                  const active = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick(item.id)}
+                      className={`flex items-center w-full px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 ${
+                        active
+                          ? 'bg-[#CE1126] text-white'
+                          : 'text-slate-700 hover:bg-red-50 hover:text-[#CE1126]'
+                      }`}
+                    >
+                      <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} />
+                      <span className="ml-3 truncate">{item.label}</span>
+                      {active && <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/70" />}
+                    </button>
+                  );
+                })}
+                {searchQuery && filteredNav.length === 0 && (
+                  <p className="text-xs text-slate-400 text-center py-4">No results</p>
+                )}
+              </nav>
+
+              {/* Bottom */}
+              <div className="px-2.5 py-2.5 border-t border-slate-100 space-y-0.5 shrink-0">
+                <button
+                  onClick={() => { setExpanded(false); navigate('/'); }}
+                  className="flex items-center w-full px-3 py-2.5 rounded-lg text-[13px] text-slate-700 hover:bg-green-50 hover:text-[#006B3F] transition-colors font-medium"
+                >
+                  <Globe className="w-[18px] h-[18px] shrink-0 text-[#006B3F]" />
+                  <span className="ml-3">Back to Website</span>
+                </button>
+                <button
+                  onClick={async () => { setExpanded(false); await signOut(); navigate('/'); }}
+                  className="flex items-center w-full px-3 py-2.5 rounded-lg text-[13px] text-slate-700 hover:bg-red-50 hover:text-[#CE1126] transition-colors font-medium"
+                >
+                  <LogOut className="w-[18px] h-[18px] shrink-0 text-[#CE1126]" />
+                  <span className="ml-3">Log Out</span>
+                </button>
+              </div>
             </motion.div>
-          </div>
+          </>
         )}
       </AnimatePresence>
 
-      {/* Desktop sidebar */}
-      <aside className={`hidden lg:flex flex-col ${desktopWidth} bg-[#1a1a2e] fixed h-full z-30 transition-all duration-300`}>
-        {sidebarContent(false)}
-      </aside>
-
-      {/* Desktop top bar */}
-      <div className="hidden lg:flex fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 items-center px-6 gap-4 transition-all duration-300" style={{ marginLeft: collapsed ? 68 : 240, left: 0 }}>
+      {/* Top bar */}
+      <div className="fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 flex items-center px-4 sm:px-6 gap-3" style={{ left: 60 }}>
         <h2 className="font-bold text-slate-900 text-sm">{activeLabel}</h2>
         <div className="flex-1" />
         <AnimatePresence>
           {searchOpen ? (
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 220, opacity: 1 }}
+              animate={{ width: 180, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
@@ -232,18 +247,18 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               </div>
             </motion.div>
           ) : (
-            <button onClick={() => setSearchOpen(true)} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+            <button onClick={() => setSearchOpen(true)} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors">
               <Search className="w-4 h-4" />
             </button>
           )}
         </AnimatePresence>
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors relative">
+        <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-[#CE1126] hover:bg-red-50 transition-colors relative">
           <Bell className="w-4 h-4" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#CE1126] rounded-full" />
         </button>
-        <div className="h-6 w-px bg-slate-200" />
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-[10px]">
+        <div className="h-6 w-px bg-slate-200 hidden sm:block" />
+        <div className="hidden sm:flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]">
             {initial}
           </div>
           <span className="text-xs font-medium text-slate-700 hidden xl:block">{profile?.full_name || 'User'}</span>
@@ -251,7 +266,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
       </div>
 
       {/* Main content */}
-      <main className={`flex-1 ${mainMargin} w-full transition-all duration-300 pt-12`}>
+      <main className="flex-1 ml-[60px] w-full pt-12 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 lg:py-6">
           <AnimatePresence mode="wait">
             <motion.div
