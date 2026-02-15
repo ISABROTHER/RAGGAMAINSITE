@@ -22,25 +22,18 @@ export function Login({ onNavigate }: LoginProps) {
 
   const identifier = method === 'email' ? email : `${phone}@phone.ccn.local`;
 
-  // Detect mobile keyboard open/close
   useEffect(() => {
     const initialHeight = window.innerHeight;
-    const handleResize = () => {
-      const isKeyboard = window.innerHeight < initialHeight * 0.75;
-      setKeyboardOpen(isKeyboard);
-    };
+    const handleResize = () => setKeyboardOpen(window.innerHeight < initialHeight * 0.75);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Scroll focused input into view on mobile
   useEffect(() => {
     const handleFocusIn = (e: FocusEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT') {
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
       }
     };
     document.addEventListener('focusin', handleFocusIn);
@@ -51,7 +44,6 @@ export function Login({ onNavigate }: LoginProps) {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     const { error: err } = await signIn(identifier, password);
     if (err) {
       setError(err);
@@ -62,60 +54,21 @@ export function Login({ onNavigate }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-white flex flex-col relative overflow-x-hidden overflow-y-auto">
+    <div className="min-h-screen min-h-[100dvh] bg-[#fafafa] flex flex-col relative overflow-x-hidden overflow-y-auto">
       {/* Ghana flag stripe */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 flex z-10">
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex-1 bg-[#CE1126] origin-left"
-        />
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="flex-1 bg-[#FCD116] origin-left"
-        />
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex-1 bg-[#006B3F] origin-left"
-        />
+      <div className="fixed top-0 left-0 right-0 h-1 flex z-20">
+        <div className="flex-1 bg-[#CE1126]" />
+        <div className="flex-1 bg-[#FCD116]" />
+        <div className="flex-1 bg-[#006B3F]" />
       </div>
 
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-[#006B3F]/[0.07] rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -bottom-20 -left-20 w-[500px] h-[500px] bg-[#FCD116]/[0.10] rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#CE1126]/[0.04] rounded-full blur-3xl"
-        />
-      </div>
-
-      <div className="relative flex-1 flex flex-col items-center justify-start sm:justify-center px-4 py-6 sm:py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-[420px]"
-        >
+      <div className="relative flex-1 flex flex-col items-center justify-start sm:justify-center px-4 pt-8 pb-6 sm:py-12">
+        <div className="w-full max-w-[400px]">
           {/* Back button */}
           <motion.button
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             onClick={() => onNavigate('home')}
             className="flex items-center gap-1.5 text-slate-400 hover:text-[#006B3F] text-sm font-medium mb-5 transition-colors"
           >
@@ -123,49 +76,37 @@ export function Login({ onNavigate }: LoginProps) {
             Back to site
           </motion.button>
 
-          {/* Logo — hides when keyboard is open on mobile */}
+          {/* Logo — collapses on keyboard */}
           <AnimatePresence>
             {!keyboardOpen && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8, height: 0, marginBottom: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ duration: 0.2 }}
                 className="text-center mb-6"
               >
-                <div className="relative inline-block">
-                  <motion.div
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-                    className="absolute -inset-4 bg-gradient-to-br from-[#006B3F]/10 via-[#FCD116]/10 to-[#CE1126]/10 rounded-full blur-xl"
-                  />
-                  <img
-                    src="https://i.imgur.com/1GfnCQc.png"
-                    alt="Cape Coast North"
-                    className="relative h-16 sm:h-24 object-contain mx-auto"
-                  />
-                </div>
+                <img
+                  src="https://i.imgur.com/1GfnCQc.png"
+                  alt="Cape Coast North"
+                  className="h-16 sm:h-20 object-contain mx-auto"
+                />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Card — Tinted Frosted Glass */}
+          {/* Card */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-[#f0f7f4]/80 backdrop-blur-2xl rounded-3xl border border-[#006B3F]/[0.08] shadow-xl shadow-[#006B3F]/[0.06] p-5 sm:p-7"
+            transition={{ duration: 0.35 }}
+            className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] p-5 sm:p-6"
           >
-            {/* Green accent bar */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="h-1 w-16 bg-gradient-to-r from-[#006B3F] to-[#FCD116]/60 rounded-full mx-auto -mt-1 mb-6 origin-left"
-            />
+            {/* Green top accent */}
+            <div className="h-0.5 w-12 bg-[#006B3F] rounded-full mx-auto mb-5" />
 
             {/* Email / Phone toggle */}
-            <div className="flex bg-white/60 rounded-xl p-1 mb-5">
+            <div className="flex bg-slate-100 rounded-lg p-0.5 mb-5">
               {([
                 { key: 'email' as AuthMethod, label: 'Email', icon: Mail },
                 { key: 'phone' as AuthMethod, label: 'Phone', icon: Phone },
@@ -174,17 +115,17 @@ export function Login({ onNavigate }: LoginProps) {
                   key={key}
                   type="button"
                   onClick={() => { setMethod(key); setError(''); }}
-                  className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                  className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all duration-200 ${
                     method === key
-                      ? 'text-white shadow-md'
+                      ? 'text-white'
                       : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   {method === key && (
                     <motion.div
-                      layoutId="login-tab-bg"
-                      className="absolute inset-0 bg-[#006B3F] rounded-lg shadow-md shadow-[#006B3F]/20"
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      layoutId="login-tab"
+                      className="absolute inset-0 bg-[#006B3F] rounded-md"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
                   <span className="relative flex items-center gap-2">
@@ -200,11 +141,10 @@ export function Login({ onNavigate }: LoginProps) {
                 {error && (
                   <motion.div
                     key="error"
-                    initial={{ opacity: 0, y: -8, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                    exit={{ opacity: 0, y: -8, height: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="bg-[#CE1126]/[0.06] border border-[#CE1126]/15 text-[#CE1126] text-sm rounded-xl px-4 py-3 font-medium"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="bg-red-50 border border-red-100 text-[#CE1126] text-sm rounded-lg px-3.5 py-2.5 font-medium"
                   >
                     {error}
                   </motion.div>
@@ -215,12 +155,12 @@ export function Login({ onNavigate }: LoginProps) {
                 {method === 'email' ? (
                   <motion.div
                     key="email-field"
-                    initial={{ opacity: 0, x: -16 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 16 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <label className="block text-[11px] font-bold text-[#006B3F]/60 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                       Email Address
                     </label>
                     <input
@@ -230,22 +170,22 @@ export function Login({ onNavigate }: LoginProps) {
                       required={method === 'email'}
                       autoComplete="email"
                       placeholder="you@example.com"
-                      className="w-full px-4 py-3.5 bg-white/70 border border-[#006B3F]/[0.08] rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/30 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all duration-200"
+                      className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                     />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="phone-field"
-                    initial={{ opacity: 0, x: -16 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 16 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <label className="block text-[11px] font-bold text-[#006B3F]/60 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                       Phone Number
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">+233</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">+233</span>
                       <input
                         type="tel"
                         value={phone}
@@ -253,7 +193,7 @@ export function Login({ onNavigate }: LoginProps) {
                         required={method === 'phone'}
                         autoComplete="tel"
                         placeholder="24 123 4567"
-                        className="w-full pl-16 pr-4 py-3.5 bg-white/70 border border-[#006B3F]/[0.08] rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/30 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all duration-200"
+                        className="w-full pl-14 pr-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                       />
                     </div>
                   </motion.div>
@@ -261,7 +201,7 @@ export function Login({ onNavigate }: LoginProps) {
               </AnimatePresence>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#006B3F]/60 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Password
                 </label>
                 <div className="relative">
@@ -272,12 +212,12 @@ export function Login({ onNavigate }: LoginProps) {
                     required
                     autoComplete="current-password"
                     placeholder="Enter your password"
-                    className="w-full px-4 py-3.5 pr-12 bg-white/70 border border-[#006B3F]/[0.08] rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/30 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all duration-200"
+                    className="w-full px-3.5 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-[#006B3F] transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#006B3F] transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -287,9 +227,8 @@ export function Login({ onNavigate }: LoginProps) {
               <motion.button
                 type="submit"
                 disabled={loading}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.97 }}
-                className="flutter-btn w-full py-4 bg-[#CE1126] hover:bg-[#a60d1e] text-white font-bold text-sm rounded-xl shadow-lg shadow-[#CE1126]/20 flex items-center justify-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-2"
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3.5 bg-[#CE1126] hover:bg-[#b30f21] active:bg-[#9a0d1c] text-white font-bold text-sm rounded-lg shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-1"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -302,16 +241,16 @@ export function Login({ onNavigate }: LoginProps) {
               </motion.button>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-[#006B3F]/[0.06] text-center">
+            <div className="mt-5 pt-4 border-t border-slate-100 text-center">
               <p className="text-sm text-slate-500">
                 Don't have an account?{' '}
-                <button onClick={() => onNavigate('register')} className="font-bold text-[#006B3F] hover:text-[#CE1126] transition-colors">
+                <button onClick={() => onNavigate('register')} className="font-semibold text-[#006B3F] hover:text-[#005a34] transition-colors">
                   Create one
                 </button>
               </p>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
