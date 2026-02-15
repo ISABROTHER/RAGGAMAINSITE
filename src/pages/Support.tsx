@@ -374,14 +374,15 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <span className="font-semibold text-slate-600 tabular-nums">
                 {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
               </span>
-              {/* Donation Board Button — icon + number */}
+              {/* Donation Board Button — text + number */}
               {project.donor_count > 0 && (
                 <button
                   onClick={fetchDonors}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-all active:scale-95"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-all active:scale-95"
                   title="View donation board"
                 >
-                  <ClipboardList className="w-3.5 h-3.5" />
+                  <ClipboardList className="w-3 h-3" />
+                  <span className="text-[10px] font-bold">Donation Board</span>
                   <span className="text-[10px] font-extrabold tabular-nums">{project.donor_count}</span>
                 </button>
               )}
