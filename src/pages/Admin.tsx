@@ -67,6 +67,23 @@ export function Admin() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-live-contributions')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'contributions' },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchData]);
+
   const completedContribs = contributions.filter((c: any) => c.status === 'completed');
   const totalRaised = completedContribs.reduce((s: number, c: any) => s + Number(c.amount_ghs), 0);
   const activeProjects = projects.filter((p: any) => (p.status || 'active') === 'active').length;
