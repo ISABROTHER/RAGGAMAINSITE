@@ -211,4 +211,4 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
       </main>
     </div>
   );
-}
+} 
