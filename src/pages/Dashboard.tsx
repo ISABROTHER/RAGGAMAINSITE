@@ -19,6 +19,7 @@ export function Dashboard() {
 
   switch (role) {
     case 'admin':
+    case 'viewer':
       return <Admin />;
     case 'assemblyman':
       return <AssemblymanDashboard />;
