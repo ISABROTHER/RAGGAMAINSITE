@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ArrowRight, Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-interface LoginProps {
+interface RegisterProps {
   onNavigate: (page: string) => void;
 }
 
@@ -15,11 +15,12 @@ function normalizePhone(raw: string): string {
 }
 
 function isEmail(value: string): boolean {
-  return value.includes('@');
+  return value.includes('@') && value.includes('.');
 }
 
-export function Login({ onNavigate }: LoginProps) {
-  const { signIn } = useAuth();
+export function Register({ onNavigate }: RegisterProps) {
+  const { signUp } = useAuth();
+  const [fullName, setFullName] = useState('');
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -49,29 +50,46 @@ export function Login({ onNavigate }: LoginProps) {
     e.preventDefault();
     setError('');
 
+    const trimmedName = fullName.trim();
+    if (!trimmedName) {
+      setError('Enter your full name');
+      return;
+    }
+
     const trimmed = identity.trim();
     if (!trimmed) {
       setError('Enter your phone number or email');
       return;
     }
 
-    let identifier: string;
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    let email: string;
+    let phone = '';
 
     if (isEmail(trimmed)) {
-      identifier = trimmed;
+      email = trimmed.toLowerCase();
     } else {
       const normalized = normalizePhone(trimmed);
       if (normalized.length < 9) {
-        setError('Enter a valid phone number or email');
+        setError('Enter a valid phone number or email address');
         return;
       }
-      identifier = `${normalized}@phone.ccn.local`;
+      phone = normalized;
+      email = `${normalized}@phone.ccn.local`;
     }
 
     setLoading(true);
-    const { error: err } = await signIn(identifier, password);
+    const { error: err } = await signUp(email, password, {
+      full_name: trimmedName,
+      phone,
+    });
+
     if (err) {
-      setError('Invalid credentials');
+      setError(err);
       setLoading(false);
     } else {
       onNavigate('dashboard');
@@ -142,6 +160,21 @@ export function Login({ onNavigate }: LoginProps) {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
+                  required
+                  autoComplete="name"
+                  placeholder="e.g. Kwame Mensah"
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Phone Number or Email
                 </label>
                 <input
@@ -165,8 +198,8 @@ export function Login({ onNavigate }: LoginProps) {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     required
-                    autoComplete="current-password"
-                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                    placeholder="At least 6 characters"
                     className="w-full px-3.5 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                   />
                   <button
@@ -189,7 +222,7 @@ export function Login({ onNavigate }: LoginProps) {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    Sign In
+                    Create Account
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -198,9 +231,9 @@ export function Login({ onNavigate }: LoginProps) {
 
             <div className="mt-5 pt-4 border-t border-slate-100 text-center">
               <p className="text-sm text-slate-500">
-                Don't have an account?{' '}
-                <button onClick={() => onNavigate('register')} className="font-semibold text-[#006B3F] hover:text-[#005a34] transition-colors">
-                  Create one
+                Already have an account?{' '}
+                <button onClick={() => onNavigate('login')} className="font-semibold text-[#006B3F] hover:text-[#005a34] transition-colors">
+                  Sign in
                 </button>
               </p>
             </div>
