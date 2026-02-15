@@ -374,18 +374,32 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <span className="font-semibold text-slate-600 tabular-nums">
                 {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
               </span>
-              {/* View Honour Roll — animated */}
+              {/* Wall of Thanks — typing animation */}
               {project.donor_count > 0 && (
                 <motion.button
                   onClick={fetchDonors}
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-colors"
-                  title="View honour roll"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/30 transition-colors overflow-hidden"
+                  title="View Wall of Thanks"
                 >
-                  <ClipboardList className="w-3 h-3" />
-                  <span className="text-[10px] font-bold">View Honour Roll</span>
+                  <motion.span
+                    animate={{ rotate: [0, -10, 10, -10, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    <ClipboardList className="w-3 h-3" />
+                  </motion.span>
+                  <span className="text-[10px] font-bold">
+                    {'Wall of Thanks'.split('').map((char, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 1] }}
+                        transition={{ delay: i * 0.08, duration: 0.1, repeat: Infinity, repeatDelay: 4 }}
+                      >
+                        {char}
+                      </motion.span>
+                    ))}
+                  </span>
                 </motion.button>
               )}
             </div>
