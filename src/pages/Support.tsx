@@ -456,7 +456,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
         </div>
       </div>
 
-      {/* Donation Board — Centered Modal (never touches screen edges) */}
+      {/* Wall of Appreciation — Centered Modal (never touches screen edges) */}
       <AnimatePresence>
         {showDonorBook && (
           <motion.div
@@ -472,16 +472,16 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm bg-white rounded-2xl shadow-2xl flex flex-col max-h-[75vh] overflow-hidden"
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col max-h-[75vh] overflow-hidden"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-slate-100 flex-shrink-0">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <ClipboardList className="w-5 h-5 text-amber-600" />
+                  <div className="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center">
+                    <ClipboardList className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">Donation Board</p>
+                    <p className="text-sm font-bold text-slate-900">Wall of Appreciation</p>
                     <p className="text-[11px] text-slate-400">{project.donor_count} supporter{project.donor_count !== 1 ? 's' : ''}</p>
                   </div>
                 </div>
@@ -493,11 +493,18 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                 </button>
               </div>
 
-              {/* Donor List */}
-              <div className="overflow-y-auto flex-1 px-4 py-3 scrollbar-hide">
+              {/* Table Header */}
+              <div className="grid grid-cols-[1fr_auto_auto] gap-2 px-5 py-2.5 border-b border-slate-100 bg-slate-50/80 flex-shrink-0">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right w-20">Contributed</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right w-16">Time</span>
+              </div>
+
+              {/* Donor Rows */}
+              <div className="overflow-y-auto flex-1 scrollbar-hide">
                 {loadingDonors ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-green-500 animate-spin" />
                   </div>
                 ) : donors.length === 0 ? (
                   <div className="text-center py-12">
@@ -507,40 +514,43 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-1">
-                      {paginatedDonors.map((donor, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.03, duration: 0.2 }}
-                          className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-colors"
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[11px] font-bold text-white">
-                                {donor.display_name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-xs font-semibold text-slate-800 truncate">
-                                {donor.display_name}
-                              </p>
-                              <p className="text-[10px] text-slate-400">{donor.time_ago}</p>
-                            </div>
+                    {paginatedDonors.map((donor, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.03, duration: 0.2 }}
+                        className={`grid grid-cols-[1fr_auto_auto] gap-2 items-center px-5 py-3 border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}
+                      >
+                        {/* Name */}
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[10px] font-bold text-white">
+                              {donor.display_name.charAt(0).toUpperCase()}
+                            </span>
                           </div>
-                          <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full tabular-nums flex-shrink-0">
-                            {donor.units.toLocaleString()} {project.unit_label}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </div>
+                          <p className="text-xs font-semibold text-slate-800 truncate">
+                            {donor.display_name}
+                          </p>
+                        </div>
+
+                        {/* Contributed */}
+                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full tabular-nums text-right w-20 text-center">
+                          {donor.units.toLocaleString()} {project.unit_label}
+                        </span>
+
+                        {/* Time */}
+                        <span className="text-[10px] text-slate-400 tabular-nums text-right w-16">
+                          {donor.time_ago}
+                        </span>
+                      </motion.div>
+                    ))}
 
                     {/* Load More */}
                     {hasMore && (
                       <button
                         onClick={() => setDonorPage((p) => p + 1)}
-                        className="w-full mt-3 py-2.5 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-600 uppercase tracking-wider hover:bg-amber-50 rounded-xl transition-colors active:scale-95"
+                        className="w-full py-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-green-600 uppercase tracking-wider hover:bg-green-50 transition-colors active:scale-95"
                       >
                         <ChevronDown className="w-3.5 h-3.5" />
                         Show more
@@ -551,7 +561,7 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               </div>
 
               {/* Footer close button */}
-              <div className="px-4 pb-4 pt-2 flex-shrink-0">
+              <div className="px-4 pb-4 pt-2 flex-shrink-0 border-t border-slate-100">
                 <button
                   onClick={() => { setShowDonorBook(false); setDonorPage(1); }}
                   className="w-full py-3 bg-slate-100 text-slate-500 rounded-xl font-bold text-[11px] uppercase tracking-wider hover:bg-slate-200 transition-colors active:scale-[0.98]"
