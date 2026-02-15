@@ -44,11 +44,11 @@ export function Login({ onNavigate }: LoginProps) {
         <div className="flex-1 bg-[#006B3F]" />
       </div>
 
-      {/* Soft background accents */}
+      {/* Background color blobs for frosted glass effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-[420px] h-[420px] bg-[#006B3F]/[0.04] rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-[420px] h-[420px] bg-[#FCD116]/[0.06] rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#CE1126]/[0.02] rounded-full blur-3xl" />
+        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-[#006B3F]/[0.08] rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] bg-[#FCD116]/[0.12] rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#CE1126]/[0.06] rounded-full blur-3xl" />
       </div>
 
       <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
@@ -78,13 +78,13 @@ export function Login({ onNavigate }: LoginProps) {
             </div>
           </div>
 
-          {/* Card */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-5 sm:p-7">
+          {/* Card — Frosted Glass */}
+          <div className="bg-white/60 backdrop-blur-2xl rounded-3xl border border-white/80 shadow-xl shadow-slate-200/40 p-5 sm:p-7 ring-1 ring-slate-900/[0.04]">
             {/* Green accent bar at top of card */}
             <div className="h-1 w-16 bg-gradient-to-r from-[#006B3F] to-[#006B3F]/40 rounded-full mx-auto -mt-1 mb-6" />
 
             {/* Email / Phone toggle */}
-            <div className="flex bg-slate-100 rounded-xl p-1 mb-6">
+            <div className="flex bg-white/40 backdrop-blur-md rounded-xl p-1 mb-6">
               {([
                 { key: 'email' as AuthMethod, label: 'Email', icon: Mail },
                 { key: 'phone' as AuthMethod, label: 'Phone', icon: Phone },
@@ -139,7 +139,7 @@ export function Login({ onNavigate }: LoginProps) {
                       required={method === 'email'}
                       autoComplete="email"
                       placeholder="you@example.com"
-                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
+                      className="w-full px-4 py-3.5 bg-white/50 backdrop-blur-sm border border-white/70 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
                     />
                   </motion.div>
                 ) : (
@@ -162,7 +162,7 @@ export function Login({ onNavigate }: LoginProps) {
                         required={method === 'phone'}
                         autoComplete="tel"
                         placeholder="24 123 4567"
-                        className="w-full pl-16 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
+                        className="w-full pl-16 pr-4 py-3.5 bg-white/50 backdrop-blur-sm border border-white/70 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
                       />
                     </div>
                   </motion.div>
@@ -181,7 +181,7 @@ export function Login({ onNavigate }: LoginProps) {
                     required
                     autoComplete="current-password"
                     placeholder="Enter your password"
-                    className="w-full px-4 py-3.5 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
+                    className="w-full px-4 py-3.5 pr-12 bg-white/50 backdrop-blur-sm border border-white/70 rounded-xl text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F]/40 focus:outline-none focus:ring-2 focus:ring-[#006B3F]/10 transition-all"
                   />
                   <button
                     type="button"
@@ -210,7 +210,7 @@ export function Login({ onNavigate }: LoginProps) {
               </motion.button>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <div className="mt-6 pt-5 border-t border-white/50 text-center">
               <p className="text-sm text-slate-500">
                 Don't have an account?{' '}
                 <button onClick={() => onNavigate('register')} className="font-bold text-[#006B3F] hover:text-[#CE1126] transition-colors">
