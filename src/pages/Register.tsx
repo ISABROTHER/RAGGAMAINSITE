@@ -8,7 +8,6 @@ interface RegisterProps {
   onNavigate: (page: string) => void;
 }
 
-// Normalize phone: strip non-digits, remove leading 0 or 233
 function normalizePhone(raw: string): string {
   let digits = raw.replace(/\D/g, '');
   if (digits.startsWith('233')) digits = digits.slice(3);
@@ -18,7 +17,8 @@ function normalizePhone(raw: string): string {
 
 export function Register({ onNavigate }: RegisterProps) {
   const { signUp } = useAuth();
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -68,6 +68,7 @@ export function Register({ onNavigate }: RegisterProps) {
 
     setLoading(true);
 
+    const fullName = `${firstName.trim()} ${surname.trim()}`;
     const authEmail = `${normalized}@phone.ccn.local`;
 
     const { error: err } = await signUp(authEmail, password, {
@@ -145,7 +146,6 @@ export function Register({ onNavigate }: RegisterProps) {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-[#fafafa] flex flex-col relative overflow-x-hidden overflow-y-auto">
-      {/* Ghana flag stripe */}
       <div className="fixed top-0 left-0 right-0 h-1 flex z-20">
         <div className="flex-1 bg-[#CE1126]" />
         <div className="flex-1 bg-[#FCD116]" />
@@ -206,16 +206,30 @@ export function Register({ onNavigate }: RegisterProps) {
                 )}
               </AnimatePresence>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={e => setFullName(e.target.value)}
-                  required
-                  placeholder="Kwame Mensah"
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
-                />
+              {/* First Name & Surname side by side */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">First Name</label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={e => setFirstName(e.target.value)}
+                    required
+                    placeholder="Kwame"
+                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Surname</label>
+                  <input
+                    type="text"
+                    value={surname}
+                    onChange={e => setSurname(e.target.value)}
+                    required
+                    placeholder="Mensah"
+                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
+                  />
+                </div>
               </div>
 
               <div>
@@ -225,7 +239,7 @@ export function Register({ onNavigate }: RegisterProps) {
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   required
-                  placeholder="e.g. 0241234567 or 241234567"
+                  placeholder="e.g. 0241234567 or +233241234567"
                   className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                 />
               </div>
@@ -264,7 +278,7 @@ export function Register({ onNavigate }: RegisterProps) {
                 </div>
               </div>
 
-              {/* Recovery email — security layer */}
+              {/* Recovery email */}
               <div className="pt-2 mt-1 border-t border-slate-100">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Shield className="w-3.5 h-3.5 text-[#006B3F]" />
@@ -278,7 +292,6 @@ export function Register({ onNavigate }: RegisterProps) {
                   placeholder="you@example.com"
                   className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-[#006B3F] focus:outline-none focus:ring-2 focus:ring-[#006B3F]/15 transition-all"
                 />
-                <p className="text-[11px] text-slate-400 mt-1.5">Used to recover your account if you forget your password</p>
               </div>
 
               <motion.button
