@@ -374,17 +374,19 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <span className="font-semibold text-slate-600 tabular-nums">
                 {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
               </span>
-              {/* Donation Board Button — text + number */}
+              {/* View Honour Roll — animated */}
               {project.donor_count > 0 && (
-                <button
+                <motion.button
                   onClick={fetchDonors}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-all active:scale-95"
-                  title="View donation board"
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/60 text-amber-700 transition-colors"
+                  title="View honour roll"
                 >
                   <ClipboardList className="w-3 h-3" />
-                  <span className="text-[10px] font-bold">Donation Board</span>
-                  <span className="text-[10px] font-extrabold tabular-nums">{project.donor_count}</span>
-                </button>
+                  <span className="text-[10px] font-bold">View Honour Roll</span>
+                </motion.button>
               )}
             </div>
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
