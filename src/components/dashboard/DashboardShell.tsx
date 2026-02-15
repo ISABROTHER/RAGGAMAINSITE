@@ -47,7 +47,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
   const sidebarContent = (isMobile: boolean) => (
     <>
       {/* Logo + toggle */}
-      <div className={`flex items-center ${collapsed && !isMobile ? 'justify-center px-2' : 'justify-between px-4'} h-14 border-b border-white/10 shrink-0`}>
+      <div className={`flex items-center ${collapsed && !isMobile ? 'justify-center px-2' : 'justify-between px-4'} h-14 border-b border-white/[0.06] shrink-0`}>
         {(isMobile || !collapsed) && (
           <div className="flex items-center gap-2.5 min-w-0">
             <img src="https://i.imgur.com/1GfnCQc.png" alt="CCN" className="h-7 w-7 object-contain shrink-0" />
@@ -55,11 +55,11 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
           </div>
         )}
         {isMobile ? (
-          <button onClick={() => setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10">
+          <button onClick={() => setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white hover:bg-white/10">
             <X className="w-5 h-5" />
           </button>
         ) : (
-          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 shrink-0">
+          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 flex items-center justify-center rounded-lg text-white hover:bg-white/10 shrink-0">
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         )}
@@ -68,23 +68,23 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
       {/* User */}
       <div className={`${collapsed && !isMobile ? 'px-2 py-3 flex justify-center' : 'px-4 py-3'} shrink-0`}>
         {collapsed && !isMobile ? (
-          <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white text-[#CE1126] font-bold text-xs" title={profile?.full_name || 'User'}>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-xs" title={profile?.full_name || 'User'}>
             {initial}
           </div>
         ) : (
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white text-[#CE1126] font-bold text-xs shrink-0">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-xs shrink-0">
               {initial}
             </div>
             <div className="min-w-0">
               <p className="font-semibold text-white text-sm truncate leading-tight">{profile?.full_name || 'User'}</p>
-              <p className="text-[10px] text-white/50 font-medium uppercase tracking-wider">{roleLabel}</p>
+              <p className="text-[10px] text-[#FCD116] font-medium uppercase tracking-wider">{roleLabel}</p>
             </div>
           </div>
         )}
       </div>
 
-      <div className="mx-3 h-px bg-white/10 shrink-0" />
+      <div className="mx-3 h-px bg-white/[0.06] shrink-0" />
 
       {/* Nav search */}
       {(isMobile || !collapsed) && (
@@ -96,7 +96,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search menu..."
-              className="w-full pl-8 pr-3 py-2 bg-white/10 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/20 focus:outline-none transition-all"
+              className="w-full pl-8 pr-3 py-2 bg-white/[0.06] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-white/30 focus:bg-white/10 focus:border-[#FCD116]/30 focus:outline-none transition-all"
             />
           </div>
         </div>
@@ -114,41 +114,40 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               title={collapsed && !isMobile ? item.label : undefined}
               className={`relative flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group ${
                 active
-                  ? 'bg-white text-[#CE1126] shadow-md shadow-black/10'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white/[0.12] text-white'
+                  : 'text-white hover:bg-white/[0.06]'
               }`}
             >
-              {/* Active edge indicator */}
               {active && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#CE1126]" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#FCD116]" />
               )}
-              <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-[#CE1126]' : 'text-white/50 group-hover:text-white'}`} />
+              <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-[#FCD116]' : 'text-white/50 group-hover:text-white'}`} />
               {(isMobile || !collapsed) && <span className="ml-3 truncate">{item.label}</span>}
-              {(isMobile || !collapsed) && active && <ChevronRight className="w-3.5 h-3.5 ml-auto text-[#CE1126]/50" />}
+              {(isMobile || !collapsed) && active && <ChevronRight className="w-3.5 h-3.5 ml-auto text-[#FCD116]/60" />}
             </button>
           );
         })}
         {searchQuery && filteredNav.length === 0 && (
-          <p className="text-xs text-white/40 text-center py-4">No results</p>
+          <p className="text-xs text-white/30 text-center py-4">No results</p>
         )}
       </nav>
 
       {/* Bottom */}
-      <div className="px-2.5 py-2.5 border-t border-white/10 space-y-0.5 shrink-0">
+      <div className="px-2.5 py-2.5 border-t border-white/[0.06] space-y-0.5 shrink-0">
         <button
           onClick={() => { setMobileOpen(false); navigate('/'); }}
           title={collapsed && !isMobile ? 'Back to Website' : undefined}
-          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white/60 hover:text-white hover:bg-white/10 transition-colors font-medium`}
+          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white hover:bg-white/[0.06] transition-colors font-medium`}
         >
-          <Globe className="w-[18px] h-[18px] shrink-0" />
+          <Globe className="w-[18px] h-[18px] shrink-0 text-[#006B3F]" />
           {(isMobile || !collapsed) && <span className="ml-3">Back to Website</span>}
         </button>
         <button
           onClick={async () => { setMobileOpen(false); await signOut(); navigate('/'); }}
           title={collapsed && !isMobile ? 'Log Out' : undefined}
-          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white/60 hover:text-white hover:bg-white/10 transition-colors font-medium`}
+          className={`flex items-center w-full ${collapsed && !isMobile ? 'justify-center px-0' : 'px-3'} py-2.5 rounded-lg text-[13px] text-white hover:bg-[#CE1126]/30 transition-colors font-medium`}
         >
-          <LogOut className="w-[18px] h-[18px] shrink-0" />
+          <LogOut className="w-[18px] h-[18px] shrink-0 text-[#CE1126]" />
           {(isMobile || !collapsed) && <span className="ml-3">Log Out</span>}
         </button>
       </div>
@@ -173,7 +172,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
           <Bell className="w-[18px] h-[18px]" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#CE1126] rounded-full" />
         </button>
-        <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-[10px]">
           {initial}
         </div>
       </div>
@@ -195,7 +194,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              className="absolute left-0 top-0 bottom-0 w-64 bg-[#CE1126] shadow-2xl flex flex-col"
+              className="absolute left-0 top-0 bottom-0 w-64 bg-[#1a1a2e] shadow-2xl flex flex-col"
             >
               {sidebarContent(true)}
             </motion.div>
@@ -203,13 +202,13 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
         )}
       </AnimatePresence>
 
-      {/* Desktop sidebar — red */}
-      <aside className={`hidden lg:flex flex-col ${desktopWidth} bg-[#CE1126] fixed h-full z-30 transition-all duration-300`}>
+      {/* Desktop sidebar */}
+      <aside className={`hidden lg:flex flex-col ${desktopWidth} bg-[#1a1a2e] fixed h-full z-30 transition-all duration-300`}>
         {sidebarContent(false)}
       </aside>
 
       {/* Desktop top bar */}
-      <div className={`hidden lg:flex fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 items-center px-6 gap-4 transition-all duration-300`} style={{ marginLeft: collapsed ? 68 : 240, left: 0 }}>
+      <div className="hidden lg:flex fixed top-0 right-0 h-12 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 z-20 items-center px-6 gap-4 transition-all duration-300" style={{ marginLeft: collapsed ? 68 : 240, left: 0 }}>
         <h2 className="font-bold text-slate-900 text-sm">{activeLabel}</h2>
         <div className="flex-1" />
         <AnimatePresence>
@@ -244,7 +243,7 @@ export function DashboardShell({ navItems, activeTab, onTabChange, accentColor, 
         </button>
         <div className="h-6 w-px bg-slate-200" />
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#CE1126] text-white font-bold text-[10px]">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[#FCD116] text-[#1a1a2e] font-bold text-[10px]">
             {initial}
           </div>
           <span className="text-xs font-medium text-slate-700 hidden xl:block">{profile?.full_name || 'User'}</span>
