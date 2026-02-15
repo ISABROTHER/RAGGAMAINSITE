@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Phone, Search, Crosshair, MapPin, Loader2, Quote } from 'lucide-react';
+import { Phone, Search, Crosshair, MapPin, Loader2, Quote, Filter, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedSection } from '../components/AnimatedSection';
 import { supabase } from '../lib/supabase';
@@ -16,6 +16,7 @@ const DEFAULT_MEMBER_PHOTO = 'https://upload.wikimedia.org/wikipedia/commons/thu
 
 export function Assemblymen() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedZone, setSelectedZone] = useState<string>('all');
   const [isLocating, setIsLocating] = useState(false);
   const [detectedZone, setDetectedZone] = useState<string | null>(null);
   const [members, setMembers] = useState<AssemblyMember[]>([]);
@@ -65,13 +66,20 @@ export function Assemblymen() {
     return phone.replace('+233 ', '0').replace('+233', '0');
   };
 
+  const uniqueZones = useMemo(() => {
+    const zones = members.map((m) => m.zone).filter(Boolean);
+    return Array.from(new Set(zones)).sort();
+  }, [members]);
+
   const filteredMembers = useMemo(() => {
-    return members.filter(
-      (m) =>
+    return members.filter((m) => {
+      const matchesSearch =
         m.assemblyman.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.zone.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [members, searchQuery]);
+        m.zone.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesZone = selectedZone === 'all' || m.zone === selectedZone;
+      return matchesSearch && matchesZone;
+    });
+  }, [members, searchQuery, selectedZone]);
 
   const handleLiveLocation = () => {
     setIsLocating(true);
@@ -153,9 +161,55 @@ export function Assemblymen() {
             </button>
           </div>
 
-          <div className="mt-3 flex justify-center">
+          <div className="mt-4 flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-black text-slate-600 uppercase tracking-widest">
+                Filter by Zone
+              </span>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
+              <button
+                onClick={() => setSelectedZone('all')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  selectedZone === 'all'
+                    ? 'bg-green-600 text-white shadow-md'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:border-green-300'
+                }`}
+              >
+                All Zones
+              </button>
+              {uniqueZones.map((zone) => (
+                <button
+                  key={zone}
+                  onClick={() => setSelectedZone(zone)}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                    selectedZone === zone
+                      ? 'bg-green-600 text-white shadow-md'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:border-green-300'
+                  }`}
+                >
+                  {zone}
+                </button>
+              ))}
+            </div>
+
+            {(searchQuery || selectedZone !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedZone('all');
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all"
+              >
+                <X className="w-3.5 h-3.5" />
+                Clear Filters
+              </button>
+            )}
+
             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-3 py-1 bg-slate-100 rounded-full border border-slate-200/50">
-              {filteredMembers.length} Representatives Active
+              {filteredMembers.length} of {members.length} Representatives
             </span>
           </div>
         </div>
@@ -229,7 +283,10 @@ export function Assemblymen() {
           >
             <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">No members found</p>
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedZone('all');
+              }}
               className="mt-4 text-green-600 font-black text-xs uppercase underline underline-offset-4"
             >
               Show all members
