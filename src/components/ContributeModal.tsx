@@ -60,6 +60,24 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const totalUSD = totalGHS / (exchangeRate || 15.20);
   const canProceedStep2 = firstName.trim().length >= 2 && lastName.trim().length >= 2 && contact.trim().length >= 5;
 
+  const verifyPayment = async (ref: string): Promise<string> => {
+    try {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`;
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reference: ref }),
+      });
+      const data = await res.json();
+      return data.status || 'pending';
+    } catch {
+      return 'pending';
+    }
+  };
+
   const handlePay = async () => {
     setError('');
     setModalState('processing');
@@ -79,6 +97,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         payment_method: payMethod,
         status: 'pending',
       });
+
+      localStorage.setItem('pending_payment_ref', ref);
 
       const email = payMethod === 'MOMO'
         ? `${contact.replace(/[^0-9]/g, '') || '0000000000'}@momo.com`
@@ -105,19 +125,42 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             { display_name: 'Project', variable_name: 'project', value: project.title },
           ]
         },
-        onSuccess: async () => {
-          await supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref);
-          setModalState('success');
-          goToStep(4);
+        onSuccess: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(4);
+            } else {
+              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
+                setModalState('success');
+                goToStep(4);
+              });
+            }
+          });
         },
-        onCancel: async () => {
-          await supabase.from('contributions').update({ status: 'failed' }).eq('payment_reference', ref);
-          setModalState('form');
-          goToStep(3);
+        onCancel: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(4);
+            } else {
+              setModalState('form');
+              goToStep(3);
+            }
+          });
         },
-        onError: async () => {
-          await supabase.from('contributions').update({ status: 'failed' }).eq('payment_reference', ref);
-          setModalState('failed');
+        onError: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(4);
+            } else {
+              setModalState('failed');
+            }
+          });
         },
       });
     } catch {

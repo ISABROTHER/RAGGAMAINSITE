@@ -60,7 +60,34 @@ export function Support() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  useEffect(() => {
+    const verifyPending = async () => {
+      const pendingRef = localStorage.getItem('pending_payment_ref');
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRef = urlParams.get('trxref') || urlParams.get('reference');
+      const ref = pendingRef || urlRef;
+
+      if (ref) {
+        try {
+          const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`;
+          await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reference: ref }),
+          });
+        } catch { /* silent */ }
+        localStorage.removeItem('pending_payment_ref');
+        if (urlRef) {
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }
+    };
+
+    verifyPending().then(() => fetchProjects());
+  }, []);
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(projects.map(p => p.category)));
