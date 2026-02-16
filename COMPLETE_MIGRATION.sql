@@ -593,7 +593,16 @@ CREATE INDEX IF NOT EXISTS idx_achievements_category ON achievements(category);
 CREATE INDEX IF NOT EXISTS idx_achievements_featured ON achievements(is_featured);
 
 -- ============================================================================
--- STEP 9: Seed 15 Assemblymen
+-- STEP 9: Add Viewer Role to Profiles Constraint (MUST BE BEFORE STEP 10)
+-- ============================================================================
+
+ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_role_check;
+
+ALTER TABLE profiles ADD CONSTRAINT profiles_role_check
+  CHECK (role = ANY (ARRAY['admin'::text, 'constituent'::text, 'assemblyman'::text, 'viewer'::text]));
+
+-- ============================================================================
+-- STEP 10: Seed 15 Assemblymen
 -- ============================================================================
 
 DO $$
@@ -726,7 +735,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- STEP 10: Create Team Viewer Account
+-- STEP 11: Create Team Viewer Account
 -- ============================================================================
 
 INSERT INTO auth.users (
@@ -824,19 +833,6 @@ WHERE u.email = 'team@kmnragga.com'
   AND NOT EXISTS (
     SELECT 1 FROM profiles WHERE email = 'team@kmnragga.com'
   );
-
--- ============================================================================
--- STEP 11: Add Viewer Role to Profiles Constraint
--- ============================================================================
-
-ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_role_check;
-
-ALTER TABLE profiles ADD CONSTRAINT profiles_role_check
-  CHECK (role = ANY (ARRAY['admin'::text, 'constituent'::text, 'assemblyman'::text, 'viewer'::text]));
-
-UPDATE profiles
-SET role = 'viewer'
-WHERE email = 'team@kmnragga.com';
 
 -- ============================================================================
 -- STEP 12: Create SMS Sender IDs Table (if referenced)
