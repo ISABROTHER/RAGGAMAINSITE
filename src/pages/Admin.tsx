@@ -82,18 +82,9 @@ export function Admin() {
   useEffect(() => {
     const channel = supabase
       .channel('admin-live-contributions')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'contributions' },
-        () => {
-          fetchData();
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'contributions' }, () => { fetchData(); })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [fetchData]);
 
   const completedContribs = contributions.filter((c: any) => c.status === 'completed');
@@ -120,53 +111,24 @@ export function Admin() {
       roleLabel={isViewer ? "Viewer" : "Administrator"}
     >
       {activeTab === 'overview' && (
-        <AdminOverview
-          stats={overviewStats}
-          events={events}
-          users={allUsers}
-          contributions={contributions}
-          onTabChange={setActiveTab}
-        />
+        <AdminOverview stats={overviewStats} events={events} users={allUsers} contributions={contributions} onTabChange={setActiveTab} />
       )}
-
       {activeTab === 'projects' && (
-        <AdminProjects
-          projects={projects}
-          contributions={contributions}
-          onRefresh={fetchData}
-        />
+        <AdminProjects projects={projects} contributions={contributions} onRefresh={fetchData} />
       )}
-
       {activeTab === 'donations' && (
-        <AdminFinancials
-          contributions={contributions}
-          projects={projects}
-        />
+        <AdminFinancials contributions={contributions} projects={projects} />
       )}
-
       {activeTab === 'assemblymen' && <AdminAssemblymen />}
-
       {activeTab === 'achievements' && <AdminAchievements />}
-
       {activeTab === 'appointments' && <AdminAppointments />}
-
       {activeTab === 'users' && (
-        <AdminUsers
-          users={allUsers}
-          onRefresh={fetchData}
-        />
+        <AdminUsers users={allUsers} onRefresh={fetchData} />
       )}
-
       {activeTab === 'content' && (
-        <AdminContent
-          events={events}
-          posts={posts}
-          onRefresh={fetchData}
-        />
+        <AdminContent events={events} posts={posts} onRefresh={fetchData} />
       )}
-
       {activeTab === 'comms' && <AdminCommHub />}
-
       {activeTab === 'issues' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">All Issues</h2>
@@ -203,9 +165,7 @@ export function Admin() {
           </div>
         </motion.div>
       )}
-
       {activeTab === 'security' && <AdminSecurity />}
-
       {activeTab === 'settings' && <AdminSettings />}
     </DashboardShell>
   );
