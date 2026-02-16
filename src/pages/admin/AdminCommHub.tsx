@@ -2,9 +2,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Send, RefreshCw, MessageSquare, Clock, CheckCircle,
   XCircle, Plus, ChevronRight, ChevronLeft, AlertCircle,
-  Search, Users, Megaphone, Pin, X, Loader2, Phone, Filter,
-  FileText, Mail, MapPin, ChevronDown, ChevronUp,
-  Inbox, MailOpen, Circle
+  Search, Users, Megaphone, Pin, X, Loader2, Phone,
+  FileText, Mail, MailOpen, Circle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -28,9 +27,7 @@ interface SMSRecord {
   recipient_phone: string;
   recipient_name: string;
   content: string;
-  sender_name: string;
   status: string;
-  channel: string;
   created_at: string;
 }
 
@@ -75,39 +72,31 @@ const ACCENT = '#CE1126';
 const SMS_CHAR_LIMIT = 160;
 
 /* ------------------------------------------------------------------ */
-/*  SMS Integration Placeholder                                        */
-/*  Replace the body of this function with your real SMS API call.     */
+/*  SMS via Supabase Edge Function → SMSOnlineGH                       */
 /* ------------------------------------------------------------------ */
+
 async function sendViaSMS(
   recipients: { phone: string; name: string }[],
   message: string,
-  _senderName: string
-): Promise<{ success: boolean; error?: string }> {
-  // ── PLACEHOLDER ──────────────────────────────────────────────
-  // Replace this with your real SMS API. Examples:
-  //
-  // Option A — Direct API call:
-  //   const res = await fetch('https://your-sms-api.com/send', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY}` },
-  //     body: JSON.stringify({ sender: _senderName, recipients: recipients.map(r => r.phone), message }),
-  //   });
-  //   return { success: res.ok };
-  //
-  // Option B — Supabase Edge Function:
-  //   const { data: { session } } = await supabase.auth.getSession();
-  //   const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-sms`, {
-  //     method: 'POST',
-  //     headers: { 'Authorization': `Bearer ${session?.access_token}`, 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ recipients, message, senderName: _senderName }),
-  //   });
-  //   return await res.json();
-  // ──────────────────────────────────────────────────────────────
+  senderName: string
+): Promise<{ success: boolean; sent?: number; error?: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, error: 'Not authenticated' };
 
-  console.log('[SMS Placeholder] Would send to:', recipients.length, 'recipients');
-  console.log('[SMS Placeholder] Message:', message);
-  await new Promise(r => setTimeout(r, 800));
-  return { success: true };
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-sms`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipients, message, senderName }),
+    }
+  );
+
+  const data = await res.json();
+  return data;
 }
 
 /* ------------------------------------------------------------------ */
@@ -181,14 +170,12 @@ export function AdminCommHub() {
         recipient_phone: m.subject || '',
         recipient_name: m.body?.split('||NAME||')[1] || m.subject || '',
         content: m.body?.split('||NAME||')[0] || m.body || '',
-        sender_name: senderName,
         status: m.priority || 'sent',
-        channel: 'sms',
         created_at: m.created_at,
       })));
     }
     setHistoryLoading(false);
-  }, [senderName]);
+  }, []);
 
   const loadInAppMessages = useCallback(async () => {
     if (!user) return;
@@ -202,10 +189,7 @@ export function AdminCommHub() {
       .limit(100);
     if (data) {
       const senderIds = [...new Set(data.map(m => m.sender_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', senderIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', senderIds);
       const nameMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
       setInAppMessages(data.map(m => ({ ...m, sender_name: nameMap.get(m.sender_id) || 'Unknown' })));
     }
@@ -213,30 +197,16 @@ export function AdminCommHub() {
   }, [user]);
 
   const loadTemplates = useCallback(async () => {
-    const { data } = await supabase
-      .from('announcements')
-      .select('*')
-      .eq('target_role', '__template__')
-      .order('created_at', { ascending: false });
-    if (data) {
-      setTemplates(data.map(d => ({ id: d.id, name: d.title, content: d.body })));
-    }
+    const { data } = await supabase.from('announcements').select('*').eq('target_role', '__template__').order('created_at', { ascending: false });
+    if (data) setTemplates(data.map(d => ({ id: d.id, name: d.title, content: d.body })));
   }, []);
 
   const loadAnnouncements = useCallback(async () => {
     setAnnouncementsLoading(true);
-    const { data } = await supabase
-      .from('announcements')
-      .select('*')
-      .neq('target_role', '__template__')
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
+    const { data } = await supabase.from('announcements').select('*').neq('target_role', '__template__').order('is_pinned', { ascending: false }).order('created_at', { ascending: false });
     if (data) {
       const authorIds = [...new Set(data.map(a => a.author_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', authorIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', authorIds);
       const nameMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
       setAnnouncements(data.map(a => ({ ...a, author_name: nameMap.get(a.author_id) || 'Unknown' })));
     }
@@ -297,9 +267,7 @@ export function AdminCommHub() {
         const phones = selectedRecipients.filter(r => r.phone).map(r => ({ phone: r.phone!, name: r.full_name }));
         const result = await sendViaSMS(phones, messageContent, senderName);
         if (result.success) {
-          const rows = phones.map(p => ({ sender_id: user!.id, recipient_id: null as string | null, subject: p.phone, body: `${messageContent}||NAME||${p.name}`, message_type: 'sms', priority: 'sent' }));
-          await supabase.from('messages').insert(rows);
-          setSendResult({ type: 'success', text: `SMS sent to ${phones.length} recipient${phones.length !== 1 ? 's' : ''}` });
+          setSendResult({ type: 'success', text: `SMS sent to ${result.sent || phones.length} recipient${(result.sent || phones.length) !== 1 ? 's' : ''}` });
         } else {
           setSendResult({ type: 'error', text: result.error || 'Failed to send SMS' });
         }
@@ -328,11 +296,7 @@ export function AdminCommHub() {
   };
 
   const useTemplate = (t: Template) => { setMessageContent(t.content); setActiveView('compose'); };
-
-  const deleteTemplate = async (id: string) => {
-    await supabase.from('announcements').delete().eq('id', id);
-    loadTemplates();
-  };
+  const deleteTemplate = async (id: string) => { await supabase.from('announcements').delete().eq('id', id); loadTemplates(); };
 
   const postAnnouncement = async () => {
     if (!user || !annTitle.trim() || !annBody.trim()) return;
@@ -345,10 +309,7 @@ export function AdminCommHub() {
     loadAnnouncements();
   };
 
-  const togglePin = async (a: Announcement) => {
-    await supabase.from('announcements').update({ is_pinned: !a.is_pinned }).eq('id', a.id);
-    loadAnnouncements();
-  };
+  const togglePin = async (a: Announcement) => { await supabase.from('announcements').update({ is_pinned: !a.is_pinned }).eq('id', a.id); loadAnnouncements(); };
 
   const openInAppDetail = async (msg: InAppMessage) => {
     setSelectedInApp(msg);
@@ -369,11 +330,10 @@ export function AdminCommHub() {
   };
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-
   const roleLabel = (r: string) => ({ all: 'Everyone', constituent: 'Constituents', assemblyman: 'Assemblymen', admin: 'Admins' }[r] || r);
 
   /* ---------------------------------------------------------------- */
-  /*  Render                                                           */
+  /*  RENDER                                                           */
   /* ---------------------------------------------------------------- */
 
   return (
@@ -438,8 +398,7 @@ export function AdminCommHub() {
               <div className="flex items-center justify-between mb-3">
                 <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">Recipients ({selectedIds.size} selected)</label>
                 <button onClick={() => setShowPicker(!showPicker)} className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:opacity-80" style={{ color: ACCENT }}>
-                  <Users className="w-3.5 h-3.5" />
-                  {showPicker ? 'Close' : 'Choose'}
+                  <Users className="w-3.5 h-3.5" />{showPicker ? 'Close' : 'Choose'}
                 </button>
               </div>
               {selectedRecipients.length > 0 ? (
@@ -457,7 +416,6 @@ export function AdminCommHub() {
               )}
             </div>
 
-            {/* Picker */}
             <AnimatePresence>
               {showPicker && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
@@ -524,8 +482,7 @@ export function AdminCommHub() {
               <textarea value={messageContent} onChange={e => setMessageContent(e.target.value)} placeholder={channel === 'sms' ? 'Type your SMS (max 160 chars)...' : 'Type your message...'} rows={channel === 'sms' ? 4 : 6} className={`w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-medium outline-none border border-slate-100 resize-none focus:ring-2 transition-all ${isOverCharLimit ? 'text-red-900 focus:ring-red-200' : 'text-slate-900 focus:ring-red-100'}`} />
               {isOverCharLimit && (
                 <div className="flex items-center gap-2 mt-3 p-2.5 bg-red-100 rounded-xl text-red-700">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span className="text-[11px] font-bold">Exceeds {SMS_CHAR_LIMIT} character SMS limit</span>
+                  <AlertCircle className="w-4 h-4 shrink-0" /><span className="text-[11px] font-bold">Exceeds {SMS_CHAR_LIMIT} character SMS limit</span>
                 </div>
               )}
             </div>
@@ -556,10 +513,7 @@ export function AdminCommHub() {
               </div>
               <div className="p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{selectedInApp.sender_name}</p>
-                    <p className="text-[11px] text-slate-400">{new Date(selectedInApp.created_at).toLocaleString()}</p>
-                  </div>
+                  <div><p className="text-sm font-bold text-slate-900">{selectedInApp.sender_name}</p><p className="text-[11px] text-slate-400">{new Date(selectedInApp.created_at).toLocaleString()}</p></div>
                   {selectedInApp.priority === 'urgent' && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">URGENT</span>}
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{selectedInApp.body}</div>
@@ -582,11 +536,7 @@ export function AdminCommHub() {
                     {historyLoading ? (
                       <div className="p-12 text-center"><Loader2 className="w-6 h-6 text-slate-300 animate-spin mx-auto" /></div>
                     ) : filteredSmsHistory.length === 0 ? (
-                      <div className="p-12 text-center">
-                        <Phone className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-                        <p className="font-bold text-slate-400">No SMS history</p>
-                        <p className="text-xs text-slate-300 mt-1">Sent messages will appear here</p>
-                      </div>
+                      <div className="p-12 text-center"><Phone className="w-10 h-10 text-slate-200 mx-auto mb-3" /><p className="font-bold text-slate-400">No SMS history</p><p className="text-xs text-slate-300 mt-1">Sent messages will appear here</p></div>
                     ) : (
                       <div className="divide-y divide-slate-100">
                         {filteredSmsHistory.map(msg => {
@@ -596,13 +546,8 @@ export function AdminCommHub() {
                             <div key={msg.id}>
                               <button onClick={() => setExpandedHistoryId(isExp ? null : msg.id)} className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors">
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white ${isFailed ? 'bg-red-500' : 'bg-green-500'}`}>
-                                    {isFailed ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-bold text-slate-900">{msg.recipient_phone}</p>
-                                    <p className="text-[11px] text-slate-400 truncate max-w-[200px]">{msg.content}</p>
-                                  </div>
+                                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white ${isFailed ? 'bg-red-500' : 'bg-green-500'}`}>{isFailed ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}</div>
+                                  <div><p className="text-sm font-bold text-slate-900">{msg.recipient_phone}</p><p className="text-[11px] text-slate-400 truncate max-w-[200px]">{msg.content}</p></div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">{timeAgo(msg.created_at)}</span>
@@ -613,10 +558,7 @@ export function AdminCommHub() {
                                 {isExp && (
                                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                                     <div className="bg-slate-50 px-5 py-4 border-t border-slate-100">
-                                      <div className="flex items-start gap-3 mb-3">
-                                        <div className="w-1 min-h-[30px] rounded-full" style={{ backgroundColor: ACCENT }} />
-                                        <p className="text-sm text-slate-700 leading-relaxed italic">"{msg.content}"</p>
-                                      </div>
+                                      <div className="flex items-start gap-3 mb-3"><div className="w-1 min-h-[30px] rounded-full" style={{ backgroundColor: ACCENT }} /><p className="text-sm text-slate-700 leading-relaxed italic">"{msg.content}"</p></div>
                                       <div className="flex items-center justify-between text-xs text-slate-400">
                                         <span className="font-bold flex items-center gap-1"><span className={`w-2 h-2 rounded-full ${isFailed ? 'bg-red-500' : 'bg-green-500'}`} />{isFailed ? 'Failed' : 'Delivered'}</span>
                                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(msg.created_at)}</span>
@@ -670,19 +612,12 @@ export function AdminCommHub() {
             {showTemplateForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
             {showTemplateForm ? 'Cancel' : 'Create New Template'}
           </button>
-
           <AnimatePresence>
             {showTemplateForm && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                 <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-                  <div>
-                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Template Name</label>
-                    <input value={newTemplate.name} onChange={e => setNewTemplate({ ...newTemplate, name: e.target.value })} placeholder="e.g. Community Meeting Reminder" className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-medium text-slate-900 outline-none border border-slate-100 focus:ring-2 focus:ring-red-100" />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Content</label>
-                    <textarea value={newTemplate.content} onChange={e => setNewTemplate({ ...newTemplate, content: e.target.value })} placeholder="Write your template message..." rows={4} className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-medium text-slate-900 outline-none resize-none border border-slate-100 focus:ring-2 focus:ring-red-100" />
-                  </div>
+                  <div><label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Template Name</label><input value={newTemplate.name} onChange={e => setNewTemplate({ ...newTemplate, name: e.target.value })} placeholder="e.g. Community Meeting Reminder" className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-medium text-slate-900 outline-none border border-slate-100 focus:ring-2 focus:ring-red-100" /></div>
+                  <div><label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Content</label><textarea value={newTemplate.content} onChange={e => setNewTemplate({ ...newTemplate, content: e.target.value })} placeholder="Write your template message..." rows={4} className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-medium text-slate-900 outline-none resize-none border border-slate-100 focus:ring-2 focus:ring-red-100" /></div>
                   <div className="flex gap-3">
                     <button onClick={() => setShowTemplateForm(false)} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200">Cancel</button>
                     <button onClick={saveTemplate} disabled={!newTemplate.name || !newTemplate.content} className="flex-1 py-3 rounded-xl text-white font-bold text-sm disabled:opacity-50" style={{ backgroundColor: ACCENT }}>Save Template</button>
@@ -691,7 +626,6 @@ export function AdminCommHub() {
               </motion.div>
             )}
           </AnimatePresence>
-
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {templates.length === 0 ? (
               <div className="p-12 text-center"><FileText className="w-10 h-10 text-slate-200 mx-auto mb-3" /><p className="font-bold text-slate-400">No templates yet</p><p className="text-xs text-slate-300 mt-1">Create reusable message templates</p></div>
@@ -699,10 +633,7 @@ export function AdminCommHub() {
               <div className="divide-y divide-slate-100">
                 {templates.map(t => (
                   <div key={t.id} className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
-                    <button onClick={() => useTemplate(t)} className="flex-1 text-left min-w-0">
-                      <h4 className="text-[15px] font-bold text-slate-900 mb-0.5">{t.name}</h4>
-                      <p className="text-[13px] text-slate-400 line-clamp-1">{t.content}</p>
-                    </button>
+                    <button onClick={() => useTemplate(t)} className="flex-1 text-left min-w-0"><h4 className="text-[15px] font-bold text-slate-900 mb-0.5">{t.name}</h4><p className="text-[13px] text-slate-400 line-clamp-1">{t.content}</p></button>
                     <div className="flex items-center gap-2 ml-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => useTemplate(t)} className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Use</button>
                       <button onClick={() => deleteTemplate(t.id)} className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100">Delete</button>
@@ -722,36 +653,24 @@ export function AdminCommHub() {
             {showAnnounceForm ? <X className="w-5 h-5" /> : <Megaphone className="w-5 h-5" />}
             {showAnnounceForm ? 'Cancel' : 'Post Announcement'}
           </button>
-
           <AnimatePresence>
             {showAnnounceForm && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                 <div className="bg-white rounded-2xl border border-amber-200 p-5 space-y-4 bg-amber-50/30">
-                  <div>
-                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Title</label>
-                    <input value={annTitle} onChange={e => setAnnTitle(e.target.value)} placeholder="Announcement title..." className="w-full px-4 py-3 bg-white rounded-xl text-sm font-medium text-slate-900 outline-none border border-amber-200 focus:ring-2 focus:ring-amber-100" />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Message</label>
-                    <textarea value={annBody} onChange={e => setAnnBody(e.target.value)} placeholder="Write your announcement..." rows={4} className="w-full px-4 py-3 bg-white rounded-xl text-sm font-medium text-slate-900 outline-none resize-none border border-amber-200 focus:ring-2 focus:ring-amber-100" />
-                  </div>
+                  <div><label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Title</label><input value={annTitle} onChange={e => setAnnTitle(e.target.value)} placeholder="Announcement title..." className="w-full px-4 py-3 bg-white rounded-xl text-sm font-medium text-slate-900 outline-none border border-amber-200 focus:ring-2 focus:ring-amber-100" /></div>
+                  <div><label className="text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 block">Message</label><textarea value={annBody} onChange={e => setAnnBody(e.target.value)} placeholder="Write your announcement..." rows={4} className="w-full px-4 py-3 bg-white rounded-xl text-sm font-medium text-slate-900 outline-none resize-none border border-amber-200 focus:ring-2 focus:ring-amber-100" /></div>
                   <div className="flex items-center gap-3">
                     <select value={annTarget} onChange={e => setAnnTarget(e.target.value)} className="px-3 py-2.5 bg-white border border-amber-200 rounded-lg text-sm font-medium focus:outline-none">
-                      <option value="all">Everyone</option>
-                      <option value="constituent">Constituents only</option>
-                      <option value="assemblyman">Assemblymen only</option>
-                      <option value="admin">Admins only</option>
+                      <option value="all">Everyone</option><option value="constituent">Constituents only</option><option value="assemblyman">Assemblymen only</option><option value="admin">Admins only</option>
                     </select>
                     <button onClick={postAnnouncement} disabled={annPosting || !annTitle.trim() || !annBody.trim()} className="ml-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm rounded-xl disabled:opacity-50 transition-colors flex items-center gap-1.5">
-                      {annPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}
-                      Publish
+                      {annPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}Publish
                     </button>
                   </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {announcementsLoading ? (
               <div className="p-12 text-center"><Loader2 className="w-6 h-6 text-slate-300 animate-spin mx-auto" /></div>
