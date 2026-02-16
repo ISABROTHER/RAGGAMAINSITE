@@ -1,15 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   LayoutDashboard, FolderOpen, DollarSign, Users,
-  FileText, MessageSquare, Megaphone, AlertTriangle,
-  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar
+  FileText, AlertTriangle,
+  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar, Radio
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { DashboardShell } from '../components/dashboard/DashboardShell';
-import { MessagePanel } from '../components/dashboard/MessagePanel';
-import { AnnouncementPanel } from '../components/dashboard/AnnouncementPanel';
 import { AdminOverview } from './admin/AdminOverview';
 import { AdminProjects } from './admin/AdminProjects';
 import { AdminFinancials } from './admin/AdminFinancials';
@@ -20,6 +18,7 @@ import { AdminSettings } from './admin/AdminSettings';
 import { AdminAssemblymen } from './admin/AdminAssemblymen';
 import { AdminAchievements } from './admin/AdminAchievements';
 import { AdminAppointments } from './admin/AdminAppointments';
+import { AdminCommHub } from './admin/AdminCommHub';
 
 const ALL_NAV = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,8 +30,7 @@ const ALL_NAV = [
   { id: 'issues', label: 'Issues', icon: AlertTriangle },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'content', label: 'Content', icon: FileText },
-  { id: 'messages', label: 'Messages', icon: MessageSquare },
-  { id: 'announcements', label: 'Announce', icon: Megaphone },
+  { id: 'comms', label: 'Comm Hub', icon: Radio },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -167,19 +165,7 @@ export function Admin() {
         />
       )}
 
-      {activeTab === 'messages' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Messages</h2>
-          <MessagePanel />
-        </motion.div>
-      )}
-
-      {activeTab === 'announcements' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Announcements</h2>
-          <AnnouncementPanel canPost />
-        </motion.div>
-      )}
+      {activeTab === 'comms' && <AdminCommHub />}
 
       {activeTab === 'issues' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
