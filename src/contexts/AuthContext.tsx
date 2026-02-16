@@ -29,25 +29,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
 
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = useCallback(async (user: User): Promise<Profile | null> => {
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', userId)
+      .eq('id', user.id)
       .maybeSingle();
-    return data;
+
+    if (data) return data;
+
+    const meta = user.user_metadata || {};
+    const fallback: Profile = {
+      id: user.id,
+      email: user.email || meta.email || '',
+      full_name: meta.full_name || '',
+      phone: meta.phone || '',
+      zone: '',
+      avatar_url: null,
+      role: meta.role || 'constituent',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: inserted } = await supabase
+      .from('profiles')
+      .upsert(fallback, { onConflict: 'id' })
+      .select()
+      .maybeSingle();
+
+    return inserted || fallback;
   }, []);
 
   const refreshProfile = useCallback(async () => {
     if (!state.user) return;
-    const profile = await fetchProfile(state.user.id);
+    const profile = await fetchProfile(state.user);
     setState(prev => ({ ...prev, profile }));
   }, [state.user, fetchProfile]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        fetchProfile(session.user.id).then(profile => {
+        fetchProfile(session.user).then(profile => {
           setState({ user: session.user, session, profile, loading: false });
         });
       } else {
@@ -55,9 +78,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        fetchProfile(session.user.id).then(profile => {
+        fetchProfile(session.user).then(profile => {
           setState({ user: session.user, session, profile, loading: false });
         });
       } else {
