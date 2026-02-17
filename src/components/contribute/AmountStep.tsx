@@ -205,7 +205,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-xs font-bold text-white/35 tabular-nums"
+                className="text-xs font-bold text-amber-400 tabular-nums"
               >
                 ≈ GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
