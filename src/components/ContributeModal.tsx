@@ -8,7 +8,7 @@ import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
 import { PaymentMethodStep } from './contribute/PaymentMethodStep';
-import type { PayMethod } from './contribute/types';
+import type { PayMethod, RecognitionType } from './contribute/types';
 
 interface Project {
   id: string;
@@ -36,6 +36,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [lastName, setLastName] = useState('');
   const [contact, setContact] = useState('');
   const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
+  const [recognition, setRecognition] = useState<RecognitionType>('first');
   const [exchangeRate, setExchangeRate] = useState(11.00);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
@@ -75,7 +76,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const unitPriceGHS = UNIT_PRICE_USD * (exchangeRate || 11.00);
   const totalGHS = amount * unitPriceGHS;
   const totalUSD = amount * UNIT_PRICE_USD;
-  const canProceedStep2 = firstName.trim().length >= 2 && lastName.trim().length >= 2 && contact.trim().length >= 5;
+  const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
 
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
@@ -127,14 +128,16 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
       localStorage.setItem('pending_payment_ref', ref);
 
-      const email = payMethod === 'MOMO'
-        ? `${contact.replace(/[^0-9]/g, '') || '0000000000'}@momo.com`
-        : contact.trim();
+      const email = contact.includes('@') ? contact.trim()
+        : contact.replace(/[^0-9]/g, '').length >= 5 ? `${contact.replace(/[^0-9]/g, '')}@momo.com`
+        : `${firstName.toLowerCase().trim()}.${lastName.toLowerCase().trim()}@donor.local`;
 
       const channelMap: Record<PayMethod, string[]> = {
         MOMO: ['mobile_money'],
         CARD: ['card'],
         BANK: ['bank_transfer'],
+        APPLE: ['card'],
+        CRYPTO: ['card'],
       };
 
       const popup = new Paystack();
@@ -254,17 +257,18 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                  modalState === 'failed' ? 'Payment Failed' :
                  modalState === 'success' ? 'Thank You!' :
                  step === 1 ? 'How Many Books?' :
-                 step === 2 ? 'Choose Payment Method' :
+                 step === 2 ? 'Payment Method' :
                  step === 3 ? 'Your Details' :
                  step === 4 ? 'Review & Pay' : 'Contribute'}
               </h2>
-              <p className="text-[11px] text-slate-400 font-medium leading-tight">
-                {modalState !== 'form' ? '' :
-                 step === 1 ? 'Select the number of books to donate' :
-                 step === 2 ? 'How would you like to pay?' :
-                 step === 3 ? 'Tell us a bit about yourself' :
-                 step === 4 ? 'Confirm your contribution' : ''}
-              </p>
+              {modalState === 'form' && (
+                <p className="text-[11px] text-slate-400 font-medium leading-tight">
+                  {step === 1 ? 'Every book makes a difference' :
+                   step === 2 ? 'Choose how to pay' :
+                   step === 3 ? 'A little about you' :
+                   step === 4 ? 'Confirm your contribution' : ''}
+                </p>
+              )}
             </div>
           </div>
           {modalState === 'form' && (
@@ -327,14 +331,15 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     setLastName={setLastName}
                     contact={contact}
                     setContact={setContact}
-                    payMethod={payMethod}
+                    recognition={recognition}
+                    setRecognition={setRecognition}
                     error={error}
                     onBack={() => goToStep(2)}
                     onNext={() => {
-                      if (!canProceedStep2) { setError('Please fill in all fields correctly.'); return; }
+                      if (!canProceedStep3) { setError('Please enter your first and last name.'); return; }
                       setError(''); goToStep(4);
                     }}
-                    canProceed={canProceedStep2}
+                    canProceed={canProceedStep3}
                   />
                 )}
                 {step === 4 && (
@@ -348,6 +353,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     contact={contact}
                     payMethod={payMethod}
                     projectTitle={project.title}
+                    recognition={recognition}
                     onBack={() => goToStep(3)}
                     onPay={handlePay}
                   />
