@@ -13,7 +13,7 @@ const IMPACT_LINES: [number, string][] = [
   [100, 'An entire class gains a library'],
   [200, 'Two classrooms light up with knowledge'],
   [500, 'A whole school year of reading, unlocked'],
-  [1000, 'You're building a library from scratch'],
+  [1000, "You're building a library from scratch"],
   [5000, 'A generation of readers begins here'],
   [10000, 'Transforming education across a community'],
   [50000, 'A legacy of learning for Cape Coast North'],
