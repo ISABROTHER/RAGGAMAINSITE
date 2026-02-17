@@ -1,12 +1,5 @@
-import { ChevronLeft, Lock, Smartphone, CreditCard, Landmark, BookOpen, User, Receipt } from 'lucide-react';
+import { ChevronLeft, Lock, BookOpen, User, Receipt } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { PayMethod } from './types';
-
-const METHOD_META: Record<PayMethod, { label: string; icon: React.ElementType }> = {
-  MOMO: { label: 'Mobile Money', icon: Smartphone },
-  CARD: { label: 'Card Payment', icon: CreditCard },
-  BANK: { label: 'Bank Transfer', icon: Landmark },
-};
 
 interface ReviewStepProps {
   amount: number;
@@ -16,7 +9,6 @@ interface ReviewStepProps {
   firstName: string;
   lastName: string;
   contact: string;
-  payMethod: PayMethod;
   projectTitle: string;
   onBack: () => void;
   onPay: () => void;
@@ -34,12 +26,9 @@ const fadeUp = {
 
 export function ReviewStep({
   amount, unitLabel, totalGHS, totalUSD,
-  firstName, lastName, contact, payMethod,
+  firstName, lastName, contact,
   projectTitle, onBack, onPay,
 }: ReviewStepProps) {
-  const method = METHOD_META[payMethod];
-  const MethodIcon = method.icon;
-
   return (
     <div className="flex flex-col min-h-0">
       <motion.div
@@ -82,15 +71,6 @@ export function ReviewStep({
           <div className="bg-slate-50 rounded-2xl p-6 space-y-4 border border-slate-200">
             <SummaryRow label="Name" value={`${firstName} ${lastName}`} />
             <SummaryRow label="Contact" value={contact} />
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-slate-500 font-medium">Payment</p>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                  <MethodIcon className="w-4 h-4 text-slate-600" />
-                </div>
-                <p className="text-[12px] font-bold text-slate-700">{method.label}</p>
-              </div>
-            </div>
           </div>
         </motion.div>
 
