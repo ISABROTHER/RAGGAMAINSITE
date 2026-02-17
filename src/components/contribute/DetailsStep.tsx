@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { ChevronLeft, ArrowRight, ShieldCheck, User, Mail } from 'lucide-react';
+import { Smartphone, CreditCard, Landmark, ChevronLeft, ArrowRight, ShieldCheck, User, Phone, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { PayMethod, PAY_METHODS } from './types';
+
+const PAY_ICONS: Record<PayMethod, React.ElementType> = {
+  MOMO: Smartphone,
+  CARD: CreditCard,
+  BANK: Landmark,
+};
 
 interface DetailsStepProps {
   firstName: string;
@@ -9,6 +16,8 @@ interface DetailsStepProps {
   setLastName: (v: string) => void;
   contact: string;
   setContact: (v: string) => void;
+  payMethod: PayMethod;
+  setPayMethod: (v: PayMethod) => void;
   error: string;
   onBack: () => void;
   onNext: () => void;
@@ -17,7 +26,7 @@ interface DetailsStepProps {
 
 export function DetailsStep({
   firstName, setFirstName, lastName, setLastName,
-  contact, setContact,
+  contact, setContact, payMethod, setPayMethod,
   error, onBack, onNext, canProceed,
 }: DetailsStepProps) {
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -51,17 +60,64 @@ export function DetailsStep({
               />
             </div>
             <FloatingInput
-              icon={Mail}
-              label="Email Address"
+              icon={payMethod === 'MOMO' ? Phone : Mail}
+              label={payMethod === 'MOMO' ? 'Mobile Money Number' : 'Email Address'}
               value={contact}
               onChange={setContact}
-              placeholder="you@email.com"
-              type="email"
-              inputMode="email"
+              placeholder={payMethod === 'MOMO' ? '024 XXX XXXX' : 'you@email.com'}
+              type={payMethod === 'MOMO' ? 'tel' : 'email'}
+              inputMode={payMethod === 'MOMO' ? 'tel' : 'email'}
               focused={focusedField === 'contact'}
               onFocus={() => setFocusedField('contact')}
               onBlur={() => setFocusedField(null)}
             />
+          </div>
+        </div>
+
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 px-0.5">Payment Method</p>
+          <div className="space-y-3">
+            {PAY_METHODS.map((m, i) => {
+              const Icon = PAY_ICONS[m.key];
+              const active = payMethod === m.key;
+              return (
+                <motion.button
+                  key={m.key}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06, duration: 0.3 }}
+                  onClick={() => setPayMethod(m.key)}
+                  className={`flutter-card w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-left min-h-[72px] ${
+                    active
+                      ? `${m.activeBg} ${m.activeRing} ring-2`
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                    active ? 'bg-white shadow-md' : 'bg-slate-50'
+                  }`}>
+                    <Icon className={`w-5 h-5 transition-colors ${active ? m.activeColor : 'text-slate-400'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[15px] font-bold transition-colors leading-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{m.label}</p>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{m.sublabel}</p>
+                  </div>
+                  <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+                    active ? 'border-green-600 bg-green-600' : 'border-slate-300'
+                  }`}>
+                    {active && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                        className="w-3 h-3 bg-white rounded-full"
+                      />
+                    )}
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 
