@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, BookOpen, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import PaystackPop from '@paystack/inline-js';
 import { supabase } from '../lib/supabase';
 import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
@@ -77,19 +78,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const totalUSD = amount * UNIT_PRICE_USD;
   const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
 
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const popupRef = useRef<Window | null>(null);
-
-  const stopPolling = useCallback(() => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    return stopPolling;
-  }, [stopPolling]);
+  const paystackRef = useRef<PaystackPop | null>(null);
 
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
@@ -152,52 +141,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     return res.json();
   };
 
-  const startPolling = (ref: string) => {
-    stopPolling();
-    let attempts = 0;
-    const maxAttempts = 120;
-
-    pollRef.current = setInterval(async () => {
-      attempts++;
-
-      if (popupRef.current && popupRef.current.closed) {
-        stopPolling();
-        const status = await verifyPayment(ref);
-        localStorage.removeItem('pending_payment_ref');
-        if (status === 'completed') {
-          setModalState('success');
-          goToStep(5);
-        } else {
-          setModalState('form');
-          goToStep(4);
-        }
-        return;
-      }
-
-      if (attempts >= maxAttempts) {
-        stopPolling();
-        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
-        localStorage.removeItem('pending_payment_ref');
-        setModalState('failed');
-        return;
-      }
-
-      const status = await verifyPayment(ref);
-      if (status === 'completed') {
-        stopPolling();
-        localStorage.removeItem('pending_payment_ref');
-        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
-        setModalState('success');
-        goToStep(5);
-      } else if (status === 'failed') {
-        stopPolling();
-        localStorage.removeItem('pending_payment_ref');
-        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
-        setModalState('failed');
-      }
-    }, 3000);
-  };
-
   const handlePay = async () => {
     setError('');
     setModalState('processing');
@@ -218,8 +161,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         status: 'pending',
       });
 
-      localStorage.setItem('pending_payment_ref', ref);
-
       const email = contact.includes('@') ? contact.trim()
         : contact.replace(/[^0-9]/g, '').length >= 5 ? `${contact.replace(/[^0-9]/g, '')}@momo.com`
         : `${firstName.toLowerCase().trim()}.${lastName.toLowerCase().trim()}@donor.local`;
@@ -232,26 +173,30 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
       const data = await initializePayment(ref, email, channelMap[payMethod]);
 
-      if (!data.authorization_url) {
-        throw new Error('No payment URL returned');
+      if (!data.access_code) {
+        throw new Error('No payment access code returned');
       }
 
-      const width = 520;
-      const height = 650;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2;
-      const popup = window.open(
-        data.authorization_url,
-        'paystack_payment',
-        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-      );
+      const paystack = new PaystackPop();
+      paystackRef.current = paystack;
 
-      if (popup) {
-        popupRef.current = popup;
-        startPolling(ref);
-      } else {
-        window.location.href = data.authorization_url;
-      }
+      paystack.resumeTransaction({
+        accessCode: data.access_code,
+        onSuccess: async () => {
+          const status = await verifyPayment(ref);
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('success');
+            goToStep(5);
+          }
+        },
+        onCancel: () => {
+          setModalState('form');
+          goToStep(4);
+        },
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Payment initialization failed. Please try again.');
       setModalState('failed');
@@ -497,7 +442,7 @@ function ProcessingState() {
       </div>
       <div className="text-center">
         <p className="text-[15px] font-bold text-slate-900 mb-1.5">Processing Payment</p>
-        <p className="text-sm text-slate-400">Complete the payment on the popup window.</p>
+        <p className="text-sm text-slate-400">Complete the payment on the secure checkout.</p>
         <div className="flex items-center justify-center gap-1.5 mt-4">
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-1" />
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-2" />
