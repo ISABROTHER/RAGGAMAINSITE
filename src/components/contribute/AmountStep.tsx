@@ -11,10 +11,14 @@ interface AmountStepProps {
   totalUSD: number;
   unitLabel: string;
   maxUnits: number;
+  unitPriceUSD: number;
+  unitPriceGHS: number;
+  exchangeRate: number;
+  rateSource: string;
   onNext: () => void;
 }
 
-export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
+export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, unitPriceUSD, unitPriceGHS, exchangeRate, rateSource, onNext }: AmountStepProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const amountRef = useRef(amount);
   amountRef.current = amount;
@@ -185,6 +189,19 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               />
             </div>
           </div>
+        </div>
+
+        {/* Live rate & per-unit price */}
+        <div className="bg-white border border-slate-100 rounded-lg px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${rateSource === 'fallback' ? 'bg-amber-400' : 'bg-green-500'} animate-pulse`} />
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+              {rateSource === 'fallback' ? 'Offline Rate' : 'Live Rate'}
+            </span>
+          </div>
+          <span className="text-[9px] font-bold text-slate-500 tabular-nums">
+            $1 = GH₵{exchangeRate.toFixed(2)} · ${unitPriceUSD.toFixed(2)}/book = GH₵{unitPriceGHS.toFixed(2)}
+          </span>
         </div>
 
         {/* Total card */}
