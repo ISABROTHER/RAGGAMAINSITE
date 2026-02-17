@@ -1,5 +1,12 @@
-import { ChevronLeft, Lock, BookOpen, User, Receipt } from 'lucide-react';
+import { ChevronLeft, Lock, Smartphone, CreditCard, Landmark, BookOpen, User, Receipt } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { PayMethod } from './types';
+
+const METHOD_META: Record<PayMethod, { label: string; icon: React.ElementType }> = {
+  MOMO: { label: 'Mobile Money', icon: Smartphone },
+  CARD: { label: 'Card Payment', icon: CreditCard },
+  BANK: { label: 'Bank Transfer', icon: Landmark },
+};
 
 interface ReviewStepProps {
   amount: number;
@@ -9,6 +16,7 @@ interface ReviewStepProps {
   firstName: string;
   lastName: string;
   contact: string;
+  payMethod: PayMethod;
   projectTitle: string;
   onBack: () => void;
   onPay: () => void;
@@ -26,9 +34,12 @@ const fadeUp = {
 
 export function ReviewStep({
   amount, unitLabel, totalGHS, totalUSD,
-  firstName, lastName, contact,
+  firstName, lastName, contact, payMethod,
   projectTitle, onBack, onPay,
 }: ReviewStepProps) {
+  const method = METHOD_META[payMethod];
+  const MethodIcon = method.icon;
+
   return (
     <div className="flex flex-col min-h-0">
       <motion.div
@@ -71,6 +82,15 @@ export function ReviewStep({
           <div className="bg-slate-50 rounded-2xl p-6 space-y-4 border border-slate-200">
             <SummaryRow label="Name" value={`${firstName} ${lastName}`} />
             <SummaryRow label="Contact" value={contact} />
+            <div className="flex items-center justify-between">
+              <p className="text-[12px] text-slate-500 font-medium">Payment</p>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                  <MethodIcon className="w-4 h-4 text-slate-600" />
+                </div>
+                <p className="text-[12px] font-bold text-slate-700">{method.label}</p>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -101,7 +121,7 @@ export function ReviewStep({
           whileTap={{ scale: 0.97 }}
           onClick={onPay}
           className="flutter-btn flex-1 py-5 bg-green-600 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 flex items-center justify-center gap-3 min-h-[60px]"
-        >x
+        >
           <Lock className="w-4 h-4" />
           Pay GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2 })}
         </motion.button>
@@ -118,6 +138,6 @@ function SummaryRow({ icon: Icon, label, value }: { icon?: React.ElementType; la
         <p className="text-[12px] text-slate-500 font-medium">{label}</p>
       </div>
       <p className="text-[12px] font-bold text-slate-800 text-right truncate max-w-[55%]">{value}</p>
-    </div> 
+    </div>
   );
 }
