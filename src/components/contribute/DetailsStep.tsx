@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import { ChevronLeft, ArrowRight, ShieldCheck, User, Phone, Mail } from 'lucide-react';
+import { ChevronLeft, ArrowRight, ShieldCheck, User, Phone, Mail, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { PayMethod } from './types';
+import type { RecognitionType } from './types';
+
+const RECOGNITION_OPTIONS: { key: RecognitionType; label: string }[] = [
+  { key: 'first', label: 'First name only' },
+  { key: 'full', label: 'Full name' },
+  { key: 'anon', label: 'Anonymous supporter' },
+];
 
 interface DetailsStepProps {
   firstName: string;
@@ -10,7 +16,8 @@ interface DetailsStepProps {
   setLastName: (v: string) => void;
   contact: string;
   setContact: (v: string) => void;
-  payMethod: PayMethod;
+  recognition: RecognitionType;
+  setRecognition: (v: RecognitionType) => void;
   error: string;
   onBack: () => void;
   onNext: () => void;
@@ -19,51 +26,100 @@ interface DetailsStepProps {
 
 export function DetailsStep({
   firstName, setFirstName, lastName, setLastName,
-  contact, setContact, payMethod,
+  contact, setContact,
+  recognition, setRecognition,
   error, onBack, onNext, canProceed,
 }: DetailsStepProps) {
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [contactType, setContactType] = useState<'email' | 'phone'>('email');
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4 space-y-6">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4 space-y-5">
+        {/* Name fields */}
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 px-0.5">Your Details</p>
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <FloatingInput
-                icon={User}
-                label="First Name"
-                value={firstName}
-                onChange={setFirstName}
-                placeholder="Kwame"
-                focused={focusedField === 'firstName'}
-                onFocus={() => setFocusedField('firstName')}
-                onBlur={() => setFocusedField(null)}
-              />
-              <FloatingInput
-                icon={User}
-                label="Surname"
-                value={lastName}
-                onChange={setLastName}
-                placeholder="Mensah"
-                focused={focusedField === 'lastName'}
-                onFocus={() => setFocusedField('lastName')}
-                onBlur={() => setFocusedField(null)}
-              />
-            </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-3 px-0.5">Your Name</p>
+          <div className="grid grid-cols-2 gap-3">
             <FloatingInput
-              icon={payMethod === 'MOMO' ? Phone : Mail}
-              label={payMethod === 'MOMO' ? 'Mobile Money Number' : 'Email Address'}
-              value={contact}
-              onChange={setContact}
-              placeholder={payMethod === 'MOMO' ? '024 XXX XXXX' : 'you@email.com'}
-              type={payMethod === 'MOMO' ? 'tel' : 'email'}
-              inputMode={payMethod === 'MOMO' ? 'tel' : 'email'}
-              focused={focusedField === 'contact'}
-              onFocus={() => setFocusedField('contact')}
+              icon={User}
+              label="First Name"
+              value={firstName}
+              onChange={setFirstName}
+              placeholder="Kwame"
+              focused={focusedField === 'firstName'}
+              onFocus={() => setFocusedField('firstName')}
               onBlur={() => setFocusedField(null)}
             />
+            <FloatingInput
+              icon={User}
+              label="Surname"
+              value={lastName}
+              onChange={setLastName}
+              placeholder="Mensah"
+              focused={focusedField === 'lastName'}
+              onFocus={() => setFocusedField('lastName')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </div>
+        </div>
+
+        {/* Contact — optional with toggle */}
+        <div>
+          <div className="flex items-center justify-between mb-3 px-0.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">Contact <span className="text-slate-300 normal-case tracking-normal">(optional)</span></p>
+            <div className="flex bg-slate-100 rounded-lg p-0.5">
+              <button
+                onClick={() => { setContactType('email'); setContact(''); }}
+                className={`px-3 py-1 rounded-md text-[9px] font-bold transition-all ${
+                  contactType === 'email' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-400'
+                }`}
+              >
+                Email
+              </button>
+              <button
+                onClick={() => { setContactType('phone'); setContact(''); }}
+                className={`px-3 py-1 rounded-md text-[9px] font-bold transition-all ${
+                  contactType === 'phone' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-400'
+                }`}
+              >
+                Phone
+              </button>
+            </div>
+          </div>
+          <FloatingInput
+            icon={contactType === 'phone' ? Phone : Mail}
+            label={contactType === 'phone' ? 'Phone Number' : 'Email Address'}
+            value={contact}
+            onChange={setContact}
+            placeholder={contactType === 'phone' ? '024 XXX XXXX' : 'you@email.com'}
+            type={contactType === 'phone' ? 'tel' : 'email'}
+            inputMode={contactType === 'phone' ? 'tel' : 'email'}
+            focused={focusedField === 'contact'}
+            onFocus={() => setFocusedField('contact')}
+            onBlur={() => setFocusedField(null)}
+          />
+        </div>
+
+        {/* Donor recognition */}
+        <div>
+          <div className="flex items-center gap-2 mb-3 px-0.5">
+            <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">How should we recognize you?</p>
+          </div>
+          <div className="flex gap-2">
+            {RECOGNITION_OPTIONS.map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setRecognition(opt.key)}
+                className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold border-2 transition-all ${
+                  recognition === opt.key
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -81,7 +137,7 @@ export function DetailsStep({
         <div className="flex items-center gap-3 px-1">
           <ShieldCheck className="w-4 h-4 text-green-600 shrink-0" />
           <span className="text-[10px] text-slate-500 font-medium leading-relaxed">
-            256-bit encrypted. Your data is secured by Paystack.
+            Your data is encrypted and securely processed.
           </span>
         </div>
       </div>
@@ -101,7 +157,12 @@ export function DetailsStep({
           className="flutter-btn flex-1 py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
         >
           Review Order
-          <ArrowRight className="w-5 h-5" />
+          <motion.span
+            animate={canProceed ? { x: [0, 6, 0] } : {}}
+            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ArrowRight className="w-5 h-5" />
+          </motion.span>
         </motion.button>
       </div>
     </div>
