@@ -188,7 +188,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         </div>
 
         {/* Total card — USD prominent, GHS secondary */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
+        <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
             <p className="text-[8px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
