@@ -7,6 +7,7 @@ import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
+import { PaymentMethodStep } from './contribute/PaymentMethodStep';
 import type { PayMethod } from './contribute/types';
 
 interface Project {
@@ -25,7 +26,7 @@ interface ContributeModalProps {
 
 type ModalState = 'form' | 'processing' | 'success' | 'failed';
 
-const STEP_LABELS = ['Amount', 'Details', 'Review', 'Done'];
+const STEP_LABELS = ['Amount', 'Payment', 'Details', 'Review', 'Done'];
 
 export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [step, setStep] = useState(1);
@@ -158,13 +159,13 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
           if (status === 'completed') {
             setModalState('success');
-            goToStep(4);
+            goToStep(5);
           } else {
             await new Promise(resolve => setTimeout(resolve, 2000));
             const retryStatus = await verifyPayment(ref);
             if (retryStatus === 'completed') {
               setModalState('success');
-              goToStep(4);
+              goToStep(5);
             } else {
               setModalState('failed');
             }
@@ -177,10 +178,10 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
           if (status === 'completed') {
             setModalState('success');
-            goToStep(4);
+            goToStep(5);
           } else {
             setModalState('form');
-            goToStep(3);
+            goToStep(4);
           }
         },
         onError: async () => {
@@ -190,7 +191,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
           if (status === 'completed') {
             setModalState('success');
-            goToStep(4);
+            goToStep(5);
           } else {
             setModalState('failed');
           }
@@ -203,7 +204,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
   const handleRetry = () => {
     setModalState('form');
-    goToStep(3);
+    goToStep(4);
     setError('');
   };
 
@@ -264,7 +265,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
         {modalState !== 'failed' && (
           <div className="px-5 sm:px-6 pb-4 pt-1 shrink-0">
-            <StepIndicator current={step} total={4} labels={STEP_LABELS} />
+            <StepIndicator current={step} total={5} labels={STEP_LABELS} />
           </div>
         )}
 
@@ -296,6 +297,14 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                   />
                 )}
                 {step === 2 && (
+                  <PaymentMethodStep
+                    payMethod={payMethod}
+                    setPayMethod={setPayMethod}
+                    onBack={() => goToStep(1)}
+                    onNext={() => { setError(''); goToStep(3); }}
+                  />
+                )}
+                {step === 3 && (
                   <DetailsStep
                     firstName={firstName}
                     setFirstName={setFirstName}
@@ -304,17 +313,16 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     contact={contact}
                     setContact={setContact}
                     payMethod={payMethod}
-                    setPayMethod={setPayMethod}
                     error={error}
-                    onBack={() => goToStep(1)}
+                    onBack={() => goToStep(2)}
                     onNext={() => {
                       if (!canProceedStep2) { setError('Please fill in all fields correctly.'); return; }
-                      setError(''); goToStep(3);
+                      setError(''); goToStep(4);
                     }}
                     canProceed={canProceedStep2}
                   />
                 )}
-                {step === 3 && (
+                {step === 4 && (
                   <ReviewStep
                     amount={amount}
                     unitLabel={project.unit_label}
@@ -325,7 +333,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     contact={contact}
                     payMethod={payMethod}
                     projectTitle={project.title}
-                    onBack={() => goToStep(2)}
+                    onBack={() => goToStep(3)}
                     onPay={handlePay}
                   />
                 )}
@@ -333,7 +341,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             </AnimatePresence>
           )}
 
-          {modalState === 'success' && step === 4 && (
+          {modalState === 'success' && step === 5 && (
             <SuccessStep
               amount={amount}
               unitLabel={project.unit_label}
