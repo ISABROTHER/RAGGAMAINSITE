@@ -12,7 +12,7 @@ export function BottomCTASection({ onNavigate }: BottomCTASectionProps) {
         
         {/* Main Title */}
         <h2 className="text-2xl md:text-4xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight">
-          Obiara Ka Ho Exercise Book Project
+          Operation 500,000 Exercise Books
           <span className="block text-lg md:text-xl font-normal text-slate-500 mt-2">
             Supporting basic education in Cape Coast North
           </span>
@@ -62,10 +62,10 @@ export function BottomCTASection({ onNavigate }: BottomCTASectionProps) {
                 <strong>Education is the foundation of our future.</strong> In Cape Coast North, too many brilliant students struggle simply because they lack basic learning materials.
               </p>
               <p className="mb-4">
-                I, Hon. Dr. Kwamena Minta Nyarku (Ragga), have launched the <strong>Obiara Ka Ho Exercise Book Project</strong> to ensure that every child in our constituency has the exercise books they need to succeed in class. This isn't just about paper and pens; it's about dignity, preparedness, and removing the barriers to learning.
+                I, Hon. Dr. Kwamena Minta Nyarku (Ragga), have launched <strong>Operation 500,000</strong> to ensure that every child in our constituency has the exercise books they need to succeed in class. This isn't just about paper and pens; it's about dignity, preparedness, and removing the barriers to learning.
               </p>
               <p className="mb-4">
-                We have already distributed thousands of books, but we need your continued support to reach every child. Every contribution goes directly to procuring and distributing these materials to schools across the constituency.
+                We have already raised enough for 325,000 books, but we need your help to reach the finish line. Every contribution goes directly to procuring and distributing these materials to schools across the constituency.
               </p>
               <p className="italic text-slate-500">
                 "Together, we can write a better future for our children."
@@ -92,8 +92,8 @@ export function BottomCTASection({ onNavigate }: BottomCTASectionProps) {
                 </div>
                 
                 <div>
-                  <div className="text-2xl font-bold text-slate-900">Ongoing <span className="text-base font-normal text-slate-600">initiative</span></div>
-                  <div className="text-xs text-slate-500">Supporting every child • 1.9K donations</div>
+                  <div className="text-2xl font-bold text-slate-900">325,000 <span className="text-base font-normal text-slate-600">books</span></div>
+                  <div className="text-xs text-slate-500">raised of 500,000 goal • 1.9K donations</div>
                 </div>
               </div>
 

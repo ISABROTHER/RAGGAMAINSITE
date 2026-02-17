@@ -1,35 +1,8 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { Minus, Plus, ArrowRight, Heart } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { Minus, Plus, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-const QUICK_AMOUNTS = [10, 50, 100, 200, 500, 1000];
-const ABSOLUTE_MAX = 500000;
-
-const IMPACT_LINES: [number, string][] = [
-  [1, 'One book, one spark of curiosity'],
-  [10, 'A classroom shelf starts to fill'],
-  [25, 'A child discovers a new world in pages'],
-  [50, 'Half a class gets to read something new'],
-  [100, 'An entire class gains a library'],
-  [200, 'Two classrooms light up with knowledge'],
-  [500, 'A whole school year of reading, unlocked'],
-  [1000, "You're building a library from scratch"],
-  [5000, 'A generation of readers begins here'],
-  [10000, 'Transforming education across a community'],
-  [50000, 'A legacy of learning for Cape Coast North'],
-];
-
-function getImpactLine(n: number): string {
-  let line = IMPACT_LINES[0][1];
-  for (const [threshold, text] of IMPACT_LINES) {
-    if (n >= threshold) line = text;
-  }
-  return line;
-}
-
-function clamp(val: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, val));
-}
+const QUICK_AMOUNTS = [10, 50, 100, 200, 500];
 
 interface AmountStepProps {
   amount: number;
@@ -42,188 +15,91 @@ interface AmountStepProps {
 }
 
 export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
-  const effectiveMax = Math.max(maxUnits || ABSOLUTE_MAX, ABSOLUTE_MAX);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const amountRef = useRef(amount);
   amountRef.current = amount;
+  const [inputFocused, setInputFocused] = useState(false);
 
-  const [mainInputText, setMainInputText] = useState(amount > 0 ? amount.toString() : '');
-  const [mainFocused, setMainFocused] = useState(false);
-  const [customText, setCustomText] = useState('');
-  const [customFocused, setCustomFocused] = useState(false);
-  const [returningDonor, setReturningDonor] = useState<number | null>(null);
+  const stopAdjust = () => {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  };
 
-  useEffect(() => {
-    if (!mainFocused) {
-      setMainInputText(amount > 0 ? amount.toLocaleString() : '');
-    }
-  }, [amount, mainFocused]);
-
-  useEffect(() => {
-    if (!customFocused && !QUICK_AMOUNTS.includes(amount) && amount > 0) {
-      setCustomText(amount.toLocaleString());
-    }
-  }, [amount, customFocused]);
-
-  useEffect(() => {
-    try {
-      const last = localStorage.getItem('last_donation_amount');
-      if (last) {
-        const val = parseInt(last);
-        if (val > 0 && val <= effectiveMax) {
-          setReturningDonor(val);
-          setAmount(val);
-        }
-      }
-    } catch {}
-  }, []);
-
-  const stopAdjust = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
-
-  const stepOnce = useCallback((dir: 'up' | 'down') => {
-    const current = amountRef.current;
-    const step = current >= 1000 ? 100 : current >= 100 ? 10 : 1;
-    const next = dir === 'up'
-      ? clamp(current + step, 1, effectiveMax)
-      : clamp(current - step, 1, effectiveMax);
-    setAmount(next);
-  }, [effectiveMax, setAmount]);
-
-  const startHold = useCallback((dir: 'up' | 'down') => {
+  const startAdjust = (dir: 'up' | 'down') => {
     stopAdjust();
-    intervalRef.current = setInterval(() => stepOnce(dir), 80);
-  }, [stopAdjust, stepOnce]);
+    const doStep = () => {
+      const current = amountRef.current;
+      const step = current >= 100 ? 10 : 1;
+      setAmount(dir === 'up' ? Math.min(maxUnits, current + step) : Math.max(1, current - step));
+    };
+    doStep();
+    intervalRef.current = setInterval(doStep, 80);
+  };
 
-  useEffect(() => {
-    return stopAdjust;
-  }, [stopAdjust]);
-
-  const sliderMax = Math.min(effectiveMax, 50000);
-  const sliderPercent = Math.min(100, (amount / sliderMax) * 100);
+  const sliderPercent = Math.min(100, (amount / maxUnits) * 100);
   const displayLabel = amount === 1 ? unitLabel.replace(/s$/i, '') : unitLabel;
-  const isCustom = !QUICK_AMOUNTS.includes(amount) && amount > 0;
-
-  const handleMainChange = (raw: string) => {
-    const cleaned = raw.replace(/[^0-9]/g, '');
-    setMainInputText(cleaned);
-    const val = parseInt(cleaned);
-    if (!isNaN(val) && val > 0) {
-      setAmount(clamp(val, 1, effectiveMax));
-    } else if (cleaned === '') {
-      setAmount(0);
-    }
-  };
-
-  const handleCustomChange = (raw: string) => {
-    const cleaned = raw.replace(/[^0-9]/g, '');
-    setCustomText(cleaned);
-    const val = parseInt(cleaned);
-    if (!isNaN(val) && val > 0) {
-      setAmount(clamp(val, 1, effectiveMax));
-    } else if (cleaned === '') {
-      setAmount(0);
-    }
-  };
-
-  const selectQuick = (n: number) => {
-    setAmount(n);
-    setCustomText('');
-  };
 
   return (
     <div className="flex flex-col min-h-0 h-full">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-1 pb-3 space-y-3">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-2 pb-3 space-y-3">
 
-        <div className="text-center px-2">
-          <p className="text-[12px] text-slate-500 leading-relaxed italic flex items-center justify-center gap-1.5">
-            <Heart className="w-3 h-3 text-red-400 fill-red-400" />
-            You're one click away from putting smiles on the faces of our students.
-          </p>
-        </div>
-
-        <AnimatePresence>
-          {returningDonor && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-center"
-            >
-              <p className="text-[10px] text-amber-700 font-medium">
-                Welcome back! We've set your last donation of {returningDonor.toLocaleString()} {unitLabel}.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className={`rounded-xl px-3 py-3 transition-all duration-300 ${mainFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
+        {/* Number display — compact row */}
+        <div className={`rounded-xl px-3 py-3 transition-all duration-300 ${inputFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => stepOnce('down')}
-              onMouseDown={() => startHold('down')}
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              onMouseDown={() => startAdjust('down')}
+              onTouchStart={() => startAdjust('down')}
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
+              className="w-9 h-9 flex-shrink-0 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
-              <Minus className="w-4 h-4 pointer-events-none" />
-            </button>
+              <Minus className="w-3.5 h-3.5" />
+            </motion.button>
             <div className="flex-1 flex items-baseline justify-center gap-1 min-w-0 overflow-hidden">
               <input
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
-                value={mainInputText}
-                onChange={e => handleMainChange(e.target.value)}
-                onFocus={() => {
-                  setMainFocused(true);
-                  setMainInputText(amount > 0 ? amount.toString() : '');
+                value={amount === 0 ? '' : amount.toLocaleString()}
+                onChange={e => {
+                  const val = parseInt(e.target.value.replace(/,/g, ''));
+                  setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
                 }}
-                onBlur={() => {
-                  setMainFocused(false);
-                  if (amount < 1) setAmount(1);
-                }}
-                className="bg-transparent text-2xl font-extrabold text-slate-900 outline-none text-right tabular-nums flex-shrink min-w-[50px] max-w-[120px]"
-                style={{ fontSize: '24px' }}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                className="bg-transparent text-xl font-extrabold text-slate-900 outline-none text-right tabular-nums flex-shrink min-w-[40px] max-w-[100px]"
+                style={{ fontSize: '20px' }}
                 placeholder="0"
               />
-              <span className="text-sm font-bold text-slate-500 flex-shrink-0 truncate">{displayLabel}</span>
+              <span className="text-base font-extrabold text-slate-900 flex-shrink-0 truncate">{displayLabel}</span>
             </div>
-            <button
-              type="button"
-              onClick={() => stepOnce('up')}
-              onMouseDown={() => startHold('up')}
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              onMouseDown={() => startAdjust('up')}
+              onTouchStart={() => startAdjust('up')}
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
+              className="w-9 h-9 flex-shrink-0 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm"
             >
-              <Plus className="w-4 h-4 pointer-events-none" />
-            </button>
+              <Plus className="w-3.5 h-3.5" />
+            </motion.button>
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={getImpactLine(amount)}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.25 }}
-            className="text-[11px] text-green-600 font-semibold text-center px-2"
-          >
-            {getImpactLine(amount)}
-          </motion.p>
-        </AnimatePresence>
-
+        {/* Slider */}
         <div className="px-1">
-          <div className="relative h-8 flex items-center">
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">Drag to adjust</p>
+            <motion.span
+              animate={{ x: [0, 4, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="text-[8px] text-slate-300"
+            >
+              ← →
+            </motion.span>
+          </div>
+          <div className="relative h-7 flex items-center">
             <div className="absolute inset-x-0 h-2 bg-slate-200 rounded-full" />
             <motion.div
               className="absolute left-0 h-2 bg-green-500 rounded-full"
@@ -231,70 +107,78 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               transition={{ duration: 0.15, ease: 'easeOut' }}
             />
             <motion.div
-              className="absolute w-6 h-6 bg-white border-[3px] border-green-500 rounded-full shadow-md pointer-events-none"
-              animate={{ left: `calc(${sliderPercent}% - 12px)` }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
+              className="absolute w-5 h-5 bg-white border-[3px] border-green-500 rounded-full shadow-md"
+              animate={{
+                left: `calc(${sliderPercent}% - 10px)`,
+                boxShadow: [
+                  '0 2px 6px rgba(22, 163, 74, 0.2)',
+                  '0 2px 12px rgba(22, 163, 74, 0.4)',
+                  '0 2px 6px rgba(22, 163, 74, 0.2)',
+                ],
+              }}
+              transition={{
+                left: { duration: 0.15, ease: 'easeOut' },
+                boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+              }}
             />
             <input
               type="range"
               min="1"
-              max={sliderMax}
-              step={amount >= 1000 ? 100 : amount >= 100 ? 10 : 1}
-              value={Math.min(amount, sliderMax)}
+              max={maxUnits}
+              step="1"
+              value={amount}
               onChange={e => setAmount(parseInt(e.target.value))}
-              className="absolute inset-0 w-full opacity-0 cursor-grab active:cursor-grabbing"
+              className="absolute inset-0 w-full opacity-0 cursor-grab"
               style={{ fontSize: '16px' }}
             />
           </div>
           <div className="flex justify-between text-[8px] font-semibold text-slate-300 mt-0.5 px-0.5">
             <span>1</span>
-            <span>{sliderMax.toLocaleString()}</span>
+            <span>{maxUnits.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-1.5">
-          {QUICK_AMOUNTS.map((n, i) => {
-            const active = amount === n;
-            return (
-              <button
-                key={n}
-                type="button"
-                onClick={() => selectQuick(n)}
-                className={`py-2 rounded-lg text-[11px] font-bold border transition-all active:scale-95 touch-manipulation ${
-                  active
-                    ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-600/20'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
-                }`}
-                style={{ animationDelay: `${i * 30}ms` }}
-              >
-                {n.toLocaleString()}
-              </button>
-            );
-          })}
-          <div className="col-span-2">
-            <div className={`h-full py-1 px-3 rounded-lg border text-[11px] font-bold flex items-center justify-center transition-all ${
-              isCustom
+        {/* Quick select */}
+        <div>
+          <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2 px-0.5">Quick Select</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {QUICK_AMOUNTS.map((n, i) => {
+              const active = amount === n;
+              return (
+                <motion.button
+                  key={n}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                  onClick={() => setAmount(n)}
+                  className={`py-2 rounded-lg text-[11px] font-bold border transition-all ${
+                    active
+                      ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-600/20'
+                      : 'bg-white text-slate-600 border-slate-200'
+                  }`}
+                >
+                  {n.toLocaleString()}
+                </motion.button>
+              );
+            })}
+            <div className={`py-0.5 px-2 rounded-lg border text-[11px] font-bold flex items-center justify-center transition-all ${
+              !QUICK_AMOUNTS.includes(amount) && amount > 0
                 ? 'border-green-600 bg-green-600 shadow-sm shadow-green-600/20'
                 : 'border-dashed border-slate-300 bg-white'
             }`}>
               <input
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Custom amount"
-                value={customFocused ? customText : (isCustom ? amount.toLocaleString() : '')}
-                onChange={e => handleCustomChange(e.target.value)}
-                onFocus={() => {
-                  setCustomFocused(true);
-                  setCustomText(isCustom ? amount.toString() : '');
-                }}
-                onBlur={() => {
-                  setCustomFocused(false);
-                  if (amount < 1) { setAmount(1); setCustomText(''); }
+                placeholder="Custom"
+                value={!QUICK_AMOUNTS.includes(amount) && amount > 0 ? amount.toLocaleString() : ''}
+                onChange={e => {
+                  const val = parseInt(e.target.value.replace(/,/g, ''));
+                  setAmount(isNaN(val) ? 0 : Math.min(maxUnits, val));
                 }}
                 style={{ fontSize: '16px' }}
-                className={`w-full text-center text-[11px] bg-transparent outline-none tabular-nums touch-manipulation ${
-                  isCustom
+                className={`w-full text-center text-[11px] bg-transparent outline-none tabular-nums ${
+                  !QUICK_AMOUNTS.includes(amount) && amount > 0
                     ? 'text-white placeholder:text-white/50'
                     : 'text-slate-600 placeholder:text-slate-400'
                 }`}
@@ -303,49 +187,79 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-4 relative overflow-hidden shadow-lg">
+        {/* Total card */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
-            <p className="text-[8px] text-white font-bold uppercase tracking-[0.2em] mb-1.5 underline" style={{ textDecorationColor: '#fbbf24' }}>Total</p>
+            <p className="text-[8px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
             <div className="flex items-baseline justify-between">
               <motion.p
-                key={`usd-${totalUSD}`}
+                key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-xl font-extrabold text-white tabular-nums"
               >
+                GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </motion.p>
+              <motion.p
+                key={`usd-${totalUSD}`}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-base font-extrabold text-green-400 tabular-nums"
+              >
                 ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
-              <div className="text-right">
-                <p className="text-[7px] font-bold text-white/50 uppercase tracking-wider mb-0.5">Amount in Ghanaian Cedis</p>
-                <motion.p
-                  key={`ghs-${totalGHS}`}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs font-bold text-amber-400 tabular-nums"
-                >
-                  GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </motion.p>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom">
+      {/* Continue button */}
+      <div className="shrink-0 px-4 sm:px-6 pb-8 pt-3 safe-bottom">
         <motion.button
-          whileTap={{ scale: 0.97 }}
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
           onClick={onNext}
           disabled={amount < 1}
-          className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
+          animate={amount >= 1 ? {
+            boxShadow: [
+              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
+              '0 0 0 8px rgba(220, 38, 38, 0), 0 4px 30px rgba(220, 38, 38, 0.5)',
+              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
+            ],
+          } : {}}
+          transition={{
+            boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="w-full py-3.5 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl font-extrabold text-sm tracking-wider uppercase disabled:shadow-none flex items-center justify-center gap-2 relative overflow-hidden"
         >
-          Continue
-          <motion.span
-            animate={amount >= 1 ? { x: [0, 6, 0] } : {}}
-            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <ArrowRight className="w-5 h-5" />
-          </motion.span>
+          {amount >= 1 && (
+            <>
+              <span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                style={{ animation: 'cShimmer 1.8s ease-in-out infinite' }}
+              />
+              <span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                style={{ animation: 'cShimmer 1.8s ease-in-out infinite 0.9s' }}
+              />
+            </>
+          )}
+          <style>{`
+            @keyframes cShimmer {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+          <span className="relative z-10 flex items-center gap-2">
+            Continue
+            <motion.span
+              animate={amount >= 1 ? { x: [0, 5, 0] } : {}}
+              transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ArrowRight className="w-4 h-4" />
+            </motion.span>
+          </span>
         </motion.button>
       </div>
     </div>
