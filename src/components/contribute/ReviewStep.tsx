@@ -140,4 +140,4 @@ function SummaryRow({ icon: Icon, label, value }: { icon?: React.ElementType; la
       <p className="text-[12px] font-bold text-slate-800 text-right truncate max-w-[55%]">{value}</p>
     </div>
   );
-}
+} 
