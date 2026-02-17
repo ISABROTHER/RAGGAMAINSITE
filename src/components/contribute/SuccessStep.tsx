@@ -1,172 +1,150 @@
-import { useState } from 'react';
-import { CheckCircle2, Share2, Copy, Check, MessageCircle, Twitter, Download } from 'lucide-react';
+import { ChevronLeft, Lock, BookOpen, User, Receipt, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { PayMethod } from './types';
 
-interface SuccessStepProps {
+const METHOD_LABELS: Record<PayMethod, string> = {
+  MOMO: 'Mobile Money',
+  CARD: 'Card Payment',
+  APPLE: 'Apple Pay',
+  CRYPTO: 'Cryptocurrency',
+  BANK: 'Bank Transfer',
+};
+
+interface ReviewStepProps {
   amount: number;
   unitLabel: string;
   totalGHS: number;
+  totalUSD: number;
   firstName: string;
+  lastName: string;
+  contact: string;
+  payMethod: PayMethod;
   projectTitle: string;
-  projectSlug: string;
-  reference: string;
-  onClose: () => void;
+  recognition: string;
+  onBack: () => void;
+  onPay: () => void;
 }
 
-export function SuccessStep({ amount, unitLabel, totalGHS, firstName, projectTitle, projectSlug, reference, onClose }: SuccessStepProps) {
-  const [copied, setCopied] = useState(false);
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
 
-  const shareUrl = `${window.location.origin}/support?project=${projectSlug}`;
-  const shareText = `I just contributed ${amount.toLocaleString()} ${unitLabel} to "${projectTitle}" in Cape Coast North! Join me and make a difference.`;
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch { /* ignore */ }
-  };
+export function ReviewStep({
+  amount, unitLabel, totalGHS, totalUSD,
+  firstName, lastName, contact, payMethod,
+  projectTitle, recognition, onBack, onPay,
+}: ReviewStepProps) {
+  const isLocal = payMethod === 'MOMO';
+  const displayTotal = isLocal
+    ? `GH₵${totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : `$${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const altLine = isLocal
+    ? `That's approximately $${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD`
+    : `That's approximately GH₵${totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2 })} in Ghanaian Cedis`;
 
-  const shareNative = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: projectTitle, text: shareText, url: shareUrl });
-      } catch { /* user cancelled */ }
-    } else {
-      copyLink();
-    }
-  };
-
-  const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
-  };
-
-  const shareX = () => {
-    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
+  const displayName = recognition === 'anon' ? 'Anonymous Supporter'
+    : recognition === 'first' ? firstName
+    : `${firstName} ${lastName}`;
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 pb-4">
-        <div className="text-center">
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
-            className="relative inline-block mb-6"
-          >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+        className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-2 pb-4 space-y-4"
+      >
+        {/* Contributor details — top */}
+        <motion.div variants={fadeUp}>
+          <div className="flex items-center gap-2.5 mb-3 px-0.5">
+            <User className="w-3.5 h-3.5 text-slate-400" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">Contributor</p>
+          </div>
+          <div className="bg-slate-50 rounded-2xl p-5 space-y-3 border border-slate-200">
+            <SummaryRow label="Recognized as" value={displayName} />
+            {contact && <SummaryRow label="Contact" value={contact} />}
+            <SummaryRow label="Payment" value={METHOD_LABELS[payMethod]} />
+          </div>
+        </motion.div>
+
+        {/* Order summary — directly below */}
+        <motion.div variants={fadeUp}>
+          <div className="flex items-center gap-2.5 mb-3 px-0.5">
+            <Receipt className="w-3.5 h-3.5 text-slate-400" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">Order Summary</p>
+          </div>
+          <div className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-200">
+            <div className="p-5 space-y-3">
+              <SummaryRow icon={BookOpen} label="Project" value={projectTitle} />
+              <SummaryRow label="Quantity" value={`${amount.toLocaleString()} ${unitLabel}`} />
             </div>
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0.5 }}
-              animate={{ scale: 2, opacity: 0 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              className="absolute inset-0 rounded-full border-2 border-green-300"
-            />
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0.4 }}
-              animate={{ scale: 1.6, opacity: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="absolute inset-0 rounded-full border-2 border-green-200"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
-          >
-            <h3 className="text-xl font-extrabold text-slate-900 mb-1.5">Thank You, {firstName}!</h3>
-            <p className="text-sm text-slate-500">Your contribution has been received.</p>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-          className="mt-6 bg-slate-50 rounded-2xl overflow-hidden"
-        >
-          <div className="p-5 space-y-4">
-            <ReceiptRow label="Contributed" value={`${amount.toLocaleString()} ${unitLabel}`} />
-            <div className="border-t border-dashed border-slate-200" />
-            <ReceiptRow label="Amount Paid" value={`GH₵${totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} highlight />
-            <div className="border-t border-dashed border-slate-200" />
-            <ReceiptRow label="Reference" value={reference} mono />
-          </div>
-          <div className="bg-slate-100/50 px-5 py-3 flex items-center justify-center gap-2">
-            <Download className="w-3 h-3 text-slate-400" />
-            <p className="text-[10px] text-slate-400 font-medium">Receipt saved</p>
+            <div className="mx-5 border-t border-dashed border-slate-300" />
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total</p>
+                <motion.p
+                  key={displayTotal}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-2xl font-extrabold text-slate-900 tabular-nums"
+                >
+                  {displayTotal}
+                </motion.p>
+              </div>
+              <motion.p
+                key={altLine}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-[11px] font-semibold text-red-500 text-right"
+              >
+                {altLine}
+              </motion.p>
+            </div>
           </div>
         </motion.div>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.4 }}
-          className="mt-6"
+      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom flex gap-3">
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={onBack}
+          className="flutter-btn w-16 h-16 shrink-0 border-2 border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:border-slate-300 hover:bg-slate-50"
         >
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300 mb-3 text-center">Spread the Word</p>
-          <div className="flex items-center justify-center gap-3">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={shareNative}
-              className="flutter-btn flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-2xl text-xs font-bold shadow-lg shadow-green-600/20"
-            >
-              <Share2 className="w-4 h-4" />
-              Share
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.85 }}
-              onClick={shareWhatsApp}
-              className="flutter-btn w-12 h-12 bg-[#25D366] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#25D366]/20"
-            >
-              <MessageCircle className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.85 }}
-              onClick={shareX}
-              className="flutter-btn w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-900/20"
-            >
-              <Twitter className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.85 }}
-              onClick={copyLink}
-              className={`flutter-btn w-12 h-12 border-2 rounded-2xl flex items-center justify-center transition-colors ${
-                copied ? 'bg-green-50 border-green-200 text-green-600' : 'border-slate-100 text-slate-400'
-              }`}
-            >
-              {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-            </motion.button>
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="shrink-0 px-5 pb-5 pt-2 safe-bottom">
+          <ChevronLeft className="w-6 h-6" />
+        </motion.button>
         <motion.button
           whileTap={{ scale: 0.97 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          onClick={onClose}
-          className="flutter-btn w-full py-[18px] border-2 border-slate-100 text-slate-700 rounded-2xl font-bold text-[15px] uppercase tracking-wider"
+          onClick={onPay}
+          className="flutter-btn flex-1 py-5 bg-green-600 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 flex items-center justify-center gap-3 min-h-[60px]"
         >
-          Done
+          <Lock className="w-4 h-4" />
+          Pay {displayTotal}
+          <motion.span
+            animate={{ x: [0, 6, 0] }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ArrowRight className="w-4 h-4" />
+          </motion.span>
         </motion.button>
       </div>
     </div>
   );
 }
 
-function ReceiptRow({ label, value, highlight, mono }: { label: string; value: string; highlight?: boolean; mono?: boolean }) {
+function SummaryRow({ icon: Icon, label, value }: { icon?: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{label}</span>
-      <span className={`text-sm font-extrabold tabular-nums ${
-        highlight ? 'text-green-700' : mono ? 'text-[10px] font-mono text-slate-500 font-bold' : 'text-slate-900'
-      }`}>{value}</span>
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2.5">
+        {Icon && <Icon className="w-4 h-4 text-slate-400 shrink-0" />}
+        <p className="text-[12px] text-slate-500 font-medium">{label}</p>
+      </div>
+      <p className="text-[12px] font-bold text-slate-800 text-right truncate max-w-[55%]">{value}</p>
     </div>
   );
 }
