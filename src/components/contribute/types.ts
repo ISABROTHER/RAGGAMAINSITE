@@ -7,7 +7,9 @@ export interface ContributeProject {
   unit_price_ghs: number;
 }
 
-export type PayMethod = 'MOMO' | 'CARD' | 'BANK';
+export type PayMethod = 'MOMO' | 'CARD' | 'BANK' | 'APPLE' | 'CRYPTO';
+
+export type RecognitionType = 'full' | 'first' | 'anon';
 
 export interface ContributionData {
   amount: number;
@@ -23,7 +25,7 @@ export interface ContributionData {
 export const PAY_METHODS: {
   key: PayMethod;
   label: string;
-  sublabel: string;
+  logos: string;
   activeColor: string;
   activeBg: string;
   activeRing: string;
@@ -31,26 +33,42 @@ export const PAY_METHODS: {
   {
     key: 'MOMO',
     label: 'Mobile Money',
-    sublabel: 'MTN, Vodafone, AirtelTigo',
+    logos: 'MTN · Vodafone · AirtelTigo',
     activeColor: 'text-yellow-700',
     activeBg: 'bg-yellow-50',
     activeRing: 'ring-yellow-400/30 border-yellow-300',
   },
   {
     key: 'CARD',
-    label: 'Debit / Credit Card',
-    sublabel: 'Visa, Mastercard',
+    label: 'Card Payment',
+    logos: 'Visa · Mastercard',
     activeColor: 'text-blue-700',
     activeBg: 'bg-blue-50',
     activeRing: 'ring-blue-400/30 border-blue-300',
   },
   {
-    key: 'BANK',
-    label: 'Bank Transfer',
-    sublabel: 'Direct bank payment',
-    activeColor: 'text-slate-700',
+    key: 'APPLE',
+    label: 'Apple Pay',
+    logos: 'iPhone · iPad · Mac',
+    activeColor: 'text-slate-800',
     activeBg: 'bg-slate-50',
     activeRing: 'ring-slate-400/30 border-slate-300',
+  },
+  {
+    key: 'CRYPTO',
+    label: 'Cryptocurrency',
+    logos: 'BTC · ETH · USDT',
+    activeColor: 'text-orange-700',
+    activeBg: 'bg-orange-50',
+    activeRing: 'ring-orange-400/30 border-orange-300',
+  },
+  {
+    key: 'BANK',
+    label: 'Bank Transfer',
+    logos: 'Direct bank payment',
+    activeColor: 'text-emerald-700',
+    activeBg: 'bg-emerald-50',
+    activeRing: 'ring-emerald-400/30 border-emerald-300',
   },
 ];
 
