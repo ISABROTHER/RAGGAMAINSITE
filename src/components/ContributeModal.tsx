@@ -36,56 +36,28 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [contact, setContact] = useState('');
   const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
   const [exchangeRate, setExchangeRate] = useState(11.00);
-  const [rateSource, setRateSource] = useState<string>('fallback');
-  const [rateUpdatedAt, setRateUpdatedAt] = useState<Date | null>(null);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
   const [reference, setReference] = useState('');
 
-  // Fetch live USD→GHS rate with multiple fallback APIs
   useEffect(() => {
     const fetchRate = async () => {
-      // API 1: ExchangeRate-API (free, reliable)
       try {
         const res = await fetch('https://v6.exchangerate-api.com/v6/latest/USD');
-        const data = await res.json();
-        if (data?.conversion_rates?.GHS && data.conversion_rates.GHS > 5 && data.conversion_rates.GHS < 30) {
-          setExchangeRate(data.conversion_rates.GHS);
-          setRateSource('exchangerate-api.com');
-          setRateUpdatedAt(new Date());
-          return;
-        }
+        const d = await res.json();
+        if (d?.conversion_rates?.GHS > 5 && d.conversion_rates.GHS < 30) { setExchangeRate(d.conversion_rates.GHS); return; }
       } catch {}
-
-      // API 2: Open Exchange Rates (free tier)
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        const data = await res.json();
-        if (data?.rates?.GHS && data.rates.GHS > 5 && data.rates.GHS < 30) {
-          setExchangeRate(data.rates.GHS);
-          setRateSource('open.er-api.com');
-          setRateUpdatedAt(new Date());
-          return;
-        }
+        const d = await res.json();
+        if (d?.rates?.GHS > 5 && d.rates.GHS < 30) { setExchangeRate(d.rates.GHS); return; }
       } catch {}
-
-      // API 3: Currency API (free)
       try {
         const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
-        const data = await res.json();
-        if (data?.usd?.ghs && data.usd.ghs > 5 && data.usd.ghs < 30) {
-          setExchangeRate(data.usd.ghs);
-          setRateSource('fawazahmed0/currency-api');
-          setRateUpdatedAt(new Date());
-          return;
-        }
+        const d = await res.json();
+        if (d?.usd?.ghs > 5 && d.usd.ghs < 30) { setExchangeRate(d.usd.ghs); return; }
       } catch {}
-
-      // All APIs failed — keep the default fallback (11.00)
-      setRateSource('fallback');
-      setRateUpdatedAt(new Date());
     };
-
     fetchRate();
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -98,7 +70,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     setStep(s);
   };
 
-  // Each book is always $0.10 USD, converted to GHS at the live rate
   const UNIT_PRICE_USD = 0.10;
   const unitPriceGHS = UNIT_PRICE_USD * (exchangeRate || 11.00);
   const totalGHS = amount * unitPriceGHS;
@@ -322,10 +293,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     totalUSD={totalUSD}
                     unitLabel={project.unit_label}
                     maxUnits={project.target_units}
-                    unitPriceUSD={UNIT_PRICE_USD}
-                    unitPriceGHS={unitPriceGHS}
-                    exchangeRate={exchangeRate}
-                    rateSource={rateSource}
                     onNext={() => { setError(''); goToStep(2); }}
                   />
                 )}
@@ -353,6 +320,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     amount={amount}
                     unitLabel={project.unit_label}
                     totalGHS={totalGHS}
+                    totalUSD={totalUSD}
                     firstName={firstName}
                     lastName={lastName}
                     contact={contact}
