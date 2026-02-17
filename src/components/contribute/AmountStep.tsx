@@ -214,52 +214,16 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
         </div>
       </div>
 
-      {/* Continue button */}
-      <div className="shrink-0 px-4 sm:px-6 pb-8 pt-3 safe-bottom">
+      {/* Continue button — same design as DetailsStep */}
+      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom">
         <motion.button
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           onClick={onNext}
           disabled={amount < 1}
-          animate={amount >= 1 ? {
-            boxShadow: [
-              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
-              '0 0 0 8px rgba(220, 38, 38, 0), 0 4px 30px rgba(220, 38, 38, 0.5)',
-              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
-            ],
-          } : {}}
-          transition={{
-            boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
-          }}
-          className="w-full py-3.5 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl font-extrabold text-sm tracking-wider uppercase disabled:shadow-none flex items-center justify-center gap-2 relative overflow-hidden"
+          className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
         >
-          {amount >= 1 && (
-            <>
-              <span
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                style={{ animation: 'cShimmer 1.8s ease-in-out infinite' }}
-              />
-              <span
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-                style={{ animation: 'cShimmer 1.8s ease-in-out infinite 0.9s' }}
-              />
-            </>
-          )}
-          <style>{`
-            @keyframes cShimmer {
-              0% { transform: translateX(-100%); }
-              100% { transform: translateX(100%); }
-            }
-          `}</style>
-          <span className="relative z-10 flex items-center gap-2">
-            Continue
-            <motion.span
-              animate={amount >= 1 ? { x: [0, 5, 0] } : {}}
-              transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <ArrowRight className="w-4 h-4" />
-            </motion.span>
-          </span>
+          Continue
+          <ArrowRight className="w-5 h-5" />
         </motion.button>
       </div>
     </div>
