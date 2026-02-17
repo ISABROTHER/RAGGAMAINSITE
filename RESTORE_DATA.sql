@@ -44,7 +44,7 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Step 3: Create admin profiles
+-- Step 3: Create admin profile
 INSERT INTO public.profiles (id, email, full_name, phone, role, is_active)
 VALUES (
   '89b96cf2-7bb5-47b2-9e9e-d4f1b7ab9d24',
@@ -59,11 +59,6 @@ ON CONFLICT (id) DO UPDATE SET
   full_name = 'KMN Ragga',
   is_active = true,
   updated_at = now();
-
--- Update team@kmnragga.com to admin role
-UPDATE profiles
-SET role = 'admin', full_name = 'Team Admin', updated_at = now()
-WHERE email = 'team@kmnragga.com';
 
 -- Step 4: Add project INSERT policy for admins
 DO $$
