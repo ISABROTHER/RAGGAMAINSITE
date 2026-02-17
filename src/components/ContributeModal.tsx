@@ -249,7 +249,22 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
               <BookOpen className="w-5 h-5 text-green-700" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Contribute</h2>
+              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">
+                {modalState === 'processing' ? 'Processing...' :
+                 modalState === 'failed' ? 'Payment Failed' :
+                 modalState === 'success' ? 'Thank You!' :
+                 step === 1 ? 'How Many Books?' :
+                 step === 2 ? 'Choose Payment Method' :
+                 step === 3 ? 'Your Details' :
+                 step === 4 ? 'Review & Pay' : 'Contribute'}
+              </h2>
+              <p className="text-[11px] text-slate-400 font-medium leading-tight">
+                {modalState !== 'form' ? '' :
+                 step === 1 ? 'Select the number of books to donate' :
+                 step === 2 ? 'How would you like to pay?' :
+                 step === 3 ? 'Tell us a bit about yourself' :
+                 step === 4 ? 'Confirm your contribution' : ''}
+              </p>
             </div>
           </div>
           {modalState === 'form' && (
@@ -475,4 +490,4 @@ function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () =>
       </div>
     </div>
   );
-} 
+}
