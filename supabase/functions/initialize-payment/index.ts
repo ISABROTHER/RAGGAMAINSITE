@@ -78,6 +78,24 @@ Deno.serve(async (req: Request) => {
       },
     );
 
+    if (!initRes.ok) {
+      const errorBody = await initRes.json().catch(() => null);
+      const message = errorBody?.message || "Payment gateway error";
+      const statusCode = initRes.status === 401 ? 401 : initRes.status >= 500 ? 502 : 400;
+      console.error(`Paystack API error ${initRes.status}: ${message}`);
+      return new Response(
+        JSON.stringify({
+          error: message,
+          code: errorBody?.code,
+          type: errorBody?.type,
+        }),
+        {
+          status: statusCode,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const initData = await initRes.json();
 
     if (!initData.status || !initData.data) {

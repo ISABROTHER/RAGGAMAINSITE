@@ -5,8 +5,6 @@ import { PayMethod } from './types';
 const METHOD_LABELS: Record<PayMethod, string> = {
   MOMO: 'Mobile Money',
   CARD: 'Card Payment',
-  APPLE: 'Apple Pay',
-  CRYPTO: 'Cryptocurrency',
   BANK: 'Bank Transfer',
 };
 
