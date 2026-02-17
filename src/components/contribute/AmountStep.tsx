@@ -223,7 +223,12 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
         >
           Continue
-          <ArrowRight className="w-5 h-5" />
+          <motion.span
+            animate={amount >= 1 ? { x: [0, 6, 0] } : {}}
+            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ArrowRight className="w-5 h-5" />
+          </motion.span>
         </motion.button>
       </div>
     </div>
