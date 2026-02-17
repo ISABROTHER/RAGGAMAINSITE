@@ -92,4 +92,4 @@ export function PaymentMethodStep({ payMethod, setPayMethod, onBack, onNext }: P
       </div>
     </div>
   );
-}
+} 
