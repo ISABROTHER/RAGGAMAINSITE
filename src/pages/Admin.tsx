@@ -60,7 +60,7 @@ export function Admin() {
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('issues').select('*').order('created_at', { ascending: false }),
       supabase.from('projects').select('*').order('created_at', { ascending: false }),
-      supabase.from('contributions').select('*').order('created_at', { ascending: false }),
+      supabase.from('contributions').select('*').neq('is_seed', true).order('created_at', { ascending: false }),
     ]);
     if (evRes.data) setEvents(evRes.data);
     if (postRes.data) setPosts(postRes.data);
