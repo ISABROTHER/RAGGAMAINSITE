@@ -252,7 +252,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       } else {
         window.location.href = data.authorization_url;
       }
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Payment initialization failed. Please try again.');
       setModalState('failed');
     }
   };
@@ -342,7 +343,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {modalState === 'processing' && <ProcessingState />}
-          {modalState === 'failed' && <FailedState onRetry={handleRetry} onClose={onClose} />}
+          {modalState === 'failed' && <FailedState error={error} onRetry={handleRetry} onClose={onClose} />}
 
           {modalState === 'form' && (
             <AnimatePresence mode="wait" custom={direction}>
@@ -508,7 +509,7 @@ function ProcessingState() {
   );
 }
 
-function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () => void }) {
+function FailedState({ error, onRetry, onClose }: { error: string; onRetry: () => void; onClose: () => void }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8 py-16">
       <motion.div
@@ -527,7 +528,7 @@ function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () =>
       >
         <p className="text-lg font-extrabold text-slate-900 mb-1.5">Payment Failed</p>
         <p className="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed">
-          Something went wrong with your payment. No money has been deducted from your account.
+          {error || 'Something went wrong with your payment. No money has been deducted from your account.'}
         </p>
       </motion.div>
       <div className="flex gap-3 w-full max-w-xs px-5 safe-bottom">
