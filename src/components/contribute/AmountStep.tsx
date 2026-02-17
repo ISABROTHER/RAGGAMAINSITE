@@ -11,14 +11,10 @@ interface AmountStepProps {
   totalUSD: number;
   unitLabel: string;
   maxUnits: number;
-  unitPriceUSD: number;
-  unitPriceGHS: number;
-  exchangeRate: number;
-  rateSource: string;
   onNext: () => void;
 }
 
-export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, unitPriceUSD, unitPriceGHS, exchangeRate, rateSource, onNext }: AmountStepProps) {
+export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, maxUnits, onNext }: AmountStepProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const amountRef = useRef(amount);
   amountRef.current = amount;
@@ -191,20 +187,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           </div>
         </div>
 
-        {/* Live rate & per-unit price */}
-        <div className="bg-white border border-slate-100 rounded-lg px-3 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${rateSource === 'fallback' ? 'bg-amber-400' : 'bg-green-500'} animate-pulse`} />
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-              {rateSource === 'fallback' ? 'Offline Rate' : 'Live Rate'}
-            </span>
-          </div>
-          <span className="text-[9px] font-bold text-slate-500 tabular-nums">
-            $1 = GH₵{exchangeRate.toFixed(2)} · ${unitPriceUSD.toFixed(2)}/book = GH₵{unitPriceGHS.toFixed(2)}
-          </span>
-        </div>
-
-        {/* Total card */}
+        {/* Total card — GHS prominent, USD subtle */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
@@ -222,9 +205,9 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 key={`usd-${totalUSD}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-base font-extrabold text-green-400 tabular-nums"
+                className="text-xs font-bold text-white/35 tabular-nums"
               >
-                ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ≈ ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
             </div>
           </div>
