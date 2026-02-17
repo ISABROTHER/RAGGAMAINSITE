@@ -135,42 +135,49 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             { display_name: 'Project', variable_name: 'project', value: project.title },
           ]
         },
-        onSuccess: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(4);
-            } else {
-              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
-                setModalState('success');
-                goToStep(4);
-              });
-            }
-          });
-        },
-        onCancel: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(4);
-            } else {
-              setModalState('form');
-              goToStep(3);
-            }
-          });
-        },
-        onError: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
+        onSuccess: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(4);
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const retryStatus = await verifyPayment(ref);
+            if (retryStatus === 'completed') {
               setModalState('success');
               goToStep(4);
             } else {
               setModalState('failed');
             }
-          });
+          }
+        },
+        onCancel: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(4);
+          } else {
+            setModalState('form');
+            goToStep(3);
+          }
+        },
+        onError: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(4);
+          } else {
+            setModalState('failed');
+          }
         },
       });
     } catch {
