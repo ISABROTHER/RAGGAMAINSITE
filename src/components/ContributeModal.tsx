@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Loader2, BookOpen, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Paystack from '@paystack/inline-js';
 import { supabase } from '../lib/supabase';
 import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
@@ -78,6 +77,20 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const totalUSD = amount * UNIT_PRICE_USD;
   const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const popupRef = useRef<Window | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return stopPolling;
+  }, [stopPolling]);
+
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`;
@@ -104,6 +117,85 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
     return `BK_${timestamp}_${randomHex.substring(0, 12)}`;
+  };
+
+  const initializePayment = async (ref: string, email: string, channels: string[]) => {
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/initialize-payment`;
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        amount: Math.round(totalGHS * 100),
+        currency: 'GHS',
+        reference: ref,
+        channels,
+        metadata: {
+          custom_fields: [
+            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
+            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
+            { display_name: 'Project', variable_name: 'project', value: project.title },
+          ],
+        },
+        callback_url: window.location.origin + window.location.pathname,
+      }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to initialize payment');
+    }
+
+    return res.json();
+  };
+
+  const startPolling = (ref: string) => {
+    stopPolling();
+    let attempts = 0;
+    const maxAttempts = 120;
+
+    pollRef.current = setInterval(async () => {
+      attempts++;
+
+      if (popupRef.current && popupRef.current.closed) {
+        stopPolling();
+        const status = await verifyPayment(ref);
+        localStorage.removeItem('pending_payment_ref');
+        if (status === 'completed') {
+          setModalState('success');
+          goToStep(5);
+        } else {
+          setModalState('form');
+          goToStep(4);
+        }
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        stopPolling();
+        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
+        localStorage.removeItem('pending_payment_ref');
+        setModalState('failed');
+        return;
+      }
+
+      const status = await verifyPayment(ref);
+      if (status === 'completed') {
+        stopPolling();
+        localStorage.removeItem('pending_payment_ref');
+        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
+        setModalState('success');
+        goToStep(5);
+      } else if (status === 'failed') {
+        stopPolling();
+        localStorage.removeItem('pending_payment_ref');
+        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
+        setModalState('failed');
+      }
+    }, 3000);
   };
 
   const handlePay = async () => {
@@ -136,70 +228,30 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         MOMO: ['mobile_money'],
         CARD: ['card'],
         BANK: ['bank_transfer'],
-        APPLE: ['card'],
-        CRYPTO: ['card'],
       };
 
-      const popup = new Paystack();
-      popup.newTransaction({
-        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-        email,
-        amount: Math.round(totalGHS * 100),
-        currency: 'GHS',
-        reference: ref,
-        channels: channelMap[payMethod],
-        metadata: {
-          custom_fields: [
-            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
-            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
-            { display_name: 'Project', variable_name: 'project', value: project.title },
-          ]
-        },
-        onSuccess: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
+      const data = await initializePayment(ref, email, channelMap[payMethod]);
 
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            const retryStatus = await verifyPayment(ref);
-            if (retryStatus === 'completed') {
-              setModalState('success');
-              goToStep(5);
-            } else {
-              setModalState('failed');
-            }
-          }
-        },
-        onCancel: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
+      if (!data.authorization_url) {
+        throw new Error('No payment URL returned');
+      }
 
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            setModalState('form');
-            goToStep(4);
-          }
-        },
-        onError: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
+      const width = 520;
+      const height = 650;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      const popup = window.open(
+        data.authorization_url,
+        'paystack_payment',
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+      );
 
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            setModalState('failed');
-          }
-        },
-      });
+      if (popup) {
+        popupRef.current = popup;
+        startPolling(ref);
+      } else {
+        window.location.href = data.authorization_url;
+      }
     } catch {
       setModalState('failed');
     }

@@ -2,18 +2,11 @@ import { ChevronLeft, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PayMethod, PAY_METHODS } from './types';
 
-// Inline SVG logo components for each method
 const MomoLogo = () => (
   <svg viewBox="0 0 40 24" className="h-5"><rect width="40" height="24" rx="4" fill="#FFCB05"/><text x="20" y="16" textAnchor="middle" fontSize="9" fontWeight="800" fill="#003B6F">MoMo</text></svg>
 );
 const VisaLogo = () => (
   <svg viewBox="0 0 40 24" className="h-5"><rect width="40" height="24" rx="4" fill="#1A1F71"/><text x="20" y="16" textAnchor="middle" fontSize="10" fontWeight="800" fill="#fff" fontStyle="italic">VISA</text></svg>
-);
-const AppleLogo = () => (
-  <svg viewBox="0 0 40 24" className="h-5"><rect width="40" height="24" rx="4" fill="#000"/><text x="20" y="16" textAnchor="middle" fontSize="9" fontWeight="600" fill="#fff"> Pay</text></svg>
-);
-const CryptoLogo = () => (
-  <svg viewBox="0 0 40 24" className="h-5"><rect width="40" height="24" rx="4" fill="#F7931A"/><text x="20" y="16" textAnchor="middle" fontSize="10" fontWeight="800" fill="#fff">₿</text></svg>
 );
 const BankLogo = () => (
   <svg viewBox="0 0 40 24" className="h-5"><rect width="40" height="24" rx="4" fill="#059669"/><text x="20" y="16" textAnchor="middle" fontSize="8" fontWeight="700" fill="#fff">BANK</text></svg>
@@ -22,8 +15,6 @@ const BankLogo = () => (
 const LOGO_MAP: Record<PayMethod, React.FC> = {
   MOMO: MomoLogo,
   CARD: VisaLogo,
-  APPLE: AppleLogo,
-  CRYPTO: CryptoLogo,
   BANK: BankLogo,
 };
 
