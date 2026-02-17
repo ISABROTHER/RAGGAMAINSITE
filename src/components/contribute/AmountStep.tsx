@@ -187,27 +187,27 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           </div>
         </div>
 
-        {/* Total card — GHS prominent, USD subtle */}
+        {/* Total card — USD prominent, GHS secondary */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
             <p className="text-[8px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
             <div className="flex items-baseline justify-between">
               <motion.p
-                key={`ghs-${totalGHS}`}
+                key={`usd-${totalUSD}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-xl font-extrabold text-white tabular-nums"
               >
-                GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
               <motion.p
-                key={`usd-${totalUSD}`}
+                key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-xs font-bold text-white/35 tabular-nums"
               >
-                ≈ ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ≈ GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
             </div>
           </div>
