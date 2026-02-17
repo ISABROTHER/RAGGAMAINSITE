@@ -215,7 +215,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -238,8 +238,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             onClose();
           }
         }}
-        className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
-        style={{ maxHeight: 'min(92vh, 800px)', touchAction: 'none' }}
+        className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl flex flex-col overflow-hidden mx-4"
+        style={{ maxHeight: 'min(88vh, 800px)', touchAction: 'none' }}
       >
         <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-1.5 sm:hidden cursor-grab active:cursor-grabbing" />
 
