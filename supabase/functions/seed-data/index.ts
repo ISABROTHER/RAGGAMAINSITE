@@ -81,14 +81,14 @@ Deno.serve(async (req: Request) => {
       .upsert(
         {
           id: projectId,
-          title: "Operation 500,000 Exercise Books",
-          slug: "operation-500000-exercise-books",
+          title: "Obiara Ka Ho Exercise Book Project",
+          slug: "obiara-ka-ho-exercise-books",
           description:
-            "Education is the foundation of our future. In Cape Coast North, too many brilliant students struggle simply because they lack basic learning materials. Hon. Dr. Kwamena Minta Nyarku (Ragga) launched Operation 500,000 to ensure that every child in the constituency has the exercise books they need to succeed in class.",
+            "Education is the foundation of our future. In Cape Coast North, too many brilliant students struggle simply because they lack basic learning materials. Hon. Dr. Kwamena Minta Nyarku (Ragga) launched the Obiara Ka Ho Exercise Book Project to ensure that every child in the constituency has the exercise books they need to succeed in class.",
           category: "Education",
           image_url:
             "https://images.pexels.com/photos/159866/books-book-pages-read-literature-159866.jpeg?auto=compress&cs=tinysrgb&w=1200",
-          target_units: 500000,
+          target_units: 0,
           unit_label: "books",
           unit_price_ghs: 2.0,
           is_active: true,
