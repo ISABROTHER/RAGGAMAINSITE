@@ -7,6 +7,7 @@ import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
+import type { PayMethod } from './contribute/types';
 
 interface Project {
   id: string;
@@ -33,6 +34,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [contact, setContact] = useState('');
+  const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
   const [exchangeRate, setExchangeRate] = useState(11.00);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
@@ -118,12 +120,21 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         amount_ghs: totalGHS,
         units_contributed: amount,
         payment_reference: ref,
+        payment_method: payMethod,
         status: 'pending',
       });
 
       localStorage.setItem('pending_payment_ref', ref);
 
-      const email = contact.includes('@') ? contact.trim() : `${contact.replace(/[^0-9]/g, '') || '0000000000'}@donor.com`;
+      const email = payMethod === 'MOMO'
+        ? `${contact.replace(/[^0-9]/g, '') || '0000000000'}@momo.com`
+        : contact.trim();
+
+      const channelMap: Record<PayMethod, string[]> = {
+        MOMO: ['mobile_money'],
+        CARD: ['card'],
+        BANK: ['bank_transfer'],
+      };
 
       const popup = new Paystack();
       popup.newTransaction({
@@ -132,7 +143,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         amount: Math.round(totalGHS * 100),
         currency: 'GHS',
         reference: ref,
-        channels: ['mobile_money', 'card', 'bank_transfer'],
+        channels: channelMap[payMethod],
         metadata: {
           custom_fields: [
             { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
@@ -292,6 +303,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     setLastName={setLastName}
                     contact={contact}
                     setContact={setContact}
+                    payMethod={payMethod}
+                    setPayMethod={setPayMethod}
                     error={error}
                     onBack={() => goToStep(1)}
                     onNext={() => {
@@ -310,6 +323,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     firstName={firstName}
                     lastName={lastName}
                     contact={contact}
+                    payMethod={payMethod}
                     projectTitle={project.title}
                     onBack={() => goToStep(2)}
                     onPay={handlePay}
