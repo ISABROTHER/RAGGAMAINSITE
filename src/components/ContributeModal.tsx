@@ -249,7 +249,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             </div>
             <div className="min-w-0">
               <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Contribute</h2>
-              <p className="text-[11px] text-slate-500 font-medium leading-tight truncate max-w-[180px]">{project.title}</p>
             </div>
           </div>
           {modalState === 'form' && (
