@@ -355,13 +355,19 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
             {project.category}
           </span>
           {(() => {
-            const milestoneTarget = Math.round(project.target_units * 0.05);
-            const barPercent = milestoneTarget > 0
-              ? Math.min(100, (project.raised_units / milestoneTarget) * 100)
+            const barPercent = project.target_units > 0
+              ? Math.min(100, (project.raised_units / project.target_units) * 100)
               : 0;
-            const donatedPct = project.target_units > 0
-              ? ((project.raised_units / project.target_units) * 100).toFixed(4)
-              : '0.0000';
+            const donatedPct = barPercent < 0.01 && barPercent > 0
+              ? barPercent.toFixed(4)
+              : barPercent.toFixed(2);
+            const barColor = barPercent < 20
+              ? { bar: 'linear-gradient(90deg, #ef4444, #f97316)', glow: 'rgba(239,68,68,0.7)' }
+              : barPercent < 50
+              ? { bar: 'linear-gradient(90deg, #f97316, #eab308)', glow: 'rgba(249,115,22,0.7)' }
+              : barPercent < 80
+              ? { bar: 'linear-gradient(90deg, #eab308, #84cc16)', glow: 'rgba(234,179,8,0.7)' }
+              : { bar: 'linear-gradient(90deg, #4ade80, #34d399)', glow: 'rgba(74,222,128,0.8)' };
             return (
               <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-10">
                 <div className="flex items-center justify-between mb-2">
@@ -376,37 +382,29 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     </motion.span>
                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">donated</span>
                   </div>
+                  <span className="text-[9px] font-bold text-white/40 tabular-nums">
+                    {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
+                  </span>
                 </div>
-                {(() => {
-                  const barColor = barPercent < 20
-                    ? { bar: 'linear-gradient(90deg, #ef4444, #f97316)', glow: 'rgba(239,68,68,0.7)' }
-                    : barPercent < 50
-                    ? { bar: 'linear-gradient(90deg, #f97316, #eab308)', glow: 'rgba(249,115,22,0.7)' }
-                    : barPercent < 80
-                    ? { bar: 'linear-gradient(90deg, #eab308, #84cc16)', glow: 'rgba(234,179,8,0.7)' }
-                    : { bar: 'linear-gradient(90deg, #4ade80, #34d399)', glow: 'rgba(74,222,128,0.8)' };
-                  return (
-                    <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${barPercent}%` }}
-                        transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
-                        className="absolute top-0 left-0 h-full rounded-full"
-                        style={{
-                          background: barColor.bar,
-                          boxShadow: `0 0 10px ${barColor.glow}, 0 0 20px ${barColor.glow.replace('0.7', '0.3').replace('0.8', '0.3')}`,
-                        }}
-                      />
-                      <motion.div
-                        className="absolute top-0 left-0 h-full w-12 rounded-full"
-                        initial={{ left: '-20%' }}
-                        animate={{ left: ['−20%', '120%'] }}
-                        transition={{ duration: 1.4, delay: 2.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
-                        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
-                      />
-                    </div>
-                  );
-                })()}
+                <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${barPercent}%` }}
+                    transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
+                    className="absolute top-0 left-0 h-full rounded-full"
+                    style={{
+                      background: barColor.bar,
+                      boxShadow: `0 0 10px ${barColor.glow}, 0 0 20px ${barColor.glow.replace('0.7', '0.3').replace('0.8', '0.3')}`,
+                    }}
+                  />
+                  <motion.div
+                    className="absolute top-0 left-0 h-full w-12 rounded-full"
+                    initial={{ left: '-20%' }}
+                    animate={{ left: ['−20%', '120%'] }}
+                    transition={{ duration: 1.4, delay: 2.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
+                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
+                  />
+                </div>
               </div>
             );
           })()}
