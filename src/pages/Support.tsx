@@ -354,22 +354,48 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/90 text-slate-800 rounded-full backdrop-blur-sm">
             {project.category}
           </span>
-          <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-6">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
-                {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()} {project.unit_label}
-              </span>
-              <span className="text-[11px] font-black text-white tabular-nums">{Math.round(project.percent)}%</span>
-            </div>
-            <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${project.percent}%` }}
-                transition={{ duration: 1.2, ease: 'circOut', delay: 0.2 }}
-                className="h-full bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.6)]"
-              />
-            </div>
-          </div>
+          {(() => {
+            const milestoneTarget = Math.round(project.target_units * 0.05);
+            const milestonePercent = milestoneTarget > 0
+              ? Math.min(100, (project.raised_units / milestoneTarget) * 100)
+              : 0;
+            return (
+              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-8">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
+                    {project.raised_units.toLocaleString()} / {milestoneTarget.toLocaleString()} {project.unit_label}
+                  </span>
+                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                    5% goal
+                  </span>
+                </div>
+                <div className="relative h-2.5 w-full bg-white/20 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${milestonePercent}%` }}
+                    transition={{ duration: 1.6, ease: [0.34, 1.56, 0.64, 1], delay: 0.3 }}
+                    className="h-full bg-gradient-to-r from-green-400 to-emerald-300 rounded-full"
+                    style={{ boxShadow: '0 0 12px rgba(74,222,128,0.7)' }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 0.6, 0] }}
+                    transition={{ duration: 1.5, delay: 1.6, repeat: Infinity, repeatDelay: 3 }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full"
+                    style={{ backgroundSize: '200% 100%' }}
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-[9px] font-semibold text-white/50">
+                    {Math.round(milestonePercent)}% of 5% milestone
+                  </span>
+                  <span className="text-[9px] font-semibold text-white/50">
+                    {(milestoneTarget - project.raised_units).toLocaleString()} to go
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Content */}
