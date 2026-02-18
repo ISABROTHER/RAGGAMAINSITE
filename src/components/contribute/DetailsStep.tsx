@@ -31,7 +31,7 @@ export function DetailsStep({
   error, onBack, onNext, canProceed,
 }: DetailsStepProps) {
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [contactType, setContactType] = useState<'email' | 'phone'>('email');
+  const [contactType, setContactType] = useState<'email' | 'phone'>('phone');
 
   return (
     <div className="flex flex-col min-h-0">

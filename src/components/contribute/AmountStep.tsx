@@ -1,31 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Minus, Plus, ArrowRight, Heart } from 'lucide-react';
+import { Minus, Plus, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const QUICK_AMOUNTS = [10, 50, 100, 200, 500, 1000];
 const ABSOLUTE_MAX = 500000;
-
-const IMPACT_LINES: [number, string][] = [
-  [1, 'One book, one spark of curiosity'],
-  [10, 'A classroom shelf starts to fill'],
-  [25, 'A child discovers a new world in pages'],
-  [50, 'Half a class gets to read something new'],
-  [100, 'An entire class gains a library'],
-  [200, 'Two classrooms light up with knowledge'],
-  [500, 'A whole school year of reading, unlocked'],
-  [1000, "You're building a library from scratch"],
-  [5000, 'A generation of readers begins here'],
-  [10000, 'Transforming education across a community'],
-  [50000, 'A legacy of learning for Cape Coast North'],
-];
-
-function getImpactLine(n: number): string {
-  let line = IMPACT_LINES[0][1];
-  for (const [threshold, text] of IMPACT_LINES) {
-    if (n >= threshold) line = text;
-  }
-  return line;
-}
 
 function clamp(val: number, min: number, max: number) {
   return Math.max(min, Math.min(max, val));
@@ -137,14 +115,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
 
   return (
     <div className="flex flex-col min-h-0 h-full">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-1 pb-3 space-y-3">
-
-        <div className="text-center px-2">
-          <p className="text-[12px] text-slate-500 leading-relaxed italic flex items-center justify-center gap-1.5">
-            <Heart className="w-3 h-3 text-red-400 fill-red-400" />
-            You're one click away from putting smiles on the faces of our students.
-          </p>
-        </div>
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-2 pb-3 space-y-3">
 
         <AnimatePresence>
           {returningDonor && (
@@ -161,18 +132,19 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           )}
         </AnimatePresence>
 
-        <div className={`rounded-xl px-3 py-3 transition-all duration-300 ${mainFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
-          <div className="flex items-center gap-2">
+        <div className={`rounded-xl px-2 py-3 transition-all duration-300 ${mainFocused ? 'bg-green-50/50 ring-2 ring-green-300/30' : 'bg-slate-50'}`}>
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => stepOnce('down')}
               onMouseDown={() => startHold('down')}
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
+              onTouchStart={() => startHold('down')}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
+              className="-ml-3 w-12 h-12 sm:w-10 sm:h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
             >
-              <Minus className="w-4 h-4 pointer-events-none" />
+              <Minus className="w-5 h-5 pointer-events-none" />
             </button>
             <div className="flex-1 flex items-baseline justify-center gap-1 min-w-0 overflow-hidden">
               <input
@@ -201,26 +173,14 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
               onMouseDown={() => startHold('up')}
               onMouseUp={stopAdjust}
               onMouseLeave={stopAdjust}
+              onTouchStart={() => startHold('up')}
               onTouchEnd={stopAdjust}
-              className="w-10 h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
+              className="-mr-3 w-12 h-12 sm:w-10 sm:h-10 flex-shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm active:bg-slate-100 active:scale-90 transition-all select-none touch-manipulation"
             >
-              <Plus className="w-4 h-4 pointer-events-none" />
+              <Plus className="w-5 h-5 pointer-events-none" />
             </button>
           </div>
         </div>
-
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={getImpactLine(amount)}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.25 }}
-            className="text-[11px] text-green-600 font-semibold text-center px-2"
-          >
-            {getImpactLine(amount)}
-          </motion.p>
-        </AnimatePresence>
 
         <div className="px-1">
           <div className="relative h-8 flex items-center">
@@ -260,7 +220,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
                 key={n}
                 type="button"
                 onClick={() => selectQuick(n)}
-                className={`py-2 rounded-lg text-[11px] font-bold border transition-all active:scale-95 touch-manipulation ${
+                className={`py-2.5 rounded-lg text-[11px] font-bold border transition-all active:scale-95 touch-manipulation ${
                   active
                     ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-600/20'
                     : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
@@ -337,7 +297,7 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
           disabled={amount < 1}
-          className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
+          className="flutter-btn w-full py-4 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[56px]"
         >
           Continue
           <motion.span

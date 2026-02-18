@@ -138,6 +138,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         MOMO: ['mobile_money'],
         CARD: ['card'],
         BANK: ['bank_transfer'],
+        APPLE_PAY: ['card'],
+        CRYPTO: ['card'],
       };
 
       const paystack = new PaystackPop();

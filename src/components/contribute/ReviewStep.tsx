@@ -6,6 +6,8 @@ const METHOD_LABELS: Record<PayMethod, string> = {
   MOMO: 'Mobile Money',
   CARD: 'Card Payment',
   BANK: 'Bank Transfer',
+  APPLE_PAY: 'Apple Pay',
+  CRYPTO: 'Cryptocurrency',
 };
 
 interface ReviewStepProps {

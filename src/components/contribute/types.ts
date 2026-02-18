@@ -7,7 +7,7 @@ export interface ContributeProject {
   unit_price_ghs: number;
 }
 
-export type PayMethod = 'MOMO' | 'CARD' | 'BANK';
+export type PayMethod = 'MOMO' | 'CARD' | 'BANK' | 'APPLE_PAY' | 'CRYPTO';
 
 export type RecognitionType = 'full' | 'first' | 'anon';
 
@@ -53,6 +53,22 @@ export const PAY_METHODS: {
     activeColor: 'text-emerald-700',
     activeBg: 'bg-emerald-50',
     activeRing: 'ring-emerald-400/30 border-emerald-300',
+  },
+  {
+    key: 'APPLE_PAY',
+    label: 'Apple Pay',
+    logos: 'Touch ID · Face ID',
+    activeColor: 'text-slate-800',
+    activeBg: 'bg-slate-50',
+    activeRing: 'ring-slate-400/30 border-slate-400',
+  },
+  {
+    key: 'CRYPTO',
+    label: 'Cryptocurrency',
+    logos: 'Bitcoin · Ethereum · USDC',
+    activeColor: 'text-orange-700',
+    activeBg: 'bg-orange-50',
+    activeRing: 'ring-orange-400/30 border-orange-300',
   },
 ];
 
