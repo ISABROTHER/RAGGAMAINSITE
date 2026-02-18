@@ -87,12 +87,14 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ reference: ref }),
       });
-      const data = await res.json();
-      return data.status || 'pending';
+      const raw = await res.text();
+      const data = (() => { try { return JSON.parse(raw); } catch { return null; } })();
+      return data?.status || 'pending';
     } catch {
       return 'pending';
     }
@@ -114,6 +116,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -134,8 +137,13 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     });
 
     if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      const msg = errData.error || errData.message || `Server error ${res.status}`;
+      const raw = await res.text().catch(() => '');
+      const errData = (() => { try { return JSON.parse(raw); } catch { return {}; } })() as Record<string, unknown>;
+      const msg =
+        (typeof errData.error === 'string' && errData.error) ||
+        (typeof errData.message === 'string' && errData.message) ||
+        (raw && raw.length < 220 ? raw : '') ||
+        `Server error ${res.status}`;
       throw new Error(msg);
     }
 
