@@ -382,9 +382,6 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     </motion.span>
                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">donated</span>
                   </div>
-                  <span className="text-[9px] font-bold text-white/40 tabular-nums">
-                    {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()}
-                  </span>
                 </div>
                 <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
                   <motion.div
