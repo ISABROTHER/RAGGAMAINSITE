@@ -134,24 +134,52 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         : contact.replace(/[^0-9]/g, '').length >= 5 ? `${contact.replace(/[^0-9]/g, '')}@momo.com`
         : `${firstName.toLowerCase().trim()}.${lastName.toLowerCase().trim()}@donor.local`;
 
-      const channelMap: Record<PayMethod, string[]> = {
-        MOMO: ['mobile_money'],
-        CARD: ['card'],
-        BANK: ['bank_transfer'],
-        APPLE_PAY: ['card'],
-        CRYPTO: ['card'],
-      };
-
       const paystack = new PaystackPop();
       paystackRef.current = paystack;
 
-      paystack.newTransaction({
+      const onSuccess = () => {
+        verifyPayment(ref).then((status) => {
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
+              setModalState('success');
+              goToStep(5);
+            });
+          }
+        });
+      };
+
+      const onCancel = () => {
+        verifyPayment(ref).then((status) => {
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('form');
+            goToStep(4);
+          }
+        });
+      };
+
+      const onError = () => {
+        verifyPayment(ref).then((status) => {
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('failed');
+          }
+        });
+      };
+
+      const baseConfig = {
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email,
         amount: Math.round(totalGHS * 100),
         currency: 'GHS',
         reference: ref,
-        channels: channelMap[payMethod],
         metadata: {
           custom_fields: [
             { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
@@ -159,41 +187,29 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             { display_name: 'Project', variable_name: 'project', value: project.title },
           ],
         },
-        onSuccess: () => {
-          verifyPayment(ref).then((status) => {
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(5);
-            } else {
-              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
-                setModalState('success');
-                goToStep(5);
-              });
-            }
-          });
-        },
-        onCancel: () => {
-          verifyPayment(ref).then((status) => {
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(5);
-            } else {
-              setModalState('form');
-              goToStep(4);
-            }
-          });
-        },
-        onError: () => {
-          verifyPayment(ref).then((status) => {
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(5);
-            } else {
-              setModalState('failed');
-            }
-          });
-        },
-      });
+      };
+
+      if (payMethod === 'APPLE_PAY') {
+        await (paystack as any).checkout({
+          ...baseConfig,
+          onSuccess,
+          onCancel,
+        });
+      } else {
+        const channelMap: Record<Exclude<PayMethod, 'APPLE_PAY'>, string[]> = {
+          MOMO: ['mobile_money'],
+          CARD: ['card'],
+          BANK: ['bank_transfer'],
+          CRYPTO: ['card'],
+        };
+        paystack.newTransaction({
+          ...baseConfig,
+          channels: channelMap[payMethod as Exclude<PayMethod, 'APPLE_PAY'>],
+          onSuccess,
+          onCancel,
+          onError,
+        });
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Payment initialization failed. Please try again.';
       setError(msg);
