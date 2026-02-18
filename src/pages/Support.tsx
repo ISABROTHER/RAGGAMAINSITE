@@ -350,13 +350,26 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
               <BookOpen className="w-10 h-10 text-slate-300" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
           <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/90 text-slate-800 rounded-full backdrop-blur-sm">
             {project.category}
           </span>
-          <span className="absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-extrabold tabular-nums bg-green-600 text-white rounded-full">
-            {project.percent}%
-          </span>
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-6">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
+                {project.raised_units.toLocaleString()} / {project.target_units.toLocaleString()} {project.unit_label}
+              </span>
+              <span className="text-[11px] font-black text-white tabular-nums">{Math.round(project.percent)}%</span>
+            </div>
+            <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${project.percent}%` }}
+                transition={{ duration: 1.2, ease: 'circOut', delay: 0.2 }}
+                className="h-full bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.6)]"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Content */}
@@ -368,44 +381,35 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
             {project.description}
           </p>
 
-          {/* Progress */}
-          <div className="mb-4">
-            <div className="flex items-center justify-end text-[11px] mb-1.5">
-              {/* Wall of Appreciation — typing animation */}
-              {project.donor_count > 0 && (
-                <motion.button
-                  onClick={fetchDonors}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/30 transition-colors overflow-hidden"
-                  title="View Wall of Appreciation"
+          {/* Wall of Appreciation button */}
+          <div className="mb-4 flex items-center justify-end">
+            {project.donor_count > 0 && (
+              <motion.button
+                onClick={fetchDonors}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/30 transition-colors overflow-hidden"
+                title="View Wall of Appreciation"
+              >
+                <motion.span
+                  animate={{ rotate: [0, -10, 10, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
                 >
-                  <motion.span
-                    animate={{ rotate: [0, -10, 10, -10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
-                  >
-                    <ClipboardList className="w-3 h-3" />
-                  </motion.span>
-                  <span className="text-[10px] font-bold">
-                    {`Wall of Appreciation · ${project.donor_count} ${project.donor_count === 1 ? 'donor' : 'donors'}`.split('').map((char, i) => (
-                      <motion.span
-                        key={i}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 1] }}
-                        transition={{ delay: i * 0.08, duration: 0.1, repeat: Infinity, repeatDelay: 4 }}
-                      >
-                        {char}
-                      </motion.span>
-                    ))}
-                  </span>
-                </motion.button>
-              )}
-            </div>
-            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-500 rounded-full transition-all duration-1000 ease-out"
-                style={{ width: `${project.percent}%` }}
-              />
-            </div>
+                  <ClipboardList className="w-3 h-3" />
+                </motion.span>
+                <span className="text-[10px] font-bold">
+                  {`Wall of Appreciation · ${project.donor_count} ${project.donor_count === 1 ? 'donor' : 'donors'}`.split('').map((char, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1] }}
+                      transition={{ delay: i * 0.08, duration: 0.1, repeat: Infinity, repeatDelay: 4 }}
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                </span>
+              </motion.button>
+            )}
           </div>
 
           {/* Buttons */}
