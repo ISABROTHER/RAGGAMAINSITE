@@ -78,7 +78,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const totalUSD = amount * UNIT_PRICE_USD;
   const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
 
-  const paystackRef = useRef<PaystackPop | null>(null);
+  const paystackRef = useRef<InstanceType<typeof PaystackPop> | null>(null);
 
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
@@ -108,46 +108,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
     return `BK_${timestamp}_${randomHex.substring(0, 12)}`;
-  };
-
-  const initializePayment = async (ref: string, email: string, channels: string[]) => {
-    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/initialize-payment`;
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        amount: Math.round(totalGHS * 100),
-        currency: 'GHS',
-        reference: ref,
-        channels,
-        metadata: {
-          custom_fields: [
-            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
-            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
-            { display_name: 'Project', variable_name: 'project', value: project.title },
-          ],
-        },
-        callback_url: window.location.origin + window.location.pathname,
-      }),
-    });
-
-    if (!res.ok) {
-      const raw = await res.text().catch(() => '');
-      const errData = (() => { try { return JSON.parse(raw); } catch { return {}; } })() as Record<string, unknown>;
-      const msg =
-        (typeof errData.error === 'string' && errData.error) ||
-        (typeof errData.message === 'string' && errData.message) ||
-        (raw && raw.length < 220 ? raw : '') ||
-        `Server error ${res.status}`;
-      throw new Error(msg);
-    }
-
-    return res.json();
   };
 
   const handlePay = async () => {
@@ -180,30 +140,56 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         BANK: ['bank_transfer'],
       };
 
-      const data = await initializePayment(ref, email, channelMap[payMethod]);
-
-      if (!data.access_code) {
-        throw new Error('No payment access code returned');
-      }
-
       const paystack = new PaystackPop();
       paystackRef.current = paystack;
 
-      paystack.resumeTransaction({
-        accessCode: data.access_code,
-        onSuccess: async () => {
-          const status = await verifyPayment(ref);
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            setModalState('success');
-            goToStep(5);
-          }
+      paystack.newTransaction({
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        email,
+        amount: Math.round(totalGHS * 100),
+        currency: 'GHS',
+        reference: ref,
+        channels: channelMap[payMethod],
+        metadata: {
+          custom_fields: [
+            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
+            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
+            { display_name: 'Project', variable_name: 'project', value: project.title },
+          ],
+        },
+        onSuccess: () => {
+          verifyPayment(ref).then((status) => {
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(5);
+            } else {
+              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
+                setModalState('success');
+                goToStep(5);
+              });
+            }
+          });
         },
         onCancel: () => {
-          setModalState('form');
-          goToStep(4);
+          verifyPayment(ref).then((status) => {
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(5);
+            } else {
+              setModalState('form');
+              goToStep(4);
+            }
+          });
+        },
+        onError: () => {
+          verifyPayment(ref).then((status) => {
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(5);
+            } else {
+              setModalState('failed');
+            }
+          });
         },
       });
     } catch (err) {
