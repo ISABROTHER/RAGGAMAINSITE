@@ -135,7 +135,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || 'Failed to initialize payment');
+      const msg = errData.error || errData.message || `Server error ${res.status}`;
+      throw new Error(msg);
     }
 
     return res.json();
@@ -198,7 +199,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         },
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Payment initialization failed. Please try again.');
+      const msg = err instanceof Error ? err.message : 'Payment initialization failed. Please try again.';
+      setError(msg);
       setModalState('failed');
     }
   };
