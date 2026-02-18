@@ -187,51 +187,79 @@ export function AmountStep({ amount, setAmount, totalGHS, totalUSD, unitLabel, m
           </div>
         </div>
 
-        {/* Total card — USD prominent, GHS secondary */}
-        <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-4 relative overflow-hidden shadow-lg">
+        {/* Total card */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 relative overflow-hidden shadow-lg">
           <div className="absolute inset-0 flutter-shimmer-bg" />
           <div className="relative z-10">
-            <p className="text-[8px] text-white font-bold uppercase tracking-[0.2em] mb-1.5 underline" style={{ textDecorationColor: '#fbbf24' }}>Total</p>
+            <p className="text-[8px] text-white/40 font-bold uppercase tracking-[0.2em] mb-1.5">Total</p>
             <div className="flex items-baseline justify-between">
               <motion.p
-                key={`usd-${totalUSD}`}
+                key={`ghs-${totalGHS}`}
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-xl font-extrabold text-white tabular-nums"
               >
+                GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </motion.p>
+              <motion.p
+                key={`usd-${totalUSD}`}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-base font-extrabold text-green-400 tabular-nums"
+              >
                 ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </motion.p>
-              <div className="text-right">
-                <p className="text-[7px] font-bold text-white/50 uppercase tracking-wider mb-0.5">Amount in Ghanaian Cedis</p>
-                <motion.p
-                  key={`ghs-${totalGHS}`}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs font-bold text-amber-400 tabular-nums"
-                >
-                  GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </motion.p>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Continue button — same design as DetailsStep */}
-      <div className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom">
+      {/* Continue button */}
+      <div className="shrink-0 px-4 sm:px-6 pb-8 pt-3 safe-bottom">
         <motion.button
-          whileTap={{ scale: 0.97 }}
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
           onClick={onNext}
           disabled={amount < 1}
-          className="flutter-btn w-full py-5 bg-green-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 disabled:shadow-none flex items-center justify-center gap-3 min-h-[60px]"
+          animate={amount >= 1 ? {
+            boxShadow: [
+              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
+              '0 0 0 8px rgba(220, 38, 38, 0), 0 4px 30px rgba(220, 38, 38, 0.5)',
+              '0 0 0 0 rgba(220, 38, 38, 0.4), 0 4px 20px rgba(220, 38, 38, 0.3)',
+            ],
+          } : {}}
+          transition={{
+            boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="w-full py-3.5 bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl font-extrabold text-sm tracking-wider uppercase disabled:shadow-none flex items-center justify-center gap-2 relative overflow-hidden"
         >
-          Continue
-          <motion.span
-            animate={amount >= 1 ? { x: [0, 6, 0] } : {}}
-            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <ArrowRight className="w-5 h-5" />
-          </motion.span>
+          {amount >= 1 && (
+            <>
+              <span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                style={{ animation: 'cShimmer 1.8s ease-in-out infinite' }}
+              />
+              <span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                style={{ animation: 'cShimmer 1.8s ease-in-out infinite 0.9s' }}
+              />
+            </>
+          )}
+          <style>{`
+            @keyframes cShimmer {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+          <span className="relative z-10 flex items-center gap-2">
+            Continue
+            <motion.span
+              animate={amount >= 1 ? { x: [0, 5, 0] } : {}}
+              transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ArrowRight className="w-4 h-4" />
+            </motion.span>
+          </span>
         </motion.button>
       </div>
     </div>

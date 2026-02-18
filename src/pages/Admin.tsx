@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   LayoutDashboard, FolderOpen, DollarSign, Users,
-  FileText, AlertTriangle,
-  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar, Radio
+  FileText, MessageSquare, Megaphone, AlertTriangle,
+  Shield, Settings, MapPin, Clock, Bell, UserCheck, Award, Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { DashboardShell } from '../components/dashboard/DashboardShell';
+import { MessagePanel } from '../components/dashboard/MessagePanel';
+import { AnnouncementPanel } from '../components/dashboard/AnnouncementPanel';
 import { AdminOverview } from './admin/AdminOverview';
 import { AdminProjects } from './admin/AdminProjects';
 import { AdminFinancials } from './admin/AdminFinancials';
@@ -18,7 +20,6 @@ import { AdminSettings } from './admin/AdminSettings';
 import { AdminAssemblymen } from './admin/AdminAssemblymen';
 import { AdminAchievements } from './admin/AdminAchievements';
 import { AdminAppointments } from './admin/AdminAppointments';
-import { AdminCommHub } from './admin/AdminCommHub';
 
 const ALL_NAV = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
@@ -30,7 +31,8 @@ const ALL_NAV = [
   { id: 'issues', label: 'Issues', icon: AlertTriangle },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'content', label: 'Content', icon: FileText },
-  { id: 'comms', label: 'Comm Hub', icon: Radio },
+  { id: 'messages', label: 'Messages', icon: MessageSquare },
+  { id: 'announcements', label: 'Announce', icon: Megaphone },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -60,7 +62,7 @@ export function Admin() {
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('issues').select('*').order('created_at', { ascending: false }),
       supabase.from('projects').select('*').order('created_at', { ascending: false }),
-      supabase.from('contributions').select('*').neq('is_seed', true).order('created_at', { ascending: false }),
+      supabase.from('contributions').select('*').order('created_at', { ascending: false }),
     ]);
     if (evRes.data) setEvents(evRes.data);
     if (postRes.data) setPosts(postRes.data);
@@ -82,9 +84,18 @@ export function Admin() {
   useEffect(() => {
     const channel = supabase
       .channel('admin-live-contributions')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'contributions' }, () => { fetchData(); })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'contributions' },
+        () => {
+          fetchData();
+        }
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchData]);
 
   const completedContribs = contributions.filter((c: any) => c.status === 'completed');
@@ -111,24 +122,65 @@ export function Admin() {
       roleLabel={isViewer ? "Viewer" : "Administrator"}
     >
       {activeTab === 'overview' && (
-        <AdminOverview stats={overviewStats} events={events} users={allUsers} contributions={contributions} onTabChange={setActiveTab} />
+        <AdminOverview
+          stats={overviewStats}
+          events={events}
+          users={allUsers}
+          contributions={contributions}
+          onTabChange={setActiveTab}
+        />
       )}
+
       {activeTab === 'projects' && (
-        <AdminProjects projects={projects} contributions={contributions} onRefresh={fetchData} />
+        <AdminProjects
+          projects={projects}
+          contributions={contributions}
+          onRefresh={fetchData}
+        />
       )}
+
       {activeTab === 'donations' && (
-        <AdminFinancials contributions={contributions} projects={projects} />
+        <AdminFinancials
+          contributions={contributions}
+          projects={projects}
+        />
       )}
+
       {activeTab === 'assemblymen' && <AdminAssemblymen />}
+
       {activeTab === 'achievements' && <AdminAchievements />}
+
       {activeTab === 'appointments' && <AdminAppointments />}
+
       {activeTab === 'users' && (
-        <AdminUsers users={allUsers} onRefresh={fetchData} />
+        <AdminUsers
+          users={allUsers}
+          onRefresh={fetchData}
+        />
       )}
+
       {activeTab === 'content' && (
-        <AdminContent events={events} posts={posts} onRefresh={fetchData} />
+        <AdminContent
+          events={events}
+          posts={posts}
+          onRefresh={fetchData}
+        />
       )}
-      {activeTab === 'comms' && <AdminCommHub />}
+
+      {activeTab === 'messages' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Messages</h2>
+          <MessagePanel />
+        </motion.div>
+      )}
+
+      {activeTab === 'announcements' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Announcements</h2>
+          <AnnouncementPanel canPost />
+        </motion.div>
+      )}
+
       {activeTab === 'issues' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">All Issues</h2>
@@ -165,7 +217,9 @@ export function Admin() {
           </div>
         </motion.div>
       )}
+
       {activeTab === 'security' && <AdminSecurity />}
+
       {activeTab === 'settings' && <AdminSettings />}
     </DashboardShell>
   );

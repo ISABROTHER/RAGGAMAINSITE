@@ -7,7 +7,6 @@ import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
-import { PaymentMethodStep } from './contribute/PaymentMethodStep';
 import type { PayMethod } from './contribute/types';
 
 interface Project {
@@ -26,7 +25,7 @@ interface ContributeModalProps {
 
 type ModalState = 'form' | 'processing' | 'success' | 'failed';
 
-const STEP_LABELS = ['Amount', 'Payment', 'Details', 'Review', 'Done'];
+const STEP_LABELS = ['Amount', 'Details', 'Review', 'Done'];
 
 export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [step, setStep] = useState(1);
@@ -36,30 +35,16 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [lastName, setLastName] = useState('');
   const [contact, setContact] = useState('');
   const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
-  const [exchangeRate, setExchangeRate] = useState(11.00);
+  const [exchangeRate, setExchangeRate] = useState(15.20);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
   const [reference, setReference] = useState('');
 
   useEffect(() => {
-    const fetchRate = async () => {
-      try {
-        const res = await fetch('https://v6.exchangerate-api.com/v6/latest/USD');
-        const d = await res.json();
-        if (d?.conversion_rates?.GHS > 5 && d.conversion_rates.GHS < 30) { setExchangeRate(d.conversion_rates.GHS); return; }
-      } catch {}
-      try {
-        const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        const d = await res.json();
-        if (d?.rates?.GHS > 5 && d.rates.GHS < 30) { setExchangeRate(d.rates.GHS); return; }
-      } catch {}
-      try {
-        const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
-        const d = await res.json();
-        if (d?.usd?.ghs > 5 && d.usd.ghs < 30) { setExchangeRate(d.usd.ghs); return; }
-      } catch {}
-    };
-    fetchRate();
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(r => r.json())
+      .then(d => { if (d?.rates?.GHS) setExchangeRate(d.rates.GHS); })
+      .catch(() => {});
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
@@ -71,10 +56,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     setStep(s);
   };
 
-  const UNIT_PRICE_USD = 0.10;
-  const unitPriceGHS = UNIT_PRICE_USD * (exchangeRate || 11.00);
-  const totalGHS = amount * unitPriceGHS;
-  const totalUSD = amount * UNIT_PRICE_USD;
+  const totalGHS = amount * project.unit_price_ghs;
+  const totalUSD = totalGHS / (exchangeRate || 15.20);
   const canProceedStep2 = firstName.trim().length >= 2 && lastName.trim().length >= 2 && contact.trim().length >= 5;
 
   const verifyPayment = async (ref: string): Promise<string> => {
@@ -152,49 +135,42 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             { display_name: 'Project', variable_name: 'project', value: project.title },
           ]
         },
-        onSuccess: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
-
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            const retryStatus = await verifyPayment(ref);
-            if (retryStatus === 'completed') {
+        onSuccess: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
               setModalState('success');
-              goToStep(5);
+              goToStep(4);
+            } else {
+              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
+                setModalState('success');
+                goToStep(4);
+              });
+            }
+          });
+        },
+        onCancel: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(4);
+            } else {
+              setModalState('form');
+              goToStep(3);
+            }
+          });
+        },
+        onError: () => {
+          verifyPayment(ref).then((status) => {
+            localStorage.removeItem('pending_payment_ref');
+            if (status === 'completed') {
+              setModalState('success');
+              goToStep(4);
             } else {
               setModalState('failed');
             }
-          }
-        },
-        onCancel: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
-
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            setModalState('form');
-            goToStep(4);
-          }
-        },
-        onError: async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const status = await verifyPayment(ref);
-          localStorage.removeItem('pending_payment_ref');
-
-          if (status === 'completed') {
-            setModalState('success');
-            goToStep(5);
-          } else {
-            setModalState('failed');
-          }
+          });
         },
       });
     } catch {
@@ -204,7 +180,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
   const handleRetry = () => {
     setModalState('form');
-    goToStep(4);
+    goToStep(3);
     setError('');
   };
 
@@ -215,7 +191,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -238,8 +214,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             onClose();
           }
         }}
-        className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl flex flex-col overflow-hidden mx-4"
-        style={{ maxHeight: 'min(88vh, 800px)', touchAction: 'none' }}
+        className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
+        style={{ maxHeight: 'min(92vh, 800px)', touchAction: 'none' }}
       >
         <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-1.5 sm:hidden cursor-grab active:cursor-grabbing" />
 
@@ -249,22 +225,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
               <BookOpen className="w-5 h-5 text-green-700" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">
-                {modalState === 'processing' ? 'Processing...' :
-                 modalState === 'failed' ? 'Payment Failed' :
-                 modalState === 'success' ? 'Thank You!' :
-                 step === 1 ? 'How Many Books?' :
-                 step === 2 ? 'Choose Payment Method' :
-                 step === 3 ? 'Your Details' :
-                 step === 4 ? 'Review & Pay' : 'Contribute'}
-              </h2>
-              <p className="text-[11px] text-slate-400 font-medium leading-tight">
-                {modalState !== 'form' ? '' :
-                 step === 1 ? 'Select the number of books to donate' :
-                 step === 2 ? 'How would you like to pay?' :
-                 step === 3 ? 'Tell us a bit about yourself' :
-                 step === 4 ? 'Confirm your contribution' : ''}
-              </p>
+              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Contribute</h2>
+              <p className="text-[11px] text-slate-500 font-medium leading-tight truncate max-w-[180px]">{project.title}</p>
             </div>
           </div>
           {modalState === 'form' && (
@@ -280,7 +242,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
         {modalState !== 'failed' && (
           <div className="px-5 sm:px-6 pb-4 pt-1 shrink-0">
-            <StepIndicator current={step} total={5} labels={STEP_LABELS} />
+            <StepIndicator current={step} total={4} labels={STEP_LABELS} />
           </div>
         )}
 
@@ -312,14 +274,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                   />
                 )}
                 {step === 2 && (
-                  <PaymentMethodStep
-                    payMethod={payMethod}
-                    setPayMethod={setPayMethod}
-                    onBack={() => goToStep(1)}
-                    onNext={() => { setError(''); goToStep(3); }}
-                  />
-                )}
-                {step === 3 && (
                   <DetailsStep
                     firstName={firstName}
                     setFirstName={setFirstName}
@@ -328,27 +282,27 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     contact={contact}
                     setContact={setContact}
                     payMethod={payMethod}
+                    setPayMethod={setPayMethod}
                     error={error}
-                    onBack={() => goToStep(2)}
+                    onBack={() => goToStep(1)}
                     onNext={() => {
                       if (!canProceedStep2) { setError('Please fill in all fields correctly.'); return; }
-                      setError(''); goToStep(4);
+                      setError(''); goToStep(3);
                     }}
                     canProceed={canProceedStep2}
                   />
                 )}
-                {step === 4 && (
+                {step === 3 && (
                   <ReviewStep
                     amount={amount}
                     unitLabel={project.unit_label}
                     totalGHS={totalGHS}
-                    totalUSD={totalUSD}
                     firstName={firstName}
                     lastName={lastName}
                     contact={contact}
                     payMethod={payMethod}
                     projectTitle={project.title}
-                    onBack={() => goToStep(3)}
+                    onBack={() => goToStep(2)}
                     onPay={handlePay}
                   />
                 )}
@@ -356,7 +310,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             </AnimatePresence>
           )}
 
-          {modalState === 'success' && step === 5 && (
+          {modalState === 'success' && step === 4 && (
             <SuccessStep
               amount={amount}
               unitLabel={project.unit_label}

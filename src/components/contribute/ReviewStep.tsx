@@ -12,7 +12,6 @@ interface ReviewStepProps {
   amount: number;
   unitLabel: string;
   totalGHS: number;
-  totalUSD: number;
   firstName: string;
   lastName: string;
   contact: string;
@@ -33,7 +32,7 @@ const fadeUp = {
 };
 
 export function ReviewStep({
-  amount, unitLabel, totalGHS, totalUSD,
+  amount, unitLabel, totalGHS,
   firstName, lastName, contact, payMethod,
   projectTitle, onBack, onPay,
 }: ReviewStepProps) {
@@ -62,14 +61,9 @@ export function ReviewStep({
             <div className="mx-6 border-t border-dashed border-slate-300" />
             <div className="p-6 flex items-center justify-between">
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total</p>
-              <div className="text-right">
-                <p className="text-2xl sm:text-xl font-extrabold text-slate-900 tabular-nums">
-                  GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-                <p className="text-[10px] font-bold text-slate-400 tabular-nums mt-0.5">
-                  ≈ ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-              </div>
+              <p className="text-2xl sm:text-xl font-extrabold text-slate-900 tabular-nums">
+                GH₵{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -140,4 +134,4 @@ function SummaryRow({ icon: Icon, label, value }: { icon?: React.ElementType; la
       <p className="text-[12px] font-bold text-slate-800 text-right truncate max-w-[55%]">{value}</p>
     </div>
   );
-} 
+}
