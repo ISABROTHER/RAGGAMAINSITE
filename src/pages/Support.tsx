@@ -356,42 +356,48 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
           </span>
           {(() => {
             const milestoneTarget = Math.round(project.target_units * 0.05);
-            const milestonePercent = milestoneTarget > 0
+            const barPercent = milestoneTarget > 0
               ? Math.min(100, (project.raised_units / milestoneTarget) * 100)
               : 0;
+            const donatedPct = project.target_units > 0
+              ? ((project.raised_units / project.target_units) * 100).toFixed(4)
+              : '0.0000';
             return (
-              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-8">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
-                    {project.raised_units.toLocaleString()} / {milestoneTarget.toLocaleString()} {project.unit_label}
-                  </span>
-                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                    5% goal
+              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-10">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-baseline gap-1">
+                    <motion.span
+                      className="text-lg font-black text-white tabular-nums leading-none"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                      {donatedPct}%
+                    </motion.span>
+                    <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">donated</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">
+                    5% target
                   </span>
                 </div>
-                <div className="relative h-2.5 w-full bg-white/20 rounded-full overflow-hidden">
+                <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${milestonePercent}%` }}
-                    transition={{ duration: 1.6, ease: [0.34, 1.56, 0.64, 1], delay: 0.3 }}
-                    className="h-full bg-gradient-to-r from-green-400 to-emerald-300 rounded-full"
-                    style={{ boxShadow: '0 0 12px rgba(74,222,128,0.7)' }}
+                    animate={{ width: `${barPercent}%` }}
+                    transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
+                    className="absolute top-0 left-0 h-full rounded-full"
+                    style={{
+                      background: 'linear-gradient(90deg, #4ade80, #34d399, #6ee7b7)',
+                      boxShadow: '0 0 10px rgba(74,222,128,0.8), 0 0 20px rgba(74,222,128,0.3)',
+                    }}
                   />
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.6, 0] }}
-                    transition={{ duration: 1.5, delay: 1.6, repeat: Infinity, repeatDelay: 3 }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full"
-                    style={{ backgroundSize: '200% 100%' }}
+                    className="absolute top-0 left-0 h-full w-20 rounded-full"
+                    initial={{ x: '-100%', opacity: 0 }}
+                    animate={{ x: ['−100%', '600%'], opacity: [0, 1, 0] }}
+                    transition={{ duration: 1.2, delay: 2.5, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
+                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}
                   />
-                </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-[9px] font-semibold text-white/50">
-                    {Math.round(milestonePercent)}% of 5% milestone
-                  </span>
-                  <span className="text-[9px] font-semibold text-white/50">
-                    {(milestoneTarget - project.raised_units).toLocaleString()} to go
-                  </span>
                 </div>
               </div>
             );
