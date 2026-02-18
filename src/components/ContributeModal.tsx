@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, BookOpen, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Paystack from '@paystack/inline-js';
+import PaystackPop from '@paystack/inline-js';
 import { supabase } from '../lib/supabase';
 import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
-import type { PayMethod } from './contribute/types';
+import { PaymentMethodStep } from './contribute/PaymentMethodStep';
+import type { PayMethod, RecognitionType } from './contribute/types';
 
 interface Project {
   id: string;
@@ -25,7 +26,7 @@ interface ContributeModalProps {
 
 type ModalState = 'form' | 'processing' | 'success' | 'failed';
 
-const STEP_LABELS = ['Amount', 'Details', 'Review', 'Done'];
+const STEP_LABELS = ['Amount', 'Payment', 'Details', 'Review', 'Done'];
 
 export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [step, setStep] = useState(1);
@@ -35,16 +36,31 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [lastName, setLastName] = useState('');
   const [contact, setContact] = useState('');
   const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
-  const [exchangeRate, setExchangeRate] = useState(15.20);
+  const [recognition, setRecognition] = useState<RecognitionType>('first');
+  const [exchangeRate, setExchangeRate] = useState(11.00);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
   const [reference, setReference] = useState('');
 
   useEffect(() => {
-    fetch('https://open.er-api.com/v6/latest/USD')
-      .then(r => r.json())
-      .then(d => { if (d?.rates?.GHS) setExchangeRate(d.rates.GHS); })
-      .catch(() => {});
+    const fetchRate = async () => {
+      try {
+        const res = await fetch('https://v6.exchangerate-api.com/v6/latest/USD');
+        const d = await res.json();
+        if (d?.conversion_rates?.GHS > 5 && d.conversion_rates.GHS < 30) { setExchangeRate(d.conversion_rates.GHS); return; }
+      } catch {}
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        const d = await res.json();
+        if (d?.rates?.GHS > 5 && d.rates.GHS < 30) { setExchangeRate(d.rates.GHS); return; }
+      } catch {}
+      try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+        const d = await res.json();
+        if (d?.usd?.ghs > 5 && d.usd.ghs < 30) { setExchangeRate(d.usd.ghs); return; }
+      } catch {}
+    };
+    fetchRate();
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
@@ -56,9 +72,13 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
     setStep(s);
   };
 
-  const totalGHS = amount * project.unit_price_ghs;
-  const totalUSD = totalGHS / (exchangeRate || 15.20);
-  const canProceedStep2 = firstName.trim().length >= 2 && lastName.trim().length >= 2 && contact.trim().length >= 5;
+  const UNIT_PRICE_USD = 0.10;
+  const unitPriceGHS = UNIT_PRICE_USD * (exchangeRate || 11.00);
+  const totalGHS = amount * unitPriceGHS;
+  const totalUSD = amount * UNIT_PRICE_USD;
+  const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
+
+  const paystackRef = useRef<PaystackPop | null>(null);
 
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
@@ -67,12 +87,14 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ reference: ref }),
       });
-      const data = await res.json();
-      return data.status || 'pending';
+      const raw = await res.text();
+      const data = (() => { try { return JSON.parse(raw); } catch { return null; } })();
+      return data?.status || 'pending';
     } catch {
       return 'pending';
     }
@@ -86,6 +108,46 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
     return `BK_${timestamp}_${randomHex.substring(0, 12)}`;
+  };
+
+  const initializePayment = async (ref: string, email: string, channels: string[]) => {
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/initialize-payment`;
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        amount: Math.round(totalGHS * 100),
+        currency: 'GHS',
+        reference: ref,
+        channels,
+        metadata: {
+          custom_fields: [
+            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
+            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
+            { display_name: 'Project', variable_name: 'project', value: project.title },
+          ],
+        },
+        callback_url: window.location.origin + window.location.pathname,
+      }),
+    });
+
+    if (!res.ok) {
+      const raw = await res.text().catch(() => '');
+      const errData = (() => { try { return JSON.parse(raw); } catch { return {}; } })() as Record<string, unknown>;
+      const msg =
+        (typeof errData.error === 'string' && errData.error) ||
+        (typeof errData.message === 'string' && errData.message) ||
+        (raw && raw.length < 220 ? raw : '') ||
+        `Server error ${res.status}`;
+      throw new Error(msg);
+    }
+
+    return res.json();
   };
 
   const handlePay = async () => {
@@ -108,11 +170,9 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         status: 'pending',
       });
 
-      localStorage.setItem('pending_payment_ref', ref);
-
-      const email = payMethod === 'MOMO'
-        ? `${contact.replace(/[^0-9]/g, '') || '0000000000'}@momo.com`
-        : contact.trim();
+      const email = contact.includes('@') ? contact.trim()
+        : contact.replace(/[^0-9]/g, '').length >= 5 ? `${contact.replace(/[^0-9]/g, '')}@momo.com`
+        : `${firstName.toLowerCase().trim()}.${lastName.toLowerCase().trim()}@donor.local`;
 
       const channelMap: Record<PayMethod, string[]> = {
         MOMO: ['mobile_money'],
@@ -120,67 +180,42 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         BANK: ['bank_transfer'],
       };
 
-      const popup = new Paystack();
-      popup.newTransaction({
-        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-        email,
-        amount: Math.round(totalGHS * 100),
-        currency: 'GHS',
-        reference: ref,
-        channels: channelMap[payMethod],
-        metadata: {
-          custom_fields: [
-            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
-            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
-            { display_name: 'Project', variable_name: 'project', value: project.title },
-          ]
-        },
-        onSuccess: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(4);
-            } else {
-              supabase.from('contributions').update({ status: 'completed' }).eq('payment_reference', ref).then(() => {
-                setModalState('success');
-                goToStep(4);
-              });
-            }
-          });
+      const data = await initializePayment(ref, email, channelMap[payMethod]);
+
+      if (!data.access_code) {
+        throw new Error('No payment access code returned');
+      }
+
+      const paystack = new PaystackPop();
+      paystackRef.current = paystack;
+
+      paystack.resumeTransaction({
+        accessCode: data.access_code,
+        onSuccess: async () => {
+          const status = await verifyPayment(ref);
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('success');
+            goToStep(5);
+          }
         },
         onCancel: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(4);
-            } else {
-              setModalState('form');
-              goToStep(3);
-            }
-          });
-        },
-        onError: () => {
-          verifyPayment(ref).then((status) => {
-            localStorage.removeItem('pending_payment_ref');
-            if (status === 'completed') {
-              setModalState('success');
-              goToStep(4);
-            } else {
-              setModalState('failed');
-            }
-          });
+          setModalState('form');
+          goToStep(4);
         },
       });
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Payment initialization failed. Please try again.';
+      setError(msg);
       setModalState('failed');
     }
   };
 
   const handleRetry = () => {
     setModalState('form');
-    goToStep(3);
+    goToStep(4);
     setError('');
   };
 
@@ -191,7 +226,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -214,8 +249,8 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             onClose();
           }
         }}
-        className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
-        style={{ maxHeight: 'min(92vh, 800px)', touchAction: 'none' }}
+        className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl flex flex-col overflow-hidden mx-4"
+        style={{ maxHeight: 'min(88vh, 800px)', touchAction: 'none' }}
       >
         <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-1.5 sm:hidden cursor-grab active:cursor-grabbing" />
 
@@ -225,8 +260,23 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
               <BookOpen className="w-5 h-5 text-green-700" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">Contribute</h2>
-              <p className="text-[11px] text-slate-500 font-medium leading-tight truncate max-w-[180px]">{project.title}</p>
+              <h2 className="text-[15px] font-bold text-slate-900 leading-tight">
+                {modalState === 'processing' ? 'Processing...' :
+                 modalState === 'failed' ? 'Payment Failed' :
+                 modalState === 'success' ? 'Thank You!' :
+                 step === 1 ? 'How Many Books?' :
+                 step === 2 ? 'Payment Method' :
+                 step === 3 ? 'Your Details' :
+                 step === 4 ? 'Review & Pay' : 'Contribute'}
+              </h2>
+              {modalState === 'form' && (
+                <p className="text-[11px] text-slate-400 font-medium leading-tight">
+                  {step === 1 ? 'Every book makes a difference' :
+                   step === 2 ? 'Choose how to pay' :
+                   step === 3 ? 'A little about you' :
+                   step === 4 ? 'Confirm your contribution' : ''}
+                </p>
+              )}
             </div>
           </div>
           {modalState === 'form' && (
@@ -242,13 +292,13 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
         {modalState !== 'failed' && (
           <div className="px-5 sm:px-6 pb-4 pt-1 shrink-0">
-            <StepIndicator current={step} total={4} labels={STEP_LABELS} />
+            <StepIndicator current={step} total={5} labels={STEP_LABELS} />
           </div>
         )}
 
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {modalState === 'processing' && <ProcessingState />}
-          {modalState === 'failed' && <FailedState onRetry={handleRetry} onClose={onClose} />}
+          {modalState === 'failed' && <FailedState error={error} onRetry={handleRetry} onClose={onClose} />}
 
           {modalState === 'form' && (
             <AnimatePresence mode="wait" custom={direction}>
@@ -274,6 +324,14 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                   />
                 )}
                 {step === 2 && (
+                  <PaymentMethodStep
+                    payMethod={payMethod}
+                    setPayMethod={setPayMethod}
+                    onBack={() => goToStep(1)}
+                    onNext={() => { setError(''); goToStep(3); }}
+                  />
+                )}
+                {step === 3 && (
                   <DetailsStep
                     firstName={firstName}
                     setFirstName={setFirstName}
@@ -281,28 +339,30 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     setLastName={setLastName}
                     contact={contact}
                     setContact={setContact}
-                    payMethod={payMethod}
-                    setPayMethod={setPayMethod}
+                    recognition={recognition}
+                    setRecognition={setRecognition}
                     error={error}
-                    onBack={() => goToStep(1)}
+                    onBack={() => goToStep(2)}
                     onNext={() => {
-                      if (!canProceedStep2) { setError('Please fill in all fields correctly.'); return; }
-                      setError(''); goToStep(3);
+                      if (!canProceedStep3) { setError('Please enter your first and last name.'); return; }
+                      setError(''); goToStep(4);
                     }}
-                    canProceed={canProceedStep2}
+                    canProceed={canProceedStep3}
                   />
                 )}
-                {step === 3 && (
+                {step === 4 && (
                   <ReviewStep
                     amount={amount}
                     unitLabel={project.unit_label}
                     totalGHS={totalGHS}
+                    totalUSD={totalUSD}
                     firstName={firstName}
                     lastName={lastName}
                     contact={contact}
                     payMethod={payMethod}
                     projectTitle={project.title}
-                    onBack={() => goToStep(2)}
+                    recognition={recognition}
+                    onBack={() => goToStep(3)}
                     onPay={handlePay}
                   />
                 )}
@@ -310,7 +370,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
             </AnimatePresence>
           )}
 
-          {modalState === 'success' && step === 4 && (
+          {modalState === 'success' && step === 5 && (
             <SuccessStep
               amount={amount}
               unitLabel={project.unit_label}
@@ -392,7 +452,7 @@ function ProcessingState() {
       </div>
       <div className="text-center">
         <p className="text-[15px] font-bold text-slate-900 mb-1.5">Processing Payment</p>
-        <p className="text-sm text-slate-400">Complete the payment on the popup window.</p>
+        <p className="text-sm text-slate-400">Complete the payment on the secure checkout.</p>
         <div className="flex items-center justify-center gap-1.5 mt-4">
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-1" />
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-2" />
@@ -404,7 +464,7 @@ function ProcessingState() {
   );
 }
 
-function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () => void }) {
+function FailedState({ error, onRetry, onClose }: { error: string; onRetry: () => void; onClose: () => void }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8 py-16">
       <motion.div
@@ -423,7 +483,7 @@ function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () =>
       >
         <p className="text-lg font-extrabold text-slate-900 mb-1.5">Payment Failed</p>
         <p className="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed">
-          Something went wrong with your payment. No money has been deducted from your account.
+          {error || 'Something went wrong with your payment. No money has been deducted from your account.'}
         </p>
       </motion.div>
       <div className="flex gap-3 w-full max-w-xs px-5 safe-bottom">

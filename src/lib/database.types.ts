@@ -463,6 +463,30 @@ export interface Database {
           created_at?: string
         }
       }
+
+      sms_sender_ids: {
+        Row: {
+          id: string
+          name: string
+          is_default: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
       announcements: {
         Row: {
           id: string

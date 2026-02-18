@@ -9,6 +9,8 @@ export interface ContributeProject {
 
 export type PayMethod = 'MOMO' | 'CARD' | 'BANK';
 
+export type RecognitionType = 'full' | 'first' | 'anon';
+
 export interface ContributionData {
   amount: number;
   firstName: string;
@@ -23,7 +25,7 @@ export interface ContributionData {
 export const PAY_METHODS: {
   key: PayMethod;
   label: string;
-  sublabel: string;
+  logos: string;
   activeColor: string;
   activeBg: string;
   activeRing: string;
@@ -31,15 +33,15 @@ export const PAY_METHODS: {
   {
     key: 'MOMO',
     label: 'Mobile Money',
-    sublabel: 'MTN, Vodafone, AirtelTigo',
+    logos: 'MTN · Vodafone · AirtelTigo',
     activeColor: 'text-yellow-700',
     activeBg: 'bg-yellow-50',
     activeRing: 'ring-yellow-400/30 border-yellow-300',
   },
   {
     key: 'CARD',
-    label: 'Debit / Credit Card',
-    sublabel: 'Visa, Mastercard',
+    label: 'Card Payment',
+    logos: 'Visa · Mastercard',
     activeColor: 'text-blue-700',
     activeBg: 'bg-blue-50',
     activeRing: 'ring-blue-400/30 border-blue-300',
@@ -47,10 +49,10 @@ export const PAY_METHODS: {
   {
     key: 'BANK',
     label: 'Bank Transfer',
-    sublabel: 'Direct bank payment',
-    activeColor: 'text-slate-700',
-    activeBg: 'bg-slate-50',
-    activeRing: 'ring-slate-400/30 border-slate-300',
+    logos: 'Direct bank payment',
+    activeColor: 'text-emerald-700',
+    activeBg: 'bg-emerald-50',
+    activeRing: 'ring-emerald-400/30 border-emerald-300',
   },
 ];
 
