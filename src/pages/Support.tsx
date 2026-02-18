@@ -376,29 +376,37 @@ function ProjectCard({ project, onContribute }: { project: ProjectWithProgress; 
                     </motion.span>
                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">donated</span>
                   </div>
-                  <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">
-                    5% target
-                  </span>
                 </div>
-                <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${barPercent}%` }}
-                    transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
-                    className="absolute top-0 left-0 h-full rounded-full"
-                    style={{
-                      background: 'linear-gradient(90deg, #4ade80, #34d399, #6ee7b7)',
-                      boxShadow: '0 0 10px rgba(74,222,128,0.8), 0 0 20px rgba(74,222,128,0.3)',
-                    }}
-                  />
-                  <motion.div
-                    className="absolute top-0 left-0 h-full w-20 rounded-full"
-                    initial={{ x: '-100%', opacity: 0 }}
-                    animate={{ x: ['−100%', '600%'], opacity: [0, 1, 0] }}
-                    transition={{ duration: 1.2, delay: 2.5, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
-                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}
-                  />
-                </div>
+                {(() => {
+                  const barColor = barPercent < 20
+                    ? { bar: 'linear-gradient(90deg, #ef4444, #f97316)', glow: 'rgba(239,68,68,0.7)' }
+                    : barPercent < 50
+                    ? { bar: 'linear-gradient(90deg, #f97316, #eab308)', glow: 'rgba(249,115,22,0.7)' }
+                    : barPercent < 80
+                    ? { bar: 'linear-gradient(90deg, #eab308, #84cc16)', glow: 'rgba(234,179,8,0.7)' }
+                    : { bar: 'linear-gradient(90deg, #4ade80, #34d399)', glow: 'rgba(74,222,128,0.8)' };
+                  return (
+                    <div className="relative h-2 w-full bg-white/15 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${barPercent}%` }}
+                        transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
+                        className="absolute top-0 left-0 h-full rounded-full"
+                        style={{
+                          background: barColor.bar,
+                          boxShadow: `0 0 10px ${barColor.glow}, 0 0 20px ${barColor.glow.replace('0.7', '0.3').replace('0.8', '0.3')}`,
+                        }}
+                      />
+                      <motion.div
+                        className="absolute top-0 left-0 h-full w-12 rounded-full"
+                        initial={{ left: '-20%' }}
+                        animate={{ left: ['−20%', '120%'] }}
+                        transition={{ duration: 1.4, delay: 2.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
+                        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
             );
           })()}
