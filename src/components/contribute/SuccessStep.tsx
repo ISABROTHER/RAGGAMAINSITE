@@ -1,4 +1,5 @@
-import { CheckCircle, BookOpen, Share2, X, Copy } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle2, Share2, Copy, Check, MessageCircle, Twitter, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface SuccessStepProps {
@@ -12,144 +13,160 @@ interface SuccessStepProps {
   onClose: () => void;
 }
 
-export function SuccessStep({
-  amount,
-  unitLabel,
-  totalGHS,
-  firstName,
-  projectTitle,
-  projectSlug,
-  reference,
-  onClose,
-}: SuccessStepProps) {
-  const handleShare = async () => {
-    const text = `I just contributed ${amount.toLocaleString()} ${unitLabel} to "${projectTitle}" for students in Cape Coast North!`;
+export function SuccessStep({ amount, unitLabel, totalGHS, firstName, projectTitle, projectSlug, reference, onClose }: SuccessStepProps) {
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = `${window.location.origin}/support?project=${projectSlug}`;
+  const shareText = `I just contributed ${amount.toLocaleString()} ${unitLabel} to "${projectTitle}" in Cape Coast North! Join me and make a difference.`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch { /* ignore */ }
+  };
+
+  const shareNative = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: projectTitle, text, url: window.location.origin + '/projects/' + projectSlug });
-      } catch {}
+        await navigator.share({ title: projectTitle, text: shareText, url: shareUrl });
+      } catch { /* user cancelled */ }
     } else {
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {}
+      copyLink();
     }
   };
 
-  const handleCopyRef = async () => {
-    try {
-      await navigator.clipboard.writeText(reference);
-    } catch {}
+  const shareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+  };
+
+  const shareX = () => {
+    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   };
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-4 pb-4">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
-          className="flex justify-center mb-6"
-        >
-          <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 pb-4">
+        <div className="text-center">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+            className="relative inline-block mb-6"
+          >
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            </div>
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}
-            >
-              <CheckCircle className="w-12 h-12 text-green-600" />
-            </motion.div>
-          </div>
-        </motion.div>
+              initial={{ scale: 0.8, opacity: 0.5 }}
+              animate={{ scale: 2, opacity: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="absolute inset-0 rounded-full border-2 border-green-300"
+            />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0.4 }}
+              animate={{ scale: 1.6, opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="absolute inset-0 rounded-full border-2 border-green-200"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
+            <h3 className="text-xl font-extrabold text-slate-900 mb-1.5">Thank You, {firstName}!</h3>
+            <p className="text-sm text-slate-500">Your contribution has been received.</p>
+          </motion.div>
+        </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.4 }}
-          className="text-center mb-6"
+          className="mt-6 bg-slate-50 rounded-2xl overflow-hidden"
         >
-          <h3 className="text-xl font-extrabold text-slate-900 mb-2">
-            Thank you, {firstName}!
-          </h3>
-          <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto">
-            Your contribution of{' '}
-            <span className="font-bold text-slate-700">{amount.toLocaleString()} {unitLabel}</span>{' '}
-            to <span className="font-bold text-slate-700">{projectTitle}</span> has been received.
-          </p>
+          <div className="p-5 space-y-4">
+            <ReceiptRow label="Contributed" value={`${amount.toLocaleString()} ${unitLabel}`} />
+            <div className="border-t border-dashed border-slate-200" />
+            <ReceiptRow label="Amount Paid" value={`GH₵${totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} highlight />
+            <div className="border-t border-dashed border-slate-200" />
+            <ReceiptRow label="Reference" value={reference} mono />
+          </div>
+          <div className="bg-slate-100/50 px-5 py-3 flex items-center justify-center gap-2">
+            <Download className="w-3 h-3 text-slate-400" />
+            <p className="text-[10px] text-slate-400 font-medium">Receipt saved</p>
+          </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.4 }}
-          className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-5"
+          className="mt-6"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
-              <BookOpen className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-600">Contribution Summary</p>
-            </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300 mb-3 text-center">Spread the Word</p>
+          <div className="flex items-center justify-center gap-3">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={shareNative}
+              className="flutter-btn flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-2xl text-xs font-bold shadow-lg shadow-green-600/20"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              onClick={shareWhatsApp}
+              className="flutter-btn w-12 h-12 bg-[#25D366] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#25D366]/20"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              onClick={shareX}
+              className="flutter-btn w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-900/20"
+            >
+              <Twitter className="w-5 h-5" />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              onClick={copyLink}
+              className={`flutter-btn w-12 h-12 border-2 rounded-2xl flex items-center justify-center transition-colors ${
+                copied ? 'bg-green-50 border-green-200 text-green-600' : 'border-slate-100 text-slate-400'
+              }`}
+            >
+              {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+            </motion.button>
           </div>
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-green-700 font-medium">Amount</p>
-              <p className="text-[12px] font-bold text-green-900">{amount.toLocaleString()} {unitLabel}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-green-700 font-medium">Total Paid</p>
-              <p className="text-[12px] font-bold text-green-900">
-                GH{'\u20B5'}{totalGHS.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div className="border-t border-dashed border-green-300 my-2" />
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-green-700 font-medium">Reference</p>
-              <button
-                onClick={handleCopyRef}
-                className="flex items-center gap-1.5 group"
-              >
-                <p className="text-[11px] font-mono font-bold text-green-800 truncate max-w-[160px]">{reference}</p>
-                <Copy className="w-3 h-3 text-green-500 group-hover:text-green-700 transition-colors" />
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.4 }}
-          className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center"
-        >
-          <p className="text-[13px] text-slate-600 leading-relaxed">
-            Every contribution brings us closer to our goal. You are making a real difference in the lives of students in Cape Coast North.
-          </p>
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.75, duration: 0.4 }}
-        className="shrink-0 px-5 sm:px-6 pb-5 pt-3 safe-bottom flex gap-3"
-      >
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={handleShare}
-          className="flutter-btn w-16 h-16 shrink-0 border-2 border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:border-green-300 hover:text-green-600 hover:bg-green-50 transition-colors"
-        >
-          <Share2 className="w-5 h-5" />
-        </motion.button>
+      <div className="shrink-0 px-5 pb-5 pt-2 safe-bottom">
         <motion.button
           whileTap={{ scale: 0.97 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
           onClick={onClose}
-          className="flutter-btn flex-1 py-5 bg-green-600 text-white rounded-2xl font-bold text-base tracking-wide shadow-xl shadow-green-600/25 flex items-center justify-center gap-3 min-h-[60px]"
+          className="flutter-btn w-full py-[18px] border-2 border-slate-100 text-slate-700 rounded-2xl font-bold text-[15px] uppercase tracking-wider"
         >
-          <X className="w-4 h-4" />
-          Close
+          Done
         </motion.button>
-      </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function ReceiptRow({ label, value, highlight, mono }: { label: string; value: string; highlight?: boolean; mono?: boolean }) {
+  return (
+    <div className="flex justify-between items-center">
+      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{label}</span>
+      <span className={`text-sm font-extrabold tabular-nums ${
+        highlight ? 'text-green-700' : mono ? 'text-[10px] font-mono text-slate-500 font-bold' : 'text-slate-900'
+      }`}>{value}</span>
     </div>
   );
 }

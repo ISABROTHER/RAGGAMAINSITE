@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, BookOpen, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import PaystackPop from '@paystack/inline-js';
+import Paystack from '@paystack/inline-js';
 import { supabase } from '../lib/supabase';
 import { AmountStep } from './contribute/AmountStep';
 import { DetailsStep } from './contribute/DetailsStep';
 import { ReviewStep } from './contribute/ReviewStep';
 import { SuccessStep } from './contribute/SuccessStep';
 import { PaymentMethodStep } from './contribute/PaymentMethodStep';
-import type { PayMethod, RecognitionType } from './contribute/types';
+import type { PayMethod } from './contribute/types';
 
 interface Project {
   id: string;
@@ -36,7 +36,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const [lastName, setLastName] = useState('');
   const [contact, setContact] = useState('');
   const [payMethod, setPayMethod] = useState<PayMethod>('MOMO');
-  const [recognition, setRecognition] = useState<RecognitionType>('first');
   const [exchangeRate, setExchangeRate] = useState(11.00);
   const [error, setError] = useState('');
   const [modalState, setModalState] = useState<ModalState>('form');
@@ -76,9 +75,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
   const unitPriceGHS = UNIT_PRICE_USD * (exchangeRate || 11.00);
   const totalGHS = amount * unitPriceGHS;
   const totalUSD = amount * UNIT_PRICE_USD;
-  const canProceedStep3 = firstName.trim().length >= 2 && lastName.trim().length >= 2;
-
-  const paystackRef = useRef<PaystackPop | null>(null);
+  const canProceedStep2 = firstName.trim().length >= 2 && lastName.trim().length >= 2 && contact.trim().length >= 5;
 
   const verifyPayment = async (ref: string): Promise<string> => {
     try {
@@ -87,14 +84,12 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ reference: ref }),
       });
-      const raw = await res.text();
-      const data = (() => { try { return JSON.parse(raw); } catch { return null; } })();
-      return data?.status || 'pending';
+      const data = await res.json();
+      return data.status || 'pending';
     } catch {
       return 'pending';
     }
@@ -108,46 +103,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
     return `BK_${timestamp}_${randomHex.substring(0, 12)}`;
-  };
-
-  const initializePayment = async (ref: string, email: string, channels: string[]) => {
-    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/initialize-payment`;
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        amount: Math.round(totalGHS * 100),
-        currency: 'GHS',
-        reference: ref,
-        channels,
-        metadata: {
-          custom_fields: [
-            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
-            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
-            { display_name: 'Project', variable_name: 'project', value: project.title },
-          ],
-        },
-        callback_url: window.location.origin + window.location.pathname,
-      }),
-    });
-
-    if (!res.ok) {
-      const raw = await res.text().catch(() => '');
-      const errData = (() => { try { return JSON.parse(raw); } catch { return {}; } })() as Record<string, unknown>;
-      const msg =
-        (typeof errData.error === 'string' && errData.error) ||
-        (typeof errData.message === 'string' && errData.message) ||
-        (raw && raw.length < 220 ? raw : '') ||
-        `Server error ${res.status}`;
-      throw new Error(msg);
-    }
-
-    return res.json();
   };
 
   const handlePay = async () => {
@@ -170,9 +125,11 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         status: 'pending',
       });
 
-      const email = contact.includes('@') ? contact.trim()
-        : contact.replace(/[^0-9]/g, '').length >= 5 ? `${contact.replace(/[^0-9]/g, '')}@momo.com`
-        : `${firstName.toLowerCase().trim()}.${lastName.toLowerCase().trim()}@donor.local`;
+      localStorage.setItem('pending_payment_ref', ref);
+
+      const email = payMethod === 'MOMO'
+        ? `${contact.replace(/[^0-9]/g, '') || '0000000000'}@momo.com`
+        : contact.trim();
 
       const channelMap: Record<PayMethod, string[]> = {
         MOMO: ['mobile_money'],
@@ -180,35 +137,67 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
         BANK: ['bank_transfer'],
       };
 
-      const data = await initializePayment(ref, email, channelMap[payMethod]);
-
-      if (!data.access_code) {
-        throw new Error('No payment access code returned');
-      }
-
-      const paystack = new PaystackPop();
-      paystackRef.current = paystack;
-
-      paystack.resumeTransaction({
-        accessCode: data.access_code,
+      const popup = new Paystack();
+      popup.newTransaction({
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        email,
+        amount: Math.round(totalGHS * 100),
+        currency: 'GHS',
+        reference: ref,
+        channels: channelMap[payMethod],
+        metadata: {
+          custom_fields: [
+            { display_name: 'Donor', variable_name: 'donor', value: `${firstName} ${lastName}` },
+            { display_name: 'Books', variable_name: 'books', value: amount.toString() },
+            { display_name: 'Project', variable_name: 'project', value: project.title },
+          ]
+        },
         onSuccess: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1500));
           const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
           if (status === 'completed') {
             setModalState('success');
             goToStep(5);
           } else {
-            setModalState('success');
-            goToStep(5);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const retryStatus = await verifyPayment(ref);
+            if (retryStatus === 'completed') {
+              setModalState('success');
+              goToStep(5);
+            } else {
+              setModalState('failed');
+            }
           }
         },
-        onCancel: () => {
-          setModalState('form');
-          goToStep(4);
+        onCancel: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('form');
+            goToStep(4);
+          }
+        },
+        onError: async () => {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const status = await verifyPayment(ref);
+          localStorage.removeItem('pending_payment_ref');
+
+          if (status === 'completed') {
+            setModalState('success');
+            goToStep(5);
+          } else {
+            setModalState('failed');
+          }
         },
       });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Payment initialization failed. Please try again.';
-      setError(msg);
+    } catch {
       setModalState('failed');
     }
   };
@@ -265,18 +254,17 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                  modalState === 'failed' ? 'Payment Failed' :
                  modalState === 'success' ? 'Thank You!' :
                  step === 1 ? 'How Many Books?' :
-                 step === 2 ? 'Payment Method' :
+                 step === 2 ? 'Choose Payment Method' :
                  step === 3 ? 'Your Details' :
                  step === 4 ? 'Review & Pay' : 'Contribute'}
               </h2>
-              {modalState === 'form' && (
-                <p className="text-[11px] text-slate-400 font-medium leading-tight">
-                  {step === 1 ? 'Every book makes a difference' :
-                   step === 2 ? 'Choose how to pay' :
-                   step === 3 ? 'A little about you' :
-                   step === 4 ? 'Confirm your contribution' : ''}
-                </p>
-              )}
+              <p className="text-[11px] text-slate-400 font-medium leading-tight">
+                {modalState !== 'form' ? '' :
+                 step === 1 ? 'Select the number of books to donate' :
+                 step === 2 ? 'How would you like to pay?' :
+                 step === 3 ? 'Tell us a bit about yourself' :
+                 step === 4 ? 'Confirm your contribution' : ''}
+              </p>
             </div>
           </div>
           {modalState === 'form' && (
@@ -298,7 +286,7 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
 
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {modalState === 'processing' && <ProcessingState />}
-          {modalState === 'failed' && <FailedState error={error} onRetry={handleRetry} onClose={onClose} />}
+          {modalState === 'failed' && <FailedState onRetry={handleRetry} onClose={onClose} />}
 
           {modalState === 'form' && (
             <AnimatePresence mode="wait" custom={direction}>
@@ -339,15 +327,14 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     setLastName={setLastName}
                     contact={contact}
                     setContact={setContact}
-                    recognition={recognition}
-                    setRecognition={setRecognition}
+                    payMethod={payMethod}
                     error={error}
                     onBack={() => goToStep(2)}
                     onNext={() => {
-                      if (!canProceedStep3) { setError('Please enter your first and last name.'); return; }
+                      if (!canProceedStep2) { setError('Please fill in all fields correctly.'); return; }
                       setError(''); goToStep(4);
                     }}
-                    canProceed={canProceedStep3}
+                    canProceed={canProceedStep2}
                   />
                 )}
                 {step === 4 && (
@@ -361,7 +348,6 @@ export function ContributeModal({ project, onClose }: ContributeModalProps) {
                     contact={contact}
                     payMethod={payMethod}
                     projectTitle={project.title}
-                    recognition={recognition}
                     onBack={() => goToStep(3)}
                     onPay={handlePay}
                   />
@@ -452,7 +438,7 @@ function ProcessingState() {
       </div>
       <div className="text-center">
         <p className="text-[15px] font-bold text-slate-900 mb-1.5">Processing Payment</p>
-        <p className="text-sm text-slate-400">Complete the payment on the secure checkout.</p>
+        <p className="text-sm text-slate-400">Complete the payment on the popup window.</p>
         <div className="flex items-center justify-center gap-1.5 mt-4">
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-1" />
           <div className="w-2 h-2 rounded-full bg-green-600 flutter-dot-2" />
@@ -464,7 +450,7 @@ function ProcessingState() {
   );
 }
 
-function FailedState({ error, onRetry, onClose }: { error: string; onRetry: () => void; onClose: () => void }) {
+function FailedState({ onRetry, onClose }: { onRetry: () => void; onClose: () => void }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8 py-16">
       <motion.div
@@ -483,7 +469,7 @@ function FailedState({ error, onRetry, onClose }: { error: string; onRetry: () =
       >
         <p className="text-lg font-extrabold text-slate-900 mb-1.5">Payment Failed</p>
         <p className="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed">
-          {error || 'Something went wrong with your payment. No money has been deducted from your account.'}
+          Something went wrong with your payment. No money has been deducted from your account.
         </p>
       </motion.div>
       <div className="flex gap-3 w-full max-w-xs px-5 safe-bottom">
